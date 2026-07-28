@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure, withRateLimit } from "@/server/api/trpc";
 import { searchIgdbGames } from "@/server/igdb/client";
 import { upsertGameFromIgdb } from "@/server/igdb/sync";
 import { searchRawgGames } from "@/server/rawg/client";
 import { upsertGameFromRawg } from "@/server/rawg/sync";
+import { searchRatelimit } from "@/lib/redis";
 
 // Below this many local matches, we assume the catalog doesn't know this
 // title yet and it's worth paying the IGDB/RAWG round trip. Above it,
@@ -13,6 +14,7 @@ const LOCAL_RESULTS_THRESHOLD = 8;
 
 export const gameRouter = createTRPCRouter({
   search: publicProcedure
+    .use(withRateLimit(searchRatelimit))
     .input(
       z.object({
         query: z.string(),

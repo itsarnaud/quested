@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, withRateLimit } from "@/server/api/trpc";
+import { standardRatelimit } from "@/lib/redis";
 
 export const likeRouter = createTRPCRouter({
   toggle: protectedProcedure
+    .use(withRateLimit(standardRatelimit))
     .input(z.object({ logId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const log = await ctx.prisma.log.findUnique({

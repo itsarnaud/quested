@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure, withRateLimit } from "@/server/api/trpc";
 import { prisma } from "@/lib/prisma";
+import { standardRatelimit } from "@/lib/redis";
 
 async function withFollowingFlag<T extends { id: string }>(
   sessionUserId: string | undefined,
@@ -23,6 +24,7 @@ async function withFollowingFlag<T extends { id: string }>(
 
 export const userRouter = createTRPCRouter({
   search: publicProcedure
+    .use(withRateLimit(standardRatelimit))
     .input(z.object({ query: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       const users = await ctx.prisma.user.findMany({
