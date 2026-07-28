@@ -26,12 +26,16 @@ export async function uploadAvatar(formData: FormData) {
   const buffer = Buffer.concat(chunks);
   const webp = await sharp(buffer).resize(256, 256, { fit: "cover" }).webp({ quality: 80 }).toBuffer();
 
-  const blob = await put(`avatars/${session.user.id}.webp`, webp, {
-    access: "public",
-    contentType: "image/webp",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
+  const blob = await put(
+    `avatars/${session.user.id}.webp`,
+    new Blob([new Uint8Array(webp)], { type: "image/webp" }),
+    {
+      access: "public",
+      contentType: "image/webp",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    },
+  );
 
   // Cache-bust: the pathname is stable (no random suffix) so we can
   // overwrite it in place, but that means a CDN edge could keep serving
