@@ -2,17 +2,10 @@ import { cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 
 const STATUS_ORDER = ["PLAYING", "COMPLETED", "BACKLOG", "WISHLIST", "DROPPED"] as const;
-
-const STATUS_LABELS: Record<(typeof STATUS_ORDER)[number], string> = {
-  PLAYING: "Playing",
-  COMPLETED: "Completed",
-  BACKLOG: "Backlog",
-  WISHLIST: "Wishlist",
-  DROPPED: "Dropped",
-};
 
 const getUserProfile = cache((username: string) =>
   prisma.user.findUnique({
@@ -44,7 +37,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProfilePage({ params }: PageProps) {
   const { username } = await params;
 
-  const user = await getUserProfile(username);
+  const [user, t, tStatus] = await Promise.all([
+    getUserProfile(username),
+    getTranslations("Profile"),
+    getTranslations("GameStatus"),
+  ]);
 
   if (!user) notFound();
 
@@ -72,13 +69,13 @@ export default async function ProfilePage({ params }: PageProps) {
       </div>
 
       {logsByStatus.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No games logged yet.</p>
+        <p className="text-sm text-muted-foreground">{t("noGames")}</p>
       ) : (
         <div className="flex flex-col gap-8">
           {logsByStatus.map((group) => (
             <div key={group.status} className="flex flex-col gap-3">
               <h2 className="text-sm font-medium text-muted-foreground">
-                {STATUS_LABELS[group.status]} · {group.logs.length}
+                {tStatus(group.status)} · {group.logs.length}
               </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
                 {group.logs.map((log) => (

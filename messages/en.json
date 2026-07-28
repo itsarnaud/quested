@@ -1,0 +1,45 @@
+{
+  "Metadata": {
+    "description": "Track, rate and share the games you play."
+  },
+  "Header": {
+    "search": "Search",
+    "profile": "Profile",
+    "signOut": "Sign out",
+    "signIn": "Sign in"
+  },
+  "Home": {
+    "tagline": "Track, rate and share the games you play.",
+    "getStarted": "Get started",
+    "signIn": "Sign in"
+  },
+  "Login": {
+    "title": "Sign in",
+    "subtitle": "Continue with one of the providers below.",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithDiscord": "Continue with Discord"
+  },
+  "Search": {
+    "title": "Search",
+    "description": "Search for a game to track, rate and add to your library.",
+    "placeholder": "Search for a game…",
+    "searching": "Searching…"
+  },
+  "GamePage": {
+    "signInPrompt": "Sign in to track this game.",
+    "signIn": "Sign in"
+  },
+  "GameStatus": {
+    "BACKLOG": "Backlog",
+    "PLAYING": "Playing",
+    "COMPLETED": "Completed",
+    "DROPPED": "Dropped",
+    "WISHLIST": "Wishlist"
+  },
+  "LogControls": {
+    "rating": "Rating"
+  },
+  "Profile": {
+    "noGames": "No games logged yet."
+  }
+}

@@ -1,10 +1,18 @@
-import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons/logo";
+import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 
 export async function Header() {
-  const session = await auth();
+  const [session, t, locale] = await Promise.all([
+    auth(),
+    getTranslations("Header"),
+    getLocale(),
+  ]);
+
+  const homeHref = locale === routing.defaultLocale ? "/" : `/${locale}`;
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border px-6">
@@ -14,7 +22,7 @@ export async function Header() {
       </Link>
       <nav className="flex items-center gap-4 text-sm">
         <Link href="/search" className="text-muted-foreground hover:text-foreground">
-          Search
+          {t("search")}
         </Link>
         {session?.user ? (
           <>
@@ -23,23 +31,23 @@ export async function Header() {
                 href={`/u/${session.user.username}`}
                 className="text-muted-foreground hover:text-foreground"
               >
-                Profile
+                {t("profile")}
               </Link>
             ) : null}
             <form
               action={async () => {
                 "use server";
-                await signOut({ redirectTo: "/" });
+                await signOut({ redirectTo: homeHref });
               }}
             >
               <Button type="submit" variant="secondary">
-                Sign out
+                {t("signOut")}
               </Button>
             </form>
           </>
         ) : (
           <Link href="/login">
-            <Button variant="secondary">Sign in</Button>
+            <Button variant="secondary">{t("signIn")}</Button>
           </Link>
         )}
       </nav>

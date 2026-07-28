@@ -1,17 +1,18 @@
 import { cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { LogControls } from "@/components/log-controls";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 
 const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
 
 type PageProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GamePage({ params }: PageProps) {
   const { slug } = await params;
-  const [game, session] = await Promise.all([getGame(slug), auth()]);
+  const [game, session, t] = await Promise.all([getGame(slug), auth(), getTranslations("GamePage")]);
 
   if (!game) notFound();
 
@@ -58,9 +59,9 @@ export default async function GamePage({ params }: PageProps) {
           <LogControls gameId={game.id} />
         ) : (
           <div className="flex items-center gap-3">
-            <p className="text-sm text-muted-foreground">Sign in to track this game.</p>
+            <p className="text-sm text-muted-foreground">{t("signInPrompt")}</p>
             <Link href="/login">
-              <Button variant="secondary">Sign in</Button>
+              <Button variant="secondary">{t("signIn")}</Button>
             </Link>
           </div>
         )}

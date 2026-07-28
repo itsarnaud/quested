@@ -1,0 +1,45 @@
+{
+  "Metadata": {
+    "description": "Suis, note et partage les jeux auxquels tu joues."
+  },
+  "Header": {
+    "search": "Recherche",
+    "profile": "Profil",
+    "signOut": "Se déconnecter",
+    "signIn": "Se connecter"
+  },
+  "Home": {
+    "tagline": "Suis, note et partage les jeux auxquels tu joues.",
+    "getStarted": "Commencer",
+    "signIn": "Se connecter"
+  },
+  "Login": {
+    "title": "Se connecter",
+    "subtitle": "Continue avec l'un des fournisseurs ci-dessous.",
+    "continueWithGoogle": "Continuer avec Google",
+    "continueWithDiscord": "Continuer avec Discord"
+  },
+  "Search": {
+    "title": "Recherche",
+    "description": "Recherche un jeu à suivre, noter et ajouter à ta bibliothèque.",
+    "placeholder": "Rechercher un jeu…",
+    "searching": "Recherche en cours…"
+  },
+  "GamePage": {
+    "signInPrompt": "Connecte-toi pour suivre ce jeu.",
+    "signIn": "Se connecter"
+  },
+  "GameStatus": {
+    "BACKLOG": "Backlog",
+    "PLAYING": "En cours",
+    "COMPLETED": "Terminé",
+    "DROPPED": "Abandonné",
+    "WISHLIST": "Liste de souhaits"
+  },
+  "LogControls": {
+    "rating": "Note"
+  },
+  "Profile": {
+    "noGames": "Aucun jeu enregistré pour l'instant."
+  }
+}

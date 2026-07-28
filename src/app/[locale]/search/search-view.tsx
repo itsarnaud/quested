@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { GameCard } from "@/components/game-card";
 
 export function SearchView() {
+  const t = useTranslations("Search");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
@@ -23,12 +25,12 @@ export function SearchView() {
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for a game…"
+        placeholder={t("placeholder")}
         className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
       />
 
       {isFetching ? (
-        <p className="text-sm text-muted-foreground">Searching…</p>
+        <p className="text-sm text-muted-foreground">{t("searching")}</p>
       ) : null}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">

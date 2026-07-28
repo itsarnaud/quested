@@ -1,17 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 
-const STATUSES = [
-  { value: "BACKLOG", label: "Backlog" },
-  { value: "PLAYING", label: "Playing" },
-  { value: "COMPLETED", label: "Completed" },
-  { value: "DROPPED", label: "Dropped" },
-  { value: "WISHLIST", label: "Wishlist" },
-] as const;
+const STATUSES = ["BACKLOG", "PLAYING", "COMPLETED", "DROPPED", "WISHLIST"] as const;
 
 export function LogControls({ gameId }: { gameId: string }) {
+  const t = useTranslations("GameStatus");
+  const tRating = useTranslations("LogControls");
   const utils = trpc.useUtils();
   const { data: log } = trpc.log.getForGame.useQuery({ gameId });
   const upsert = trpc.log.upsert.useMutation({
@@ -23,21 +20,21 @@ export function LogControls({ gameId }: { gameId: string }) {
       <div className="flex flex-wrap gap-2">
         {STATUSES.map((status) => (
           <button
-            key={status.value}
-            onClick={() => upsert.mutate({ gameId, status: status.value, rating: log?.rating ?? undefined })}
+            key={status}
+            onClick={() => upsert.mutate({ gameId, status, rating: log?.rating ?? undefined })}
             className={cn(
               "h-9 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-muted",
-              log?.status === status.value && "border-accent bg-accent text-accent-foreground hover:opacity-90",
+              log?.status === status && "border-accent bg-accent text-accent-foreground hover:opacity-90",
             )}
           >
-            {status.label}
+            {t(status)}
           </button>
         ))}
       </div>
 
       {log?.status ? (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Rating</span>
+          <span className="text-sm text-muted-foreground">{tRating("rating")}</span>
           <select
             value={log?.rating ?? ""}
             onChange={(e) =>

@@ -1,6 +1,21 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { siteUrl } from "@/lib/site";
+import { routing } from "@/i18n/routing";
+
+// English is served under /en, French (the default locale) has no prefix.
+function localizedUrls(path: string) {
+  return Object.fromEntries(
+    routing.locales.map((locale) => [
+      locale,
+      locale === routing.defaultLocale ? `${siteUrl}${path}` : `${siteUrl}/${locale}${path}`,
+    ]),
+  );
+}
+
+function entry(path: string, rest: Omit<MetadataRoute.Sitemap[number], "url" | "alternates">) {
+  return { url: localizedUrls(path)[routing.defaultLocale], alternates: { languages: localizedUrls(path) }, ...rest };
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [games, users] = await Promise.all([
@@ -12,19 +27,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   return [
-    { url: siteUrl, changeFrequency: "weekly", priority: 1 },
-    { url: `${siteUrl}/search`, changeFrequency: "weekly", priority: 0.8 },
-    ...games.map((game) => ({
-      url: `${siteUrl}/games/${game.slug}`,
-      lastModified: game.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    })),
-    ...users.map((user) => ({
-      url: `${siteUrl}/u/${user.username}`,
-      lastModified: user.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.5,
-    })),
+    entry("", { changeFrequency: "weekly", priority: 1 }),
+    entry("/search", { changeFrequency: "weekly", priority: 0.8 }),
+    ...games.map((game) =>
+      entry(`/games/${game.slug}`, {
+        lastModified: game.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.6,
+      }),
+    ),
+    ...users.map((user) =>
+      entry(`/u/${user.username}`, {
+        lastModified: user.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.5,
+      }),
+    ),
   ];
 }
