@@ -26,6 +26,7 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
+  providerLabel     String? // display identity on that provider (username/email), for the account settings UI
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

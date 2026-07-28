@@ -8,6 +8,7 @@ import { routing } from "@/i18n/routing";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ error?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -19,8 +20,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function LoginPage({ params }: PageProps) {
+export default async function LoginPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
+  const { error } = await searchParams;
   const t = await getTranslations("Login");
   const searchHref = locale === routing.defaultLocale ? "/search" : `/${locale}/search`;
 
@@ -31,6 +33,13 @@ export default async function LoginPage({ params }: PageProps) {
           <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
+
+        {error === "OAuthAccountNotLinked" ? (
+          <p className="rounded-md border border-red-600 bg-red-50 p-3 text-sm text-red-600">
+            {t("accountNotLinked")}
+          </p>
+        ) : null}
+
         <div className="flex flex-col gap-2">
           <form
             action={async () => {

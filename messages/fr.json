@@ -22,7 +22,8 @@
     "title": "Se connecter",
     "subtitle": "Continue avec l'un des fournisseurs ci-dessous.",
     "continueWithGoogle": "Continuer avec Google",
-    "continueWithDiscord": "Continuer avec Discord"
+    "continueWithDiscord": "Continuer avec Discord",
+    "accountNotLinked": "Ce compte est déjà lié à Google ou Discord. Essaie l'autre option de connexion ci-dessous."
   },
   "Search": {
     "title": "Recherche",
@@ -68,7 +69,14 @@
     "deleteButton": "Supprimer définitivement mon compte",
     "deleteConfirm": "Es-tu sûr ? Cette action est définitive et ne peut pas être annulée.",
     "deleteConfirmButton": "Oui, tout supprimer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "linkedAccountsTitle": "Comptes liés",
+    "linkedAccountsDescription": "Lie plusieurs comptes pour pouvoir te connecter avec l'un ou l'autre.",
+    "linked": "Lié",
+    "linkGoogle": "Lier mon compte Google",
+    "linkDiscord": "Lier mon compte Discord",
+    "unlink": "Délier",
+    "unlinkLastAccountWarning": "Impossible de délier ton seul moyen de connexion."
   },
   "Legal": {
     "mentionsTitle": "Mentions légales",

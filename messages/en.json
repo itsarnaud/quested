@@ -22,7 +22,8 @@
     "title": "Sign in",
     "subtitle": "Continue with one of the providers below.",
     "continueWithGoogle": "Continue with Google",
-    "continueWithDiscord": "Continue with Discord"
+    "continueWithDiscord": "Continue with Discord",
+    "accountNotLinked": "This account is already linked to Google or Discord. Try the other sign-in option below."
   },
   "Search": {
     "title": "Search",
@@ -68,7 +69,14 @@
     "deleteButton": "Permanently delete my account",
     "deleteConfirm": "Are you sure? This action is permanent and cannot be undone.",
     "deleteConfirmButton": "Yes, delete everything",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "linkedAccountsTitle": "Linked accounts",
+    "linkedAccountsDescription": "Link multiple accounts so you can sign in with either one.",
+    "linked": "Linked",
+    "linkGoogle": "Link my Google account",
+    "linkDiscord": "Link my Discord account",
+    "unlink": "Unlink",
+    "unlinkLastAccountWarning": "You can't unlink your only sign-in method."
   },
   "Legal": {
     "mentionsTitle": "Legal notice",

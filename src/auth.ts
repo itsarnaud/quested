@@ -43,5 +43,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const username = await generateUniqueUsername(user.name ?? user.email ?? user.id ?? "player");
       await prisma.user.update({ where: { id: user.id }, data: { username } });
     },
+    async linkAccount({ account, profile }) {
+      const providerLabel = account.provider === "discord" ? profile.name : (profile.email ?? profile.name);
+      if (!providerLabel) return;
+
+      await prisma.account.update({
+        where: {
+          provider_providerAccountId: {
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+          },
+        },
+        data: { providerLabel },
+      });
+    },
   },
 });
