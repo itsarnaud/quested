@@ -5,6 +5,7 @@
   "Header": {
     "search": "Search",
     "profile": "Profile",
+    "account": "Account",
     "signOut": "Sign out",
     "signIn": "Sign in"
   },
@@ -40,6 +41,68 @@
     "rating": "Rating"
   },
   "Profile": {
-    "noGames": "No games logged yet."
+    "noGames": "No games logged yet.",
+    "settings": "Settings"
+  },
+  "Footer": {
+    "legal": "Legal notice",
+    "privacy": "Privacy"
+  },
+  "Account": {
+    "title": "My account",
+    "exportTitle": "Export my data",
+    "exportDescription": "Download a JSON file containing your profile and all your logged games.",
+    "exportButton": "Download my data",
+    "deleteTitle": "Delete my account",
+    "deleteDescription": "Permanently deletes your account, your public profile and all your logged games. This action cannot be undone.",
+    "deleteButton": "Permanently delete my account",
+    "deleteConfirm": "Are you sure? This action is permanent and cannot be undone.",
+    "deleteConfirmButton": "Yes, delete everything",
+    "cancel": "Cancel"
+  },
+  "Legal": {
+    "mentionsTitle": "Legal notice",
+    "mentionsSections": [
+      {
+        "heading": "Site publisher",
+        "body": "Quested is a personal, non-commercial project published by Arnaud Royer.\nPersonal site: arnaudroyer.fr\nContact: contact@arnaudroyer.fr"
+      },
+      {
+        "heading": "Publication director",
+        "body": "Arnaud Royer."
+      },
+      {
+        "heading": "Hosting",
+        "body": "The site is hosted by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA.\nThe database is hosted by Neon Inc., in the Europe region (Frankfurt, Germany)."
+      }
+    ],
+    "privacyTitle": "Privacy policy",
+    "privacyIntro": "This page explains what data Quested collects, why, and how you can control it.",
+    "privacySections": [
+      {
+        "heading": "Data collected",
+        "body": "When signing in with Google or Discord: your name, email address and profile picture.\nWhen using the site: the games you add to your library, their status, your rating and your personal notes."
+      },
+      {
+        "heading": "Purpose",
+        "body": "This data is only used to run the service: authenticate you, display your public profile, and power your game library."
+      },
+      {
+        "heading": "Who receives this data",
+        "body": "Google or Discord (authentication), Neon (database hosting, European Union), Vercel (site hosting). IGDB and RAWG are used to search for games but never receive your personal data, only the search terms."
+      },
+      {
+        "heading": "Retention period",
+        "body": "Your data is kept as long as your account exists, and deleted immediately and permanently if you delete your account."
+      },
+      {
+        "heading": "Cookies",
+        "body": "Quested only uses a session cookie strictly necessary for signing in. No advertising or analytics cookies are used."
+      },
+      {
+        "heading": "Your rights",
+        "body": "You can export or delete all your data at any time from the Account page. For any other request (rectification, question), contact contact@arnaudroyer.fr. You can also file a complaint with your local data protection authority."
+      }
+    ]
   }
 }

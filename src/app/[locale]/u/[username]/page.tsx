@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { Link } from "@/i18n/navigation";
+import { GearIcon } from "@/components/icons/gear-icon";
 
 const STATUS_ORDER = ["PLAYING", "COMPLETED", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 
@@ -37,13 +40,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProfilePage({ params }: PageProps) {
   const { username } = await params;
 
-  const [user, t, tStatus] = await Promise.all([
+  const [user, session, t, tStatus] = await Promise.all([
     getUserProfile(username),
+    auth(),
     getTranslations("Profile"),
     getTranslations("GameStatus"),
   ]);
 
   if (!user) notFound();
+
+  const isOwnProfile = session?.user?.username === username;
 
   const logsByStatus = STATUS_ORDER.map((status) => ({
     status,
@@ -52,20 +58,34 @@ export default async function ProfilePage({ params }: PageProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-10">
-      <div className="flex items-center gap-4">
-        {user.image ? (
-          <Image
-            src={user.image}
-            alt={user.name ?? username}
-            width={56}
-            height={56}
-            className="rounded-full"
-          />
-        ) : null}
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">{user.name ?? username}</h1>
-          <p className="text-sm text-muted-foreground">@{username}</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          {user.image ? (
+            <Image
+              src={user.image}
+              alt={user.name ?? username}
+              width={56}
+              height={56}
+              className="rounded-full"
+            />
+          ) : null}
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight">{user.name ?? username}</h1>
+            <p className="text-sm text-muted-foreground">@{username}</p>
+          </div>
         </div>
+        {isOwnProfile ? (
+          <div className="flex items-center gap-4">
+            <div className="h-10 w-px bg-border" aria-hidden="true" />
+            <Link
+              href="/account"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <GearIcon />
+              {t("settings")}
+            </Link>
+          </div>
+        ) : null}
       </div>
 
       {logsByStatus.length === 0 ? (

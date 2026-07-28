@@ -5,6 +5,7 @@
   "Header": {
     "search": "Recherche",
     "profile": "Profil",
+    "account": "Compte",
     "signOut": "Se déconnecter",
     "signIn": "Se connecter"
   },
@@ -40,6 +41,68 @@
     "rating": "Note"
   },
   "Profile": {
-    "noGames": "Aucun jeu enregistré pour l'instant."
+    "noGames": "Aucun jeu enregistré pour l'instant.",
+    "settings": "Paramètres"
+  },
+  "Footer": {
+    "legal": "Mentions légales",
+    "privacy": "Confidentialité"
+  },
+  "Account": {
+    "title": "Mon compte",
+    "exportTitle": "Exporter mes données",
+    "exportDescription": "Télécharge un fichier JSON contenant ton profil et tous tes jeux enregistrés.",
+    "exportButton": "Télécharger mes données",
+    "deleteTitle": "Supprimer mon compte",
+    "deleteDescription": "Supprime définitivement ton compte, ton profil public et tous tes jeux enregistrés. Cette action est irréversible.",
+    "deleteButton": "Supprimer définitivement mon compte",
+    "deleteConfirm": "Es-tu sûr ? Cette action est définitive et ne peut pas être annulée.",
+    "deleteConfirmButton": "Oui, tout supprimer",
+    "cancel": "Annuler"
+  },
+  "Legal": {
+    "mentionsTitle": "Mentions légales",
+    "mentionsSections": [
+      {
+        "heading": "Éditeur du site",
+        "body": "Quested est un projet personnel, non-commercial, édité par Arnaud Royer.\nSite personnel : arnaudroyer.fr\nContact : contact@arnaudroyer.fr"
+      },
+      {
+        "heading": "Directeur de la publication",
+        "body": "Arnaud Royer."
+      },
+      {
+        "heading": "Hébergement",
+        "body": "Le site est hébergé par Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis.\nLa base de données est hébergée par Neon Inc., dans la région Europe (Frankfurt, Allemagne)."
+      }
+    ],
+    "privacyTitle": "Politique de confidentialité",
+    "privacyIntro": "Cette page explique quelles données Quested collecte, pourquoi, et comment les contrôler.",
+    "privacySections": [
+      {
+        "heading": "Données collectées",
+        "body": "Lors de la connexion via Google ou Discord : ton nom, ton adresse email et ta photo de profil.\nLors de l'utilisation du site : les jeux que tu ajoutes à ta bibliothèque, leur statut, ta note et tes notes personnelles."
+      },
+      {
+        "heading": "Finalité",
+        "body": "Ces données servent uniquement à faire fonctionner le service : t'authentifier, afficher ton profil public, et faire fonctionner ta bibliothèque de jeux."
+      },
+      {
+        "heading": "Destinataires des données",
+        "body": "Google ou Discord (authentification), Neon (hébergement de la base de données, Union Européenne), Vercel (hébergement du site). IGDB et RAWG sont utilisés pour rechercher des jeux mais ne reçoivent jamais tes données personnelles, uniquement les termes recherchés."
+      },
+      {
+        "heading": "Durée de conservation",
+        "body": "Tes données sont conservées tant que ton compte existe, et supprimées immédiatement et définitivement si tu supprimes ton compte."
+      },
+      {
+        "heading": "Cookies",
+        "body": "Quested utilise uniquement un cookie de session strictement nécessaire à la connexion. Aucun cookie publicitaire ou analytique n'est utilisé."
+      },
+      {
+        "heading": "Tes droits",
+        "body": "Tu peux à tout moment exporter ou supprimer toutes tes données depuis la page Compte. Pour toute autre demande (rectification, question), contacte contact@arnaudroyer.fr. Tu peux aussi introduire une réclamation auprès de la CNIL (cnil.fr)."
+      }
+    ]
   }
 }

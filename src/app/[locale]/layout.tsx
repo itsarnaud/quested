@@ -5,6 +5,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { Geist, Geist_Mono } from "next/font/google";
 import { TRPCProvider } from "@/lib/trpc/provider";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { siteUrl, siteName } from "@/lib/site";
 import { routing } from "@/i18n/routing";
 import "./globals.css";
@@ -74,6 +75,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <TRPCProvider>
             <Header />
             {children}
+            <Footer />
           </TRPCProvider>
         </NextIntlClientProvider>
       </body>
