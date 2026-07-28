@@ -32,6 +32,10 @@
     "placeholder": "Search for a game…",
     "searching": "Searching…"
   },
+  "SearchHistory": {
+    "recent": "Recent searches",
+    "clear": "Clear"
+  },
   "People": {
     "title": "Find players",
     "description": "Search for a player by name or username to follow them.",

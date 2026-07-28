@@ -6,11 +6,12 @@ type GameCardProps = {
   title: string;
   releaseYear: number | null;
   coverUrl: string | null;
+  onClick?: () => void;
 };
 
-export function GameCard({ slug, title, releaseYear, coverUrl }: GameCardProps) {
+export function GameCard({ slug, title, releaseYear, coverUrl, onClick }: GameCardProps) {
   return (
-    <Link href={`/games/${slug}`} className="flex flex-col gap-2">
+    <Link href={`/games/${slug}`} className="flex flex-col gap-2" onClick={onClick}>
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
         {coverUrl ? (
           <Image

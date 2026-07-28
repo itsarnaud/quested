@@ -32,6 +32,10 @@
     "placeholder": "Rechercher un jeu…",
     "searching": "Recherche en cours…"
   },
+  "SearchHistory": {
+    "recent": "Recherches récentes",
+    "clear": "Effacer"
+  },
   "People": {
     "title": "Trouver des joueurs",
     "description": "Recherche un joueur par nom ou pseudo pour le suivre.",

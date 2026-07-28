@@ -6,12 +6,15 @@ import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
+import { useSearchHistory } from "@/lib/use-search-history";
 
 export function PeopleView() {
   const t = useTranslations("People");
   const tFollow = useTranslations("Follow");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const history = useSearchHistory("people");
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedQuery(query), 350);
@@ -29,12 +32,34 @@ export function PeopleView() {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10">
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={t("placeholder")}
-        className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
-      />
+      <div className="relative">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={history.onFocus}
+          onBlur={history.onBlur}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && query.trim().length > 1) {
+              history.commit(query.trim());
+              history.setOpen(false);
+            }
+          }}
+          placeholder={t("placeholder")}
+          className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
+        />
+        {history.open && query.trim().length === 0 ? (
+          <SearchHistoryDropdown
+            terms={history.terms}
+            onSelect={(term) => {
+              setQuery(term);
+              setDebouncedQuery(term);
+              history.setOpen(false);
+            }}
+            onRemove={history.remove}
+            onClear={history.clear}
+          />
+        ) : null}
+      </div>
 
       {isFetching ? <p className="text-sm text-muted-foreground">{t("searching")}</p> : null}
 
@@ -48,7 +73,11 @@ export function PeopleView() {
             key={user.id}
             className="flex items-center justify-between gap-3 rounded-md border border-border p-3"
           >
-            <Link href={`/u/${user.username}`} className="flex min-w-0 items-center gap-3">
+            <Link
+              href={`/u/${user.username}`}
+              className="flex min-w-0 items-center gap-3"
+              onClick={() => query.trim().length > 1 && history.commit(query.trim())}
+            >
               <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
                 {user.image ? (
                   <Image
