@@ -6,10 +6,11 @@ Personal, non-commercial project. Live at [quested.cc](https://quested.cc).
 
 ## Features
 
-- **Search**: look up a game and it gets imported automatically from IGDB and RAWG. If it's already in the database (even approximately, matched by title and year), no duplicate is created, just a link to the extra source.
-- **Logging**: status, rating out of 10, and personal notes on a dedicated game page.
-- **Public profiles**: every account has a `/u/username` page listing logged games grouped by status, with a customizable bio and avatar.
-- **Follows**: follow other players, see their activity on your home feed, alongside popular games and recent additions to the catalog.
+- **Search**: look up a game and it gets imported automatically from IGDB and RAWG. If it's already in the database (even approximately, matched by title and year), no duplicate is created, just a link to the extra source. Recent searches are kept locally and suggested again on focus, and popular games are shown by default before you type anything.
+- **Logging**: status, a rating out of 10 to the decimal (e.g. 7.4), and a personal review on a dedicated game page.
+- **Public profiles**: every account has a `/u/username` page listing logged games grouped by status, with a customizable bio and avatar. Every logged game links back to its page.
+- **Follows**: follow other players, see their reviews on your home feed alongside popular games and recent additions to the catalog. The player search page suggests people through mutual follows, or shows recently joined players as a fallback.
+- **Notifications**: a bell in the header shows unread notifications, for now limited to new followers.
 - **Account**: sign in with Google or Discord, link both to the same account, export your data, or delete your account.
 - **Languages**: French by default, English available at `/en`.
 
