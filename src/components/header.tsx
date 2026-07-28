@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/icons/logo";
 
 export async function Header() {
   const session = await auth();
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border px-6">
-      <Link href="/" className="text-sm font-semibold tracking-tight">
+      <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+        <Logo />
         Quested
       </Link>
       <nav className="flex items-center gap-4 text-sm">
