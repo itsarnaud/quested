@@ -13,6 +13,8 @@ import { FollowSection } from "@/app/[locale]/u/[username]/follow-section";
 import { ProfileTabs } from "@/app/[locale]/u/[username]/profile-tabs";
 import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games-section";
 import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
+import { PaginatedGameGrid } from "@/app/[locale]/u/[username]/paginated-game-grid";
+import { ShowMoreList } from "@/app/[locale]/u/[username]/show-more-list";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 
@@ -105,37 +107,16 @@ export default async function ProfilePage({ params }: PageProps) {
             <h2 className="text-sm font-medium text-muted-foreground">
               {tStatus(group.status)} · {group.logs.length}
             </h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
-              {group.logs.map((log) => (
-                <Link
-                  key={log.id}
-                  href={`/games/${log.game.slug}`}
-                  className="flex flex-col gap-2 hover:opacity-90"
-                  title={log.notes ?? undefined}
-                >
-                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
-                    {log.game.coverUrl ? (
-                      <Image
-                        src={log.game.coverUrl}
-                        alt={log.game.title}
-                        fill
-                        sizes="(max-width: 768px) 45vw, 160px"
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="truncate text-sm font-medium">{log.game.title}</span>
-                    {log.rating != null ? (
-                      <span className="text-xs text-muted-foreground">{log.rating.toFixed(1)}/10</span>
-                    ) : null}
-                    {log.notes ? (
-                      <span className="truncate text-xs text-muted-foreground">{log.notes}</span>
-                    ) : null}
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <PaginatedGameGrid
+              games={group.logs.map((log) => ({
+                id: log.id,
+                slug: log.game.slug,
+                title: log.game.title,
+                coverUrl: log.game.coverUrl,
+                rating: log.rating,
+                notes: log.notes,
+              }))}
+            />
           </div>
         ))}
       </div>
@@ -145,8 +126,8 @@ export default async function ProfilePage({ params }: PageProps) {
     reviews.length === 0 ? (
       <p className="text-sm text-muted-foreground">{t("noReviews")}</p>
     ) : (
-      <div className="flex flex-col divide-y divide-border">
-        {reviews.map((log) => {
+      <ShowMoreList
+        items={reviews.map((log) => {
           const likeCount = log.likes.length;
           const isLiked = Boolean(
             session?.user && log.likes.some((like) => like.userId === session.user.id),
@@ -190,15 +171,15 @@ export default async function ProfilePage({ params }: PageProps) {
             </div>
           );
         })}
-      </div>
+      />
     );
 
   const likesContent =
     likedByUser.length === 0 ? (
       <p className="text-sm text-muted-foreground">{t("noLikes")}</p>
     ) : (
-      <div className="flex flex-col divide-y divide-border">
-        {likedByUser.map(({ log }) => {
+      <ShowMoreList
+        items={likedByUser.map(({ log }) => {
           const likeCount = log.likes.length;
           const isLiked = Boolean(
             session?.user && log.likes.some((like) => like.userId === session.user.id),
@@ -253,7 +234,7 @@ export default async function ProfilePage({ params }: PageProps) {
             </div>
           );
         })}
-      </div>
+      />
     );
 
   return (
