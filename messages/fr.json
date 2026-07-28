@@ -66,8 +66,12 @@
   },
   "Profile": {
     "noGames": "Aucun jeu enregistré pour l'instant.",
+    "noReviews": "Aucun avis publié pour l'instant.",
+    "noLikes": "Aucun avis aimé pour l'instant.",
     "settings": "Paramètres",
-    "reviewsTitle": "Avis"
+    "gamesTab": "Jeux",
+    "reviewsTab": "Avis",
+    "likesTab": "Aimés"
   },
   "Follow": {
     "follow": "Suivre",

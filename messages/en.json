@@ -66,8 +66,12 @@
   },
   "Profile": {
     "noGames": "No games logged yet.",
+    "noReviews": "No reviews published yet.",
+    "noLikes": "No liked reviews yet.",
     "settings": "Settings",
-    "reviewsTitle": "Reviews"
+    "gamesTab": "Games",
+    "reviewsTab": "Reviews",
+    "likesTab": "Liked"
   },
   "Follow": {
     "follow": "Follow",
