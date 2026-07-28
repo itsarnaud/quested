@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import type { RawgGame } from "@/server/rawg/client";
-import { findMatchingGame, createCanonicalGame, linkExternalId } from "@/server/games/dedup";
+import {
+  findMatchingGame,
+  createCanonicalGame,
+  linkExternalId,
+  enrichGameTaxonomy,
+} from "@/server/games/dedup";
 
 function releaseYear(rawgGame: RawgGame): number | null {
   if (!rawgGame.released) return null;
@@ -24,11 +29,13 @@ export async function upsertGameFromRawg(rawgGame: RawgGame) {
   if (existingLink) return existingLink.game;
 
   const year = releaseYear(rawgGame);
+  const genres = rawgGame.genres?.map((g) => g.name) ?? [];
+  const platforms = rawgGame.platforms?.map((p) => p.platform.name) ?? [];
   const match = await findMatchingGame(rawgGame.name, year);
 
   if (match) {
     await linkExternalId(match.id, "RAWG", sourceId);
-    return match;
+    return enrichGameTaxonomy(match, genres, platforms);
   }
 
   return createCanonicalGame({
@@ -36,6 +43,8 @@ export async function upsertGameFromRawg(rawgGame: RawgGame) {
     year,
     coverUrl: rawgGame.background_image,
     summary: null,
+    genres,
+    platforms,
     source: "RAWG",
     sourceId,
   });

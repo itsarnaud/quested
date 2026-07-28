@@ -33,7 +33,12 @@
     "description": "Search for a game to track, rate and add to your library.",
     "placeholder": "Search for a game…",
     "searching": "Searching…",
-    "popularTitle": "Popular games"
+    "popularTitle": "Popular games",
+    "noResults": "No games found.",
+    "filterGenre": "Genre",
+    "filterPlatform": "Platform",
+    "filterYear": "Year",
+    "filterClear": "Reset"
   },
   "SearchHistory": {
     "recent": "Recent searches",

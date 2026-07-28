@@ -11,6 +11,9 @@ export function SearchView() {
   const t = useTranslations("Search");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [genre, setGenre] = useState("");
+  const [platform, setPlatform] = useState("");
+  const [year, setYear] = useState("");
   const history = useSearchHistory("games");
 
   useEffect(() => {
@@ -18,10 +21,18 @@ export function SearchView() {
     return () => clearTimeout(id);
   }, [query]);
 
-  const isSearching = debouncedQuery.trim().length > 1;
+  const { data: filterOptions } = trpc.game.filterOptions.useQuery();
+
+  const hasFilters = Boolean(genre || platform || year);
+  const isSearching = debouncedQuery.trim().length > 1 || hasFilters;
 
   const { data: games, isFetching } = trpc.game.search.useQuery(
-    { query: debouncedQuery },
+    {
+      query: debouncedQuery,
+      genre: genre || undefined,
+      platform: platform || undefined,
+      year: year ? Number(year) : undefined,
+    },
     { enabled: isSearching },
   );
   const { data: popularGames } = trpc.game.popular.useQuery(undefined, { enabled: !isSearching });
@@ -59,10 +70,69 @@ export function SearchView() {
         ) : null}
       </div>
 
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+        >
+          <option value="">{t("filterGenre")}</option>
+          {filterOptions?.genres.map((g) => (
+            <option key={g} value={g}>
+              {g}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={platform}
+          onChange={(e) => setPlatform(e.target.value)}
+          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+        >
+          <option value="">{t("filterPlatform")}</option>
+          {filterOptions?.platforms.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+        >
+          <option value="">{t("filterYear")}</option>
+          {filterOptions?.years.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </select>
+
+        {hasFilters ? (
+          <button
+            type="button"
+            onClick={() => {
+              setGenre("");
+              setPlatform("");
+              setYear("");
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            {t("filterClear")}
+          </button>
+        ) : null}
+      </div>
+
       {isFetching ? <p className="text-sm text-muted-foreground">{t("searching")}</p> : null}
 
       {!isSearching && popularGames && popularGames.length > 0 ? (
         <h2 className="text-sm font-medium text-muted-foreground">{t("popularTitle")}</h2>
+      ) : null}
+
+      {isSearching && !isFetching && displayedGames && displayedGames.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{t("noResults")}</p>
       ) : null}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">

@@ -134,6 +134,8 @@ model Game {
   releaseYear Int?
   coverUrl    String?
   summary     String?  @db.Text
+  genres      String[] @default([])
+  platforms   String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

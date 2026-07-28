@@ -27,11 +27,32 @@ export async function findMatchingGame(title: string, year: number | null) {
   return candidates.find((g) => normalizeTitle(g.title) === normalized) ?? null;
 }
 
+/**
+ * Fills in genres/platforms on an already-canonical game if it doesn't have
+ * them yet — happens when the game was first imported from a source that
+ * didn't return this data, and a later source (searched again) does.
+ */
+export async function enrichGameTaxonomy<
+  T extends { id: string; genres: string[]; platforms: string[] },
+>(game: T, genres: string[], platforms: string[]): Promise<T> {
+  if (game.genres.length > 0 || game.platforms.length > 0) return game;
+  if (genres.length === 0 && platforms.length === 0) return game;
+
+  await prisma.game.update({
+    where: { id: game.id },
+    data: { genres, platforms },
+  });
+
+  return { ...game, genres, platforms };
+}
+
 export async function createCanonicalGame(input: {
   title: string;
   year: number | null;
   coverUrl: string | null;
   summary: string | null;
+  genres: string[];
+  platforms: string[];
   source: GameSource;
   sourceId: string;
 }) {
@@ -45,6 +66,8 @@ export async function createCanonicalGame(input: {
       releaseYear: input.year,
       coverUrl: input.coverUrl,
       summary: input.summary,
+      genres: input.genres,
+      platforms: input.platforms,
       externalIds: {
         create: { source: input.source, sourceId: input.sourceId },
       },

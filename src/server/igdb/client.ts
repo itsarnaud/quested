@@ -34,6 +34,8 @@ export type IgdbGame = {
   summary?: string;
   first_release_date?: number; // unix seconds
   cover?: { url: string };
+  genres?: { name: string }[];
+  platforms?: { name: string }[];
 };
 
 export async function searchIgdbGames(query: string, limit = 20): Promise<IgdbGame[]> {
@@ -46,7 +48,7 @@ export async function searchIgdbGames(query: string, limit = 20): Promise<IgdbGa
       Authorization: `Bearer ${token}`,
       "Content-Type": "text/plain",
     },
-    body: `search "${query.replace(/"/g, '\\"')}"; fields name,summary,first_release_date,cover.url; limit ${limit};`,
+    body: `search "${query.replace(/"/g, '\\"')}"; fields name,summary,first_release_date,cover.url,genres.name,platforms.name; limit ${limit};`,
   });
 
   if (!res.ok) {

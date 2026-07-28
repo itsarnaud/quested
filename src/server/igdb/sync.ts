@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { toCoverUrl, type IgdbGame } from "@/server/igdb/client";
-import { findMatchingGame, createCanonicalGame, linkExternalId } from "@/server/games/dedup";
+import {
+  findMatchingGame,
+  createCanonicalGame,
+  linkExternalId,
+  enrichGameTaxonomy,
+} from "@/server/games/dedup";
 
 function releaseYear(igdbGame: IgdbGame): number | null {
   if (!igdbGame.first_release_date) return null;
@@ -24,11 +29,13 @@ export async function upsertGameFromIgdb(igdbGame: IgdbGame) {
   if (existingLink) return existingLink.game;
 
   const year = releaseYear(igdbGame);
+  const genres = igdbGame.genres?.map((g) => g.name) ?? [];
+  const platforms = igdbGame.platforms?.map((p) => p.name) ?? [];
   const match = await findMatchingGame(igdbGame.name, year);
 
   if (match) {
     await linkExternalId(match.id, "IGDB", sourceId);
-    return match;
+    return enrichGameTaxonomy(match, genres, platforms);
   }
 
   return createCanonicalGame({
@@ -36,6 +43,8 @@ export async function upsertGameFromIgdb(igdbGame: IgdbGame) {
     year,
     coverUrl: toCoverUrl(igdbGame.cover),
     summary: igdbGame.summary ?? null,
+    genres,
+    platforms,
     source: "IGDB",
     sourceId,
   });

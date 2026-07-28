@@ -33,7 +33,12 @@
     "description": "Recherche un jeu à suivre, noter et ajouter à ta bibliothèque.",
     "placeholder": "Rechercher un jeu…",
     "searching": "Recherche en cours…",
-    "popularTitle": "Jeux populaires"
+    "popularTitle": "Jeux populaires",
+    "noResults": "Aucun jeu trouvé.",
+    "filterGenre": "Genre",
+    "filterPlatform": "Plateforme",
+    "filterYear": "Année",
+    "filterClear": "Réinitialiser"
   },
   "SearchHistory": {
     "recent": "Recherches récentes",

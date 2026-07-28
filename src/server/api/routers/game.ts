@@ -13,8 +13,36 @@ const LOCAL_RESULTS_THRESHOLD = 8;
 
 export const gameRouter = createTRPCRouter({
   search: publicProcedure
-    .input(z.object({ query: z.string().min(1) }))
+    .input(
+      z.object({
+        query: z.string(),
+        genre: z.string().optional(),
+        platform: z.string().optional(),
+        year: z.number().int().optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
+      const hasFilters = Boolean(input.genre || input.platform || input.year);
+      const hasQuery = input.query.trim().length > 0;
+
+      // With filters active, browse the local catalog only — filters are
+      // structured data we only have for games already imported, so an
+      // external API round trip wouldn't respect them anyway.
+      if (hasFilters) {
+        return ctx.prisma.game.findMany({
+          where: {
+            title: hasQuery ? { contains: input.query, mode: "insensitive" } : undefined,
+            genres: input.genre ? { has: input.genre } : undefined,
+            platforms: input.platform ? { has: input.platform } : undefined,
+            releaseYear: input.year,
+          },
+          orderBy: { logs: { _count: "desc" } },
+          take: 24,
+        });
+      }
+
+      if (!hasQuery) return [];
+
       const localGames = await ctx.prisma.game.findMany({
         where: { title: { contains: input.query, mode: "insensitive" } },
         take: 20,
@@ -38,6 +66,27 @@ export const gameRouter = createTRPCRouter({
         new Map([...localGames, ...igdbGames, ...rawgGames].map((g) => [g.id, g])).values(),
       );
     }),
+
+  filterOptions: publicProcedure.query(async ({ ctx }) => {
+    const [genres, platforms, years] = await Promise.all([
+      ctx.prisma.$queryRaw<{ value: string }[]>`
+        SELECT DISTINCT unnest(genres) AS value FROM "Game" ORDER BY value
+      `,
+      ctx.prisma.$queryRaw<{ value: string }[]>`
+        SELECT DISTINCT unnest(platforms) AS value FROM "Game" ORDER BY value
+      `,
+      ctx.prisma.$queryRaw<{ value: number }[]>`
+        SELECT DISTINCT "releaseYear" AS value FROM "Game"
+        WHERE "releaseYear" IS NOT NULL ORDER BY value DESC
+      `,
+    ]);
+
+    return {
+      genres: genres.map((g) => g.value),
+      platforms: platforms.map((p) => p.value),
+      years: years.map((y) => y.value),
+    };
+  }),
 
   bySlug: publicProcedure
     .input(z.object({ slug: z.string() }))
