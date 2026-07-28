@@ -19,9 +19,15 @@ function entry(path: string, rest: Omit<MetadataRoute.Sitemap[number], "url" | "
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [games, users] = await Promise.all([
-    prisma.game.findMany({ select: { slug: true, updatedAt: true } }),
+    // Only list games at least one person has actually logged — keeps
+    // search-only imports (which can be noisy, especially for common
+    // search terms) out of the public sitemap.
+    prisma.game.findMany({
+      where: { logs: { some: {} } },
+      select: { slug: true, updatedAt: true },
+    }),
     prisma.user.findMany({
-      where: { username: { not: null } },
+      where: { username: { not: null }, logs: { some: {} } },
       select: { username: true, updatedAt: true },
     }),
   ]);

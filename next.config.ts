@@ -4,6 +4,13 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      // Avatar uploads are capped at 5MB before compression; leave some
+      // headroom for multipart/form-data overhead on top of that.
+      bodySizeLimit: "6mb",
+    },
+  },
   images: {
     remotePatterns: [
       {

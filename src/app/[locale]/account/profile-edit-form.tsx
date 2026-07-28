@@ -109,7 +109,6 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            pattern="[a-z0-9-]{3,20}"
             className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-accent"
           />
           <p className="text-xs text-muted-foreground">{t("usernameInvalid")}</p>
