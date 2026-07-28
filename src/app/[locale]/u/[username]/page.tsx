@@ -15,6 +15,7 @@ import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games
 import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
 import { PaginatedGameGrid } from "@/app/[locale]/u/[username]/paginated-game-grid";
 import { ShowMoreList } from "@/app/[locale]/u/[username]/show-more-list";
+import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 
@@ -288,9 +289,11 @@ export default async function ProfilePage({ params }: PageProps) {
         gamesLabel={t("gamesTab")}
         reviewsLabel={t("reviewsTab")}
         likesLabel={t("likesTab")}
+        listsLabel={t("listsTab")}
         gamesContent={gamesContent}
         reviewsContent={reviewsContent}
         likesContent={likesContent}
+        listsContent={<GameListsSection username={username} canEdit={isOwnProfile} />}
       />
     </div>
   );

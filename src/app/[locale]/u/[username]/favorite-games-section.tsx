@@ -130,7 +130,7 @@ export function FavoriteGamesSection({
           </div>
 
           {candidates.length > 0 ? (
-            <div className="flex flex-col gap-1">
+            <div className="flex max-h-64 flex-col gap-1 overflow-y-auto">
               {candidates.map((log) => (
                 <button
                   key={log.gameId}

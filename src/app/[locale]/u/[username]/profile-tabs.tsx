@@ -3,22 +3,26 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-type Tab = "games" | "reviews" | "likes";
+type Tab = "games" | "reviews" | "likes" | "lists";
 
 export function ProfileTabs({
   gamesLabel,
   reviewsLabel,
   likesLabel,
+  listsLabel,
   gamesContent,
   reviewsContent,
   likesContent,
+  listsContent,
 }: {
   gamesLabel: string;
   reviewsLabel: string;
   likesLabel: string;
+  listsLabel: string;
   gamesContent: React.ReactNode;
   reviewsContent: React.ReactNode;
   likesContent: React.ReactNode;
+  listsContent: React.ReactNode;
 }) {
   const [tab, setTab] = useState<Tab>("games");
 
@@ -26,9 +30,15 @@ export function ProfileTabs({
     { key: "games", label: gamesLabel },
     { key: "reviews", label: reviewsLabel },
     { key: "likes", label: likesLabel },
+    { key: "lists", label: listsLabel },
   ];
 
-  const content = { games: gamesContent, reviews: reviewsContent, likes: likesContent }[tab];
+  const content = {
+    games: gamesContent,
+    reviews: reviewsContent,
+    likes: likesContent,
+    lists: listsContent,
+  }[tab];
 
   return (
     <div className="flex flex-col gap-6">
