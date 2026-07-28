@@ -66,7 +66,8 @@
   },
   "Profile": {
     "noGames": "Aucun jeu enregistré pour l'instant.",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "reviewsTitle": "Avis"
   },
   "Follow": {
     "follow": "Suivre",
