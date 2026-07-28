@@ -77,7 +77,7 @@ async function Feed({ userId }: { userId: string }) {
           where: { userId: { in: followingIds } },
           include: { game: true, user: true },
           orderBy: { updatedAt: "desc" },
-          take: 20,
+          take: 5,
         })
       : Promise.resolve([]),
     getPopularGames(),
@@ -95,35 +95,55 @@ async function Feed({ userId }: { userId: string }) {
         {activity.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("noActivity")}</p>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col divide-y divide-border">
             {activity.map((log) => (
-              <Link
-                key={log.id}
-                href={`/games/${log.game.slug}`}
-                className="flex items-center gap-3 rounded-md border border-border p-3 hover:bg-muted"
-              >
-                <div className="relative h-14 w-11 shrink-0 overflow-hidden rounded border border-border bg-muted">
-                  {log.game.coverUrl ? (
-                    <Image
-                      src={log.game.coverUrl}
-                      alt={log.game.title}
-                      fill
-                      sizes="44px"
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
-                <div className="flex flex-col text-sm">
-                  <span>
-                    <span className="font-medium">@{log.user.username}</span>{" "}
-                    <span className="text-muted-foreground">
-                      · {tStatus(log.status)}
-                      {log.rating ? ` · ${log.rating}/10` : ""}
-                    </span>
+              <div key={log.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
+                <Link
+                  href={`/u/${log.user.username}`}
+                  className="flex items-center gap-2 text-sm hover:underline"
+                >
+                  <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+                    {log.user.image ? (
+                      <Image
+                        src={log.user.image}
+                        alt={log.user.username ?? ""}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
+                  <span className="font-medium">@{log.user.username}</span>
+                  <span className="text-muted-foreground">
+                    · {tStatus(log.status)}
+                    {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
                   </span>
-                  <span className="font-medium">{log.game.title}</span>
-                </div>
-              </Link>
+                </Link>
+
+                <Link href={`/games/${log.game.slug}`} className="flex gap-3 hover:opacity-90">
+                  <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
+                    {log.game.coverUrl ? (
+                      <Image
+                        src={log.game.coverUrl}
+                        alt={log.game.title}
+                        fill
+                        sizes="72px"
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <span className="font-medium">{log.game.title}</span>
+                    {log.game.releaseYear ? (
+                      <span className="text-sm text-muted-foreground">{log.game.releaseYear}</span>
+                    ) : null}
+                  </div>
+                </Link>
+
+                {log.notes ? (
+                  <p className="whitespace-pre-wrap text-sm text-muted-foreground">{log.notes}</p>
+                ) : null}
+              </div>
             ))}
           </div>
         )}
