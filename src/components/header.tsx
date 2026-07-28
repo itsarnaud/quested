@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { MobileMenu } from "@/components/mobile-menu";
+import { NotificationBell } from "@/components/notification-bell";
 
 export async function Header() {
   const [session, t, locale] = await Promise.all([
@@ -63,11 +64,15 @@ export async function Header() {
         Quested
       </Link>
 
-      <nav className="hidden items-center gap-4 text-sm sm:flex">{navItems}</nav>
+      <div className="flex items-center gap-3">
+        <nav className="hidden items-center gap-4 text-sm sm:flex">{navItems}</nav>
 
-      <MobileMenu>
-        <div className="flex flex-col items-start gap-4 text-sm">{navItems}</div>
-      </MobileMenu>
+        {session?.user ? <NotificationBell /> : null}
+
+        <MobileMenu>
+          <div className="flex flex-col items-start gap-4 text-sm">{navItems}</div>
+        </MobileMenu>
+      </div>
     </header>
   );
 }

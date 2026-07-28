@@ -75,6 +75,11 @@
     "following": "abonnements",
     "signInToFollow": "Connecte-toi pour suivre"
   },
+  "Notifications": {
+    "title": "Notifications",
+    "startedFollowing": "a commencé à te suivre",
+    "empty": "Aucune notification pour l'instant."
+  },
   "Footer": {
     "legal": "Mentions légales",
     "privacy": "Confidentialité"

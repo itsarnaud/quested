@@ -24,6 +24,9 @@ export const followRouter = createTRPCRouter({
       await ctx.prisma.follow.create({
         data: { followerId: ctx.session.user.id, followingId: target.id },
       });
+      await ctx.prisma.notification.create({
+        data: { userId: target.id, actorId: ctx.session.user.id, type: "FOLLOW" },
+      });
       return { following: true };
     }),
 

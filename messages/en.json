@@ -75,6 +75,11 @@
     "following": "following",
     "signInToFollow": "Sign in to follow"
   },
+  "Notifications": {
+    "title": "Notifications",
+    "startedFollowing": "started following you",
+    "empty": "No notifications yet."
+  },
   "Footer": {
     "legal": "Legal notice",
     "privacy": "Privacy"
