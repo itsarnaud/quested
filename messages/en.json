@@ -17,7 +17,9 @@
     "activityTitle": "Activity from your follows",
     "noActivity": "Follow other players to see their activity here.",
     "popularTitle": "Popular games",
-    "newTitle": "New games"
+    "newTitle": "New games",
+    "recommendedTitle": "Recommended for you",
+    "recommendedBy": "{count, plural, one {liked by # follow} other {liked by # follows}}"
   },
   "Login": {
     "title": "Sign in",

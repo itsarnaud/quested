@@ -14,6 +14,36 @@ function getPopularGames() {
   });
 }
 
+const RECOMMENDATION_RATING_THRESHOLD = 7;
+
+async function getRecommendations(userId: string, followingIds: string[]) {
+  if (followingIds.length === 0) return [];
+
+  const myLoggedGameIds = (
+    await prisma.log.findMany({ where: { userId }, select: { gameId: true } })
+  ).map((l) => l.gameId);
+
+  const grouped = await prisma.log.groupBy({
+    by: ["gameId"],
+    where: {
+      userId: { in: followingIds },
+      rating: { gte: RECOMMENDATION_RATING_THRESHOLD },
+      gameId: { notIn: myLoggedGameIds },
+    },
+    _count: { gameId: true },
+    orderBy: { _count: { gameId: "desc" } },
+    take: 6,
+  });
+  if (grouped.length === 0) return [];
+
+  const games = await prisma.game.findMany({ where: { id: { in: grouped.map((g) => g.gameId) } } });
+  const gameById = new Map(games.map((g) => [g.id, g]));
+
+  return grouped
+    .map((g) => ({ game: gameById.get(g.gameId), count: g._count.gameId }))
+    .filter((r): r is { game: NonNullable<typeof r.game>; count: number } => Boolean(r.game));
+}
+
 export default async function Home() {
   const session = await auth();
 
@@ -72,7 +102,7 @@ async function Feed({ userId }: { userId: string }) {
   });
   const followingIds = following.map((f) => f.followingId);
 
-  const [activity, popularGames, newGames] = await Promise.all([
+  const [activity, popularGames, newGames, recommendations] = await Promise.all([
     followingIds.length > 0
       ? prisma.log.findMany({
           where: { userId: { in: followingIds } },
@@ -87,6 +117,7 @@ async function Feed({ userId }: { userId: string }) {
       orderBy: { releaseYear: "desc" },
       take: 12,
     }),
+    getRecommendations(userId, followingIds),
   ]);
 
   return (
@@ -157,6 +188,24 @@ async function Feed({ userId }: { userId: string }) {
           </div>
         )}
       </div>
+
+      {recommendations.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">{t("recommendedTitle")}</h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+            {recommendations.map(({ game, count }) => (
+              <GameCard
+                key={game.id}
+                slug={game.slug}
+                title={game.title}
+                releaseYear={game.releaseYear}
+                coverUrl={game.coverUrl}
+                subtitle={t("recommendedBy", { count })}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-muted-foreground">{t("popularTitle")}</h2>

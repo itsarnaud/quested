@@ -17,7 +17,9 @@
     "activityTitle": "Activité de tes abonnements",
     "noActivity": "Suis d'autres joueurs pour voir leur activité ici.",
     "popularTitle": "Jeux populaires",
-    "newTitle": "Nouveaux jeux"
+    "newTitle": "Nouveaux jeux",
+    "recommendedTitle": "Recommandé pour toi",
+    "recommendedBy": "{count, plural, one {# abonnement l'a aimé} other {# abonnements l'ont aimé}}"
   },
   "Login": {
     "title": "Se connecter",
