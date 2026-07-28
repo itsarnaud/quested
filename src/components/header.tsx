@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons/logo";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 export async function Header() {
   const [session, t, locale] = await Promise.all([
@@ -50,6 +51,7 @@ export async function Header() {
             <Button variant="secondary">{t("signIn")}</Button>
           </Link>
         )}
+        <LocaleSwitcher />
       </nav>
     </header>
   );
