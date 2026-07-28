@@ -108,7 +108,7 @@ export default async function ProfilePage({ params }: PageProps) {
               </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
                 {group.logs.map((log) => (
-                  <div key={log.id} className="flex flex-col gap-2">
+                  <div key={log.id} className="flex flex-col gap-2" title={log.notes ?? undefined}>
                     <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
                       {log.game.coverUrl ? (
                         <Image
@@ -122,8 +122,11 @@ export default async function ProfilePage({ params }: PageProps) {
                     </div>
                     <div className="flex flex-col">
                       <span className="truncate text-sm font-medium">{log.game.title}</span>
-                      {log.rating ? (
-                        <span className="text-xs text-muted-foreground">{log.rating}/10</span>
+                      {log.rating != null ? (
+                        <span className="text-xs text-muted-foreground">{log.rating.toFixed(1)}/10</span>
+                      ) : null}
+                      {log.notes ? (
+                        <span className="truncate text-xs text-muted-foreground">{log.notes}</span>
                       ) : null}
                     </div>
                   </div>

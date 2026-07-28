@@ -51,7 +51,10 @@
     "WISHLIST": "Liste de souhaits"
   },
   "LogControls": {
-    "rating": "Note"
+    "rating": "Note",
+    "notes": "Avis",
+    "notesPlaceholder": "Qu'as-tu pensé de ce jeu ?",
+    "save": "Enregistrer"
   },
   "Profile": {
     "noGames": "Aucun jeu enregistré pour l'instant.",

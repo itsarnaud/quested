@@ -9,18 +9,19 @@ export const logRouter = createTRPCRouter({
       z.object({
         gameId: z.string(),
         status: GameStatus,
-        rating: z.number().int().min(1).max(10).optional(),
-        notes: z.string().optional(),
+        rating: z.number().min(0).max(10).optional(),
+        notes: z.string().max(2000).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
+      const rating = input.rating !== undefined ? Math.round(input.rating * 10) / 10 : undefined;
       return ctx.prisma.log.upsert({
         where: { userId_gameId: { userId, gameId: input.gameId } },
-        create: { userId, ...input },
+        create: { userId, ...input, rating },
         update: {
           status: input.status,
-          rating: input.rating,
+          rating,
           notes: input.notes,
         },
       });

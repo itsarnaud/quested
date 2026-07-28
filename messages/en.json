@@ -51,7 +51,10 @@
     "WISHLIST": "Wishlist"
   },
   "LogControls": {
-    "rating": "Rating"
+    "rating": "Rating",
+    "notes": "Review",
+    "notesPlaceholder": "What did you think of this game?",
+    "save": "Save"
   },
   "Profile": {
     "noGames": "No games logged yet.",
