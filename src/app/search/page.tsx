@@ -35,6 +35,7 @@ export default function SearchPage() {
         {games?.map((game) => (
           <GameCard
             key={game.id}
+            slug={game.slug}
             title={game.title}
             releaseYear={game.releaseYear}
             coverUrl={game.coverUrl}

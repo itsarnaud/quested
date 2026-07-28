@@ -33,4 +33,12 @@ export const logRouter = createTRPCRouter({
       orderBy: { updatedAt: "desc" },
     });
   }),
+
+  getForGame: protectedProcedure
+    .input(z.object({ gameId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.log.findUnique({
+        where: { userId_gameId: { userId: ctx.session.user.id, gameId: input.gameId } },
+      });
+    }),
 });

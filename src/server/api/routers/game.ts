@@ -13,4 +13,10 @@ export const gameRouter = createTRPCRouter({
       // de-dupe in case several IGDB results matched the same canonical Game
       return Array.from(new Map(games.map((g) => [g.id, g])).values());
     }),
+
+  bySlug: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.game.findUnique({ where: { slug: input.slug } });
+    }),
 });
