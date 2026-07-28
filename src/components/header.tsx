@@ -15,16 +15,26 @@ export async function Header() {
           Search
         </Link>
         {session?.user ? (
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/" });
-            }}
-          >
-            <Button type="submit" variant="secondary">
-              Sign out
-            </Button>
-          </form>
+          <>
+            {session.user.username ? (
+              <Link
+                href={`/u/${session.user.username}`}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Profile
+              </Link>
+            ) : null}
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/" });
+              }}
+            >
+              <Button type="submit" variant="secondary">
+                Sign out
+              </Button>
+            </form>
+          </>
         ) : (
           <Link href="/login">
             <Button variant="secondary">Sign in</Button>

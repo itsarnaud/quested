@@ -1,0 +1,95 @@
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+
+const STATUS_ORDER = ["PLAYING", "COMPLETED", "BACKLOG", "WISHLIST", "DROPPED"] as const;
+
+const STATUS_LABELS: Record<(typeof STATUS_ORDER)[number], string> = {
+  PLAYING: "Playing",
+  COMPLETED: "Completed",
+  BACKLOG: "Backlog",
+  WISHLIST: "Wishlist",
+  DROPPED: "Dropped",
+};
+
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}) {
+  const { username } = await params;
+
+  const user = await prisma.user.findUnique({
+    where: { username },
+    include: {
+      logs: {
+        include: { game: true },
+        orderBy: { updatedAt: "desc" },
+      },
+    },
+  });
+
+  if (!user) notFound();
+
+  const logsByStatus = STATUS_ORDER.map((status) => ({
+    status,
+    logs: user.logs.filter((log) => log.status === status),
+  })).filter((group) => group.logs.length > 0);
+
+  return (
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-10">
+      <div className="flex items-center gap-4">
+        {user.image ? (
+          <Image
+            src={user.image}
+            alt={user.name ?? username}
+            width={56}
+            height={56}
+            className="rounded-full"
+          />
+        ) : null}
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">{user.name ?? username}</h1>
+          <p className="text-sm text-muted-foreground">@{username}</p>
+        </div>
+      </div>
+
+      {logsByStatus.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No games logged yet.</p>
+      ) : (
+        <div className="flex flex-col gap-8">
+          {logsByStatus.map((group) => (
+            <div key={group.status} className="flex flex-col gap-3">
+              <h2 className="text-sm font-medium text-muted-foreground">
+                {STATUS_LABELS[group.status]} · {group.logs.length}
+              </h2>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+                {group.logs.map((log) => (
+                  <div key={log.id} className="flex flex-col gap-2">
+                    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
+                      {log.game.coverUrl ? (
+                        <Image
+                          src={log.game.coverUrl}
+                          alt={log.game.title}
+                          fill
+                          sizes="(max-width: 768px) 45vw, 160px"
+                          className="object-cover"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="truncate text-sm font-medium">{log.game.title}</span>
+                      {log.rating ? (
+                        <span className="text-xs text-muted-foreground">{log.rating}/10</span>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
