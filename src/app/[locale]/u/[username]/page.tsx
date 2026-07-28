@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${user.name ?? username} (@${username})`,
-    description: `${user.name ?? username}'s game library on Quested.`,
+    description: user.bio ?? `${user.name ?? username}'s game library on Quested.`,
   };
 }
 
@@ -67,12 +67,14 @@ export default async function ProfilePage({ params }: PageProps) {
               alt={user.name ?? username}
               width={56}
               height={56}
+              unoptimized
               className="rounded-full"
             />
           ) : null}
           <div>
             <h1 className="text-xl font-semibold tracking-tight">{user.name ?? username}</h1>
             <p className="text-sm text-muted-foreground">@{username}</p>
+            {user.bio ? <p className="mt-1 text-sm">{user.bio}</p> : null}
           </div>
         </div>
         {isOwnProfile ? (

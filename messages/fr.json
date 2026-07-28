@@ -76,7 +76,18 @@
     "linkGoogle": "Lier mon compte Google",
     "linkDiscord": "Lier mon compte Discord",
     "unlink": "Délier",
-    "unlinkLastAccountWarning": "Impossible de délier ton seul moyen de connexion."
+    "unlinkLastAccountWarning": "Impossible de délier ton seul moyen de connexion.",
+    "profileTitle": "Profil public",
+    "avatarButton": "Changer la photo",
+    "nameLabel": "Nom d'affichage",
+    "usernameLabel": "Nom d'utilisateur",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "Quelques mots sur toi…",
+    "saveButton": "Enregistrer",
+    "saved": "Enregistré.",
+    "usernameTaken": "Ce nom d'utilisateur est déjà pris.",
+    "usernameInvalid": "3 à 20 caractères : lettres minuscules, chiffres et tirets uniquement.",
+    "genericError": "Une erreur est survenue, réessaie."
   },
   "Legal": {
     "mentionsTitle": "Mentions légales",

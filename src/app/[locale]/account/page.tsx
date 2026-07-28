@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 import { AccountView } from "@/app/[locale]/account/account-view";
 import { LinkedAccounts } from "@/app/[locale]/account/linked-accounts";
+import { ProfileEditForm } from "@/app/[locale]/account/profile-edit-form";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -23,11 +25,18 @@ export default async function AccountPage({ params }: PageProps) {
     return;
   }
 
-  const t = await getTranslations("Account");
+  const [t, profile] = await Promise.all([
+    getTranslations("Account"),
+    prisma.user.findUniqueOrThrow({
+      where: { id: session.user.id },
+      select: { name: true, username: true, bio: true, image: true },
+    }),
+  ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-6 py-10">
       <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+      <ProfileEditForm initialProfile={profile} />
       <LinkedAccounts userId={session.user.id} />
       <AccountView />
     </div>

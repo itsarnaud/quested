@@ -76,7 +76,18 @@
     "linkGoogle": "Link my Google account",
     "linkDiscord": "Link my Discord account",
     "unlink": "Unlink",
-    "unlinkLastAccountWarning": "You can't unlink your only sign-in method."
+    "unlinkLastAccountWarning": "You can't unlink your only sign-in method.",
+    "profileTitle": "Public profile",
+    "avatarButton": "Change photo",
+    "nameLabel": "Display name",
+    "usernameLabel": "Username",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "A few words about you…",
+    "saveButton": "Save",
+    "saved": "Saved.",
+    "usernameTaken": "This username is already taken.",
+    "usernameInvalid": "3 to 20 characters: lowercase letters, numbers and hyphens only.",
+    "genericError": "Something went wrong, try again."
   },
   "Legal": {
     "mentionsTitle": "Legal notice",

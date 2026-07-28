@@ -1,6 +1,47 @@
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
+  getProfile: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.user.findUniqueOrThrow({
+      where: { id: ctx.session.user.id },
+      select: { name: true, username: true, bio: true, image: true },
+    });
+  }),
+
+  updateProfile: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().trim().min(1).max(50),
+        username: z
+          .string()
+          .trim()
+          .toLowerCase()
+          .min(3)
+          .max(20)
+          .regex(/^[a-z0-9-]+$/),
+        bio: z.string().trim().max(280).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.prisma.user.findUnique({
+        where: { username: input.username },
+      });
+      if (existing && existing.id !== ctx.session.user.id) {
+        throw new TRPCError({ code: "CONFLICT" });
+      }
+
+      return ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: {
+          name: input.name,
+          username: input.username,
+          bio: input.bio || null,
+        },
+      });
+    }),
+
   exportData: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUniqueOrThrow({
       where: { id: ctx.session.user.id },
