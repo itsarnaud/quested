@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { signIn } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { GoogleIcon } from "@/components/icons/google-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  robots: { index: false, follow: false },
+};
 
 export default function LoginPage() {
   return (

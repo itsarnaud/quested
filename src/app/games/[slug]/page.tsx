@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,16 +8,29 @@ import { prisma } from "@/lib/prisma";
 import { LogControls } from "@/components/log-controls";
 import { Button } from "@/components/ui/button";
 
-export default async function GamePage({
-  params,
-}: {
+const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
+
+type PageProps = {
   params: Promise<{ slug: string }>;
-}) {
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const [game, session] = await Promise.all([
-    prisma.game.findUnique({ where: { slug } }),
-    auth(),
-  ]);
+  const game = await getGame(slug);
+  if (!game) return {};
+
+  const title = game.releaseYear ? `${game.title} (${game.releaseYear})` : game.title;
+
+  return {
+    title,
+    description: game.summary ?? undefined,
+    openGraph: game.coverUrl ? { images: [{ url: game.coverUrl }] } : undefined,
+  };
+}
+
+export default async function GamePage({ params }: PageProps) {
+  const { slug } = await params;
+  const [game, session] = await Promise.all([getGame(slug), auth()]);
 
   if (!game) notFound();
 

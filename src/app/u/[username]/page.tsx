@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -12,14 +14,8 @@ const STATUS_LABELS: Record<(typeof STATUS_ORDER)[number], string> = {
   DROPPED: "Dropped",
 };
 
-export default async function ProfilePage({
-  params,
-}: {
-  params: Promise<{ username: string }>;
-}) {
-  const { username } = await params;
-
-  const user = await prisma.user.findUnique({
+const getUserProfile = cache((username: string) =>
+  prisma.user.findUnique({
     where: { username },
     include: {
       logs: {
@@ -27,7 +23,28 @@ export default async function ProfilePage({
         orderBy: { updatedAt: "desc" },
       },
     },
-  });
+  }),
+);
+
+type PageProps = {
+  params: Promise<{ username: string }>;
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { username } = await params;
+  const user = await getUserProfile(username);
+  if (!user) return {};
+
+  return {
+    title: `${user.name ?? username} (@${username})`,
+    description: `${user.name ?? username}'s game library on Quested.`,
+  };
+}
+
+export default async function ProfilePage({ params }: PageProps) {
+  const { username } = await params;
+
+  const user = await getUserProfile(username);
 
   if (!user) notFound();
 
