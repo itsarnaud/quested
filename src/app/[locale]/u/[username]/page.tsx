@@ -11,6 +11,7 @@ import { HeartIcon } from "@/components/icons/heart-icon";
 import { LikeButton } from "@/components/like-button";
 import { FollowSection } from "@/app/[locale]/u/[username]/follow-section";
 import { ProfileTabs } from "@/app/[locale]/u/[username]/profile-tabs";
+import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games-section";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 
@@ -21,6 +22,9 @@ const getUserProfile = cache((username: string) =>
       logs: {
         include: { game: true, likes: { select: { userId: true } } },
         orderBy: { updatedAt: "desc" },
+      },
+      favoriteGames: {
+        orderBy: { position: "asc" },
       },
     },
   }),
@@ -52,6 +56,19 @@ export default async function ProfilePage({ params }: PageProps) {
   ]);
 
   if (!user) notFound();
+
+  const logByGameId = new Map(user.logs.map((log) => [log.gameId, log]));
+  const favoriteGames = user.favoriteGames
+    .map((fg) => logByGameId.get(fg.gameId))
+    .filter((log): log is (typeof user.logs)[number] => Boolean(log))
+    .map((log) => ({
+      id: log.game.id,
+      slug: log.game.slug,
+      title: log.game.title,
+      coverUrl: log.game.coverUrl,
+      rating: log.rating,
+      notes: log.notes,
+    }));
 
   const likedByUser = await prisma.like.findMany({
     where: { userId: user.id },
@@ -276,6 +293,11 @@ export default async function ProfilePage({ params }: PageProps) {
         username={username}
         isLoggedIn={Boolean(session?.user)}
         isOwnProfile={isOwnProfile}
+      />
+
+      <FavoriteGamesSection
+        initialFavorites={favoriteGames}
+        canEdit={isOwnProfile}
       />
 
       <ProfileTabs

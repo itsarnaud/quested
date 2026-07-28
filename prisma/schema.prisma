@@ -74,6 +74,8 @@ model User {
   notificationsSent     Notification[] @relation("NotificationsSent")
 
   likes Like[]
+
+  favoriteGames FavoriteGame[]
 }
 
 model Follow {
@@ -135,10 +137,26 @@ model Game {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  externalIds GameExternalId[]
-  logs        Log[]
+  externalIds   GameExternalId[]
+  logs          Log[]
+  favoritedBy   FavoriteGame[]
 
   @@index([title])
+}
+
+model FavoriteGame {
+  id       String @id @default(cuid())
+  position Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId String
+
+  @@unique([userId, gameId])
+  @@unique([userId, position])
+  @@index([userId])
 }
 
 enum GameSource {

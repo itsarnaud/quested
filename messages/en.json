@@ -71,7 +71,13 @@
     "settings": "Settings",
     "gamesTab": "Games",
     "reviewsTab": "Reviews",
-    "likesTab": "Liked"
+    "likesTab": "Liked",
+    "favoritesTitle": "Favorites",
+    "favoritesAdd": "Add",
+    "favoritesRemove": "Remove",
+    "favoritesCancel": "Cancel",
+    "favoritesFilterPlaceholder": "Filter your rated games…",
+    "favoritesNoCandidates": "Rate a game to be able to feature it here."
   },
   "Follow": {
     "follow": "Follow",

@@ -101,6 +101,49 @@ export const userRouter = createTRPCRouter({
     });
   }),
 
+  getFavorites: protectedProcedure.query(async ({ ctx }) => {
+    const favorites = await ctx.prisma.favoriteGame.findMany({
+      where: { userId: ctx.session.user.id },
+      include: { game: { include: { logs: { where: { userId: ctx.session.user.id } } } } },
+      orderBy: { position: "asc" },
+    });
+    return favorites.map((f) => {
+      const log = f.game.logs[0];
+      return {
+        id: f.game.id,
+        slug: f.game.slug,
+        title: f.game.title,
+        coverUrl: f.game.coverUrl,
+        rating: log?.rating ?? null,
+        notes: log?.notes ?? null,
+      };
+    });
+  }),
+
+  // Only rated games can be picked, so the favorite card can always show a rating.
+  setFavorites: protectedProcedure
+    .input(z.object({ gameIds: z.array(z.string()).max(4) }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      if (input.gameIds.length > 0) {
+        const ratedCount = await ctx.prisma.log.count({
+          where: { userId, gameId: { in: input.gameIds }, rating: { not: null } },
+        });
+        if (ratedCount !== input.gameIds.length) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
+      }
+
+      await ctx.prisma.$transaction([
+        ctx.prisma.favoriteGame.deleteMany({ where: { userId } }),
+        ctx.prisma.favoriteGame.createMany({
+          data: input.gameIds.map((gameId, position) => ({ userId, gameId, position })),
+        }),
+      ]);
+      return { success: true };
+    }),
+
   updateProfile: protectedProcedure
     .input(
       z.object({

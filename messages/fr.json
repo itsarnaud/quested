@@ -71,7 +71,13 @@
     "settings": "Paramètres",
     "gamesTab": "Jeux",
     "reviewsTab": "Avis",
-    "likesTab": "Aimés"
+    "likesTab": "Aimés",
+    "favoritesTitle": "Favoris",
+    "favoritesAdd": "Ajouter",
+    "favoritesRemove": "Retirer",
+    "favoritesCancel": "Annuler",
+    "favoritesFilterPlaceholder": "Filtrer tes jeux notés…",
+    "favoritesNoCandidates": "Note un jeu pour pouvoir le mettre en favori."
   },
   "Follow": {
     "follow": "Suivre",
