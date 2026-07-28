@@ -64,6 +64,24 @@ model User {
   accounts Account[]
   sessions Session[]
   logs     Log[]
+
+  following Follow[] @relation("Following")
+  followers Follow[] @relation("Followers")
+}
+
+model Follow {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  follower   User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followerId String
+
+  following   User   @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+  followingId String
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 enum GameStatus {
@@ -112,14 +130,14 @@ model GameExternalId {
 }
 
 model Log {
-  id        String     @id @default(cuid())
-  status    GameStatus @default(BACKLOG)
-  rating    Int? // 1-10, null if not rated yet
-  notes     String?    @db.Text
-  startedAt DateTime?
+  id         String     @id @default(cuid())
+  status     GameStatus @default(BACKLOG)
+  rating     Int? // 1-10, null if not rated yet
+  notes      String?    @db.Text
+  startedAt  DateTime?
   finishedAt DateTime?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String

@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { GearIcon } from "@/components/icons/gear-icon";
+import { FollowSection } from "@/app/[locale]/u/[username]/follow-section";
 
 const STATUS_ORDER = ["PLAYING", "COMPLETED", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 
@@ -87,6 +88,8 @@ export default async function ProfilePage({ params }: PageProps) {
           </div>
         ) : null}
       </div>
+
+      <FollowSection username={username} showButton={Boolean(session?.user) && !isOwnProfile} />
 
       {logsByStatus.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("noGames")}</p>

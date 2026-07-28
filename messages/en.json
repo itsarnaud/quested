@@ -12,7 +12,11 @@
   "Home": {
     "tagline": "Track, rate and share the games you play.",
     "getStarted": "Get started",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "activityTitle": "Activity from your follows",
+    "noActivity": "Follow other players to see their activity here.",
+    "popularTitle": "Popular games",
+    "newTitle": "New games"
   },
   "Login": {
     "title": "Sign in",
@@ -43,6 +47,12 @@
   "Profile": {
     "noGames": "No games logged yet.",
     "settings": "Settings"
+  },
+  "Follow": {
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "followers": "followers",
+    "following": "following"
   },
   "Footer": {
     "legal": "Legal notice",

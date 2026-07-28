@@ -12,7 +12,11 @@
   "Home": {
     "tagline": "Suis, note et partage les jeux auxquels tu joues.",
     "getStarted": "Commencer",
-    "signIn": "Se connecter"
+    "signIn": "Se connecter",
+    "activityTitle": "Activité de tes abonnements",
+    "noActivity": "Suis d'autres joueurs pour voir leur activité ici.",
+    "popularTitle": "Jeux populaires",
+    "newTitle": "Nouveaux jeux"
   },
   "Login": {
     "title": "Se connecter",
@@ -43,6 +47,12 @@
   "Profile": {
     "noGames": "Aucun jeu enregistré pour l'instant.",
     "settings": "Paramètres"
+  },
+  "Follow": {
+    "follow": "Suivre",
+    "unfollow": "Ne plus suivre",
+    "followers": "abonnés",
+    "following": "abonnements"
   },
   "Footer": {
     "legal": "Mentions légales",
