@@ -1,0 +1,133 @@
+// Prisma schema for Quested
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Auth.js required models ---
+// https://authjs.dev/getting-started/adapters/prisma
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// --- App models ---
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  username      String?   @unique
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  logs     Log[]
+}
+
+enum GameStatus {
+  BACKLOG
+  PLAYING
+  COMPLETED
+  DROPPED
+  WISHLIST
+}
+
+// A game aggregated from external sources (IGDB, RAWG, ...), deduplicated
+// into a single canonical entry that logs point to.
+model Game {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  releaseYear Int?
+  coverUrl    String?
+  summary     String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  externalIds GameExternalId[]
+  logs        Log[]
+
+  @@index([title])
+}
+
+enum GameSource {
+  IGDB
+  RAWG
+}
+
+// Maps a canonical Game to its id in each external source, so the
+// dedup/matching job can tell "already imported" apart from "new game".
+model GameExternalId {
+  id       String     @id @default(cuid())
+  source   GameSource
+  sourceId String
+
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId String
+
+  @@unique([source, sourceId])
+  @@index([gameId])
+}
+
+model Log {
+  id        String     @id @default(cuid())
+  status    GameStatus @default(BACKLOG)
+  rating    Int? // 1-10, null if not rated yet
+  notes     String?    @db.Text
+  startedAt DateTime?
+  finishedAt DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId String
+
+  @@unique([userId, gameId])
+  @@index([userId])
+  @@index([gameId])
+}
