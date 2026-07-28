@@ -4,6 +4,7 @@
   },
   "Header": {
     "search": "Search",
+    "people": "Players",
     "profile": "Profile",
     "account": "Account",
     "signOut": "Sign out",
@@ -30,6 +31,13 @@
     "description": "Search for a game to track, rate and add to your library.",
     "placeholder": "Search for a game…",
     "searching": "Searching…"
+  },
+  "People": {
+    "title": "Find players",
+    "description": "Search for a player by name or username to follow them.",
+    "placeholder": "Search for a player…",
+    "searching": "Searching…",
+    "noResults": "No players found."
   },
   "GamePage": {
     "signInPrompt": "Sign in to track this game.",

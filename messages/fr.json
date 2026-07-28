@@ -4,6 +4,7 @@
   },
   "Header": {
     "search": "Recherche",
+    "people": "Joueurs",
     "profile": "Profil",
     "account": "Compte",
     "signOut": "Se déconnecter",
@@ -30,6 +31,13 @@
     "description": "Recherche un jeu à suivre, noter et ajouter à ta bibliothèque.",
     "placeholder": "Rechercher un jeu…",
     "searching": "Recherche en cours…"
+  },
+  "People": {
+    "title": "Trouver des joueurs",
+    "description": "Recherche un joueur par nom ou pseudo pour le suivre.",
+    "placeholder": "Rechercher un joueur…",
+    "searching": "Recherche en cours…",
+    "noResults": "Aucun joueur trouvé."
   },
   "GamePage": {
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",

@@ -1,8 +1,41 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
+  search: publicProcedure
+    .input(z.object({ query: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          username: { not: null },
+          id: ctx.session?.user ? { not: ctx.session.user.id } : undefined,
+          OR: [
+            { username: { contains: input.query, mode: "insensitive" } },
+            { name: { contains: input.query, mode: "insensitive" } },
+          ],
+        },
+        select: { id: true, username: true, name: true, image: true, bio: true },
+        take: 20,
+      });
+
+      const followingIds = ctx.session?.user
+        ? new Set(
+            (
+              await ctx.prisma.follow.findMany({
+                where: {
+                  followerId: ctx.session.user.id,
+                  followingId: { in: users.map((u) => u.id) },
+                },
+                select: { followingId: true },
+              })
+            ).map((f) => f.followingId),
+          )
+        : new Set<string>();
+
+      return users.map((u) => ({ ...u, isFollowing: followingIds.has(u.id) }));
+    }),
+
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findUniqueOrThrow({
       where: { id: ctx.session.user.id },

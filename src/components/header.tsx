@@ -21,6 +21,9 @@ export async function Header() {
       <Link href="/search" className="text-muted-foreground hover:text-foreground">
         {t("search")}
       </Link>
+      <Link href="/people" className="text-muted-foreground hover:text-foreground">
+        {t("people")}
+      </Link>
       {session?.user ? (
         <>
           {session.user.username ? (
