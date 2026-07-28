@@ -17,7 +17,13 @@ export async function uploadAvatar(formData: FormData) {
   if (file.size > MAX_UPLOAD_SIZE) throw new Error("FILE_TOO_LARGE");
   if (!file.type.startsWith("image/")) throw new Error("INVALID_FILE_TYPE");
 
-  const buffer = Buffer.from(await file.arrayBuffer());
+  // file.arrayBuffer() crashes on Vercel's Fluid Compute runtime with
+  // "SharedArrayBuffer is not allowed" — read it as a Node stream instead.
+  const chunks: Buffer[] = [];
+  for await (const chunk of file.stream() as unknown as AsyncIterable<Uint8Array>) {
+    chunks.push(Buffer.from(chunk));
+  }
+  const buffer = Buffer.concat(chunks);
   const webp = await sharp(buffer).resize(256, 256, { fit: "cover" }).webp({ quality: 80 }).toBuffer();
 
   const blob = await put(`avatars/${session.user.id}.webp`, webp, {
