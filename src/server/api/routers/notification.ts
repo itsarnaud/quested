@@ -4,7 +4,10 @@ export const notificationRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.notification.findMany({
       where: { userId: ctx.session.user.id },
-      include: { actor: { select: { username: true, name: true, image: true } } },
+      include: {
+        actor: { select: { username: true, name: true, image: true } },
+        log: { select: { game: { select: { slug: true, title: true } } } },
+      },
       orderBy: { createdAt: "desc" },
       take: 20,
     });

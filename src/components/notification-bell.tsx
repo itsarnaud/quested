@@ -58,7 +58,7 @@ export function NotificationBell() {
                 {notifications.map((n) => (
                   <Link
                     key={n.id}
-                    href={`/u/${n.actor.username}`}
+                    href={n.type === "LIKE" && n.log ? `/games/${n.log.game.slug}` : `/u/${n.actor.username}`}
                     className={cn(
                       "flex items-center gap-2 rounded px-1 py-2 text-sm hover:bg-muted",
                       !n.read && "bg-muted/50",
@@ -77,7 +77,10 @@ export function NotificationBell() {
                       ) : null}
                     </div>
                     <span>
-                      <span className="font-medium">@{n.actor.username}</span> {t("startedFollowing")}
+                      <span className="font-medium">@{n.actor.username}</span>{" "}
+                      {n.type === "LIKE" && n.log
+                        ? t("liked", { game: n.log.game.title })
+                        : t("startedFollowing")}
                     </span>
                   </Link>
                 ))}

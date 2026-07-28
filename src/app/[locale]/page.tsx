@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { GameCard } from "@/components/game-card";
+import { LikeButton } from "@/components/like-button";
 
 function getPopularGames() {
   return prisma.game.findMany({
@@ -75,7 +76,7 @@ async function Feed({ userId }: { userId: string }) {
     followingIds.length > 0
       ? prisma.log.findMany({
           where: { userId: { in: followingIds } },
-          include: { game: true, user: true },
+          include: { game: true, user: true, likes: { select: { userId: true } } },
           orderBy: { updatedAt: "desc" },
           take: 5,
         })
@@ -98,27 +99,35 @@ async function Feed({ userId }: { userId: string }) {
           <div className="flex flex-col divide-y divide-border">
             {activity.map((log) => (
               <div key={log.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
-                <Link
-                  href={`/u/${log.user.username}`}
-                  className="flex items-center gap-2 text-sm hover:underline"
-                >
-                  <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-                    {log.user.image ? (
-                      <Image
-                        src={log.user.image}
-                        alt={log.user.username ?? ""}
-                        fill
-                        unoptimized
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <span className="font-medium">@{log.user.username}</span>
-                  <span className="text-muted-foreground">
-                    · {tStatus(log.status)}
-                    {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
-                  </span>
-                </Link>
+                <div className="flex items-center justify-between gap-3">
+                  <Link
+                    href={`/u/${log.user.username}`}
+                    className="flex min-w-0 items-center gap-2 text-sm hover:underline"
+                  >
+                    <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+                      {log.user.image ? (
+                        <Image
+                          src={log.user.image}
+                          alt={log.user.username ?? ""}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
+                      ) : null}
+                    </div>
+                    <span className="truncate font-medium">@{log.user.username}</span>
+                    <span className="shrink-0 text-muted-foreground">
+                      · {tStatus(log.status)}
+                      {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
+                    </span>
+                  </Link>
+
+                  <LikeButton
+                    logId={log.id}
+                    initialLiked={log.likes.some((like) => like.userId === userId)}
+                    initialCount={log.likes.length}
+                  />
+                </div>
 
                 <Link href={`/games/${log.game.slug}`} className="flex gap-3 hover:opacity-90">
                   <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">

@@ -78,6 +78,7 @@
   "Notifications": {
     "title": "Notifications",
     "startedFollowing": "started following you",
+    "liked": "liked your review on {game}",
     "empty": "No notifications yet."
   },
   "About": {

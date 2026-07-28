@@ -72,6 +72,8 @@ model User {
 
   notificationsReceived Notification[] @relation("NotificationsReceived")
   notificationsSent     Notification[] @relation("NotificationsSent")
+
+  likes Like[]
 }
 
 model Follow {
@@ -101,12 +103,16 @@ model Notification {
   actor   User   @relation("NotificationsSent", fields: [actorId], references: [id], onDelete: Cascade)
   actorId String
 
+  log   Log?    @relation(fields: [logId], references: [id], onDelete: Cascade)
+  logId String?
+
   @@index([userId, read])
   @@index([createdAt])
 }
 
 enum NotificationType {
   FOLLOW
+  LIKE
 }
 
 enum GameStatus {
@@ -170,7 +176,24 @@ model Log {
   game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId String
 
+  likes         Like[]
+  notifications Notification[]
+
   @@unique([userId, gameId])
   @@index([userId])
   @@index([gameId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  log   Log    @relation(fields: [logId], references: [id], onDelete: Cascade)
+  logId String
+
+  @@unique([userId, logId])
+  @@index([logId])
 }
