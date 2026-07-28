@@ -14,8 +14,9 @@ type Log = {
   notes: string | null;
 } | null | undefined;
 
-export function LogControls({ gameId }: { gameId: string }) {
+export function LogControls({ gameId, isUnreleased = false }: { gameId: string; isUnreleased?: boolean }) {
   const t = useTranslations("GameStatus");
+  const tRating = useTranslations("LogControls");
   const utils = trpc.useUtils();
   const { data: log } = trpc.log.getForGame.useQuery({ gameId });
   const upsert = trpc.log.upsert.useMutation({
@@ -46,7 +47,7 @@ export function LogControls({ gameId }: { gameId: string }) {
         ))}
       </div>
 
-      {log?.status ? (
+      {log?.status && !isUnreleased ? (
         <RatingAndNotes
           key={`${log.rating}-${log.notes}`}
           gameId={gameId}
@@ -62,6 +63,8 @@ export function LogControls({ gameId }: { gameId: string }) {
           }
           isPending={upsert.isPending}
         />
+      ) : log?.status && isUnreleased ? (
+        <p className="text-sm text-muted-foreground">{tRating("notYetReleased")}</p>
       ) : null}
     </div>
   );

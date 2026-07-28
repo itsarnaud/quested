@@ -56,7 +56,8 @@
   },
   "GamePage": {
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",
-    "signIn": "Se connecter"
+    "signIn": "Se connecter",
+    "topReviewsTitle": "Avis les mieux notés"
   },
   "GameStatus": {
     "BACKLOG": "Backlog",
@@ -69,7 +70,8 @@
     "rating": "Note",
     "notes": "Avis",
     "notesPlaceholder": "Qu'as-tu pensé de ce jeu ?",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "notYetReleased": "Tu pourras noter ce jeu une fois sorti."
   },
   "Profile": {
     "noGames": "Aucun jeu enregistré pour l'instant.",

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 const GameStatus = z.enum(["BACKLOG", "PLAYING", "COMPLETED", "DROPPED", "WISHLIST"]);
@@ -16,6 +17,17 @@ export const logRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
       const rating = input.rating !== undefined ? Math.round(input.rating * 10) / 10 : undefined;
+
+      if (rating !== undefined) {
+        const game = await ctx.prisma.game.findUnique({
+          where: { id: input.gameId },
+          select: { releaseYear: true },
+        });
+        if (game?.releaseYear && game.releaseYear > new Date().getFullYear()) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "This game hasn't released yet." });
+        }
+      }
+
       return ctx.prisma.log.upsert({
         where: { userId_gameId: { userId, gameId: input.gameId } },
         create: { userId, ...input, rating },

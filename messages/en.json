@@ -56,7 +56,8 @@
   },
   "GamePage": {
     "signInPrompt": "Sign in to track this game.",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "topReviewsTitle": "Top reviews"
   },
   "GameStatus": {
     "BACKLOG": "Backlog",
@@ -69,7 +70,8 @@
     "rating": "Rating",
     "notes": "Review",
     "notesPlaceholder": "What did you think of this game?",
-    "save": "Save"
+    "save": "Save",
+    "notYetReleased": "You'll be able to rate this game once it's out."
   },
   "Profile": {
     "noGames": "No games logged yet.",
