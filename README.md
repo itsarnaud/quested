@@ -6,11 +6,11 @@ Personal, non-commercial project. Live at [quested.cc](https://quested.cc).
 
 ## Features
 
-- **Search**: look up a game and it gets imported automatically from IGDB and RAWG. If it's already in the database (even approximately, matched by title and year), no duplicate is created, just a link to the extra source. Recent searches are kept locally and suggested again on focus, and popular games are shown by default before you type anything.
-- **Logging**: status, a rating out of 10 to the decimal (e.g. 7.4), and a personal review on a dedicated game page.
-- **Public profiles**: every account has a `/u/username` page listing logged games grouped by status, with a customizable bio and avatar. Every logged game links back to its page.
-- **Follows**: follow other players, see their reviews on your home feed alongside popular games and recent additions to the catalog. The player search page suggests people through mutual follows, or shows recently joined players as a fallback.
-- **Notifications**: a bell in the header shows unread notifications, for now limited to new followers.
+- **Search**: look up a game and it gets imported automatically from IGDB and RAWG. If it's already in the database (even approximately, matched by title and year), no duplicate is created, just a link to the extra source. Recent searches are kept locally and suggested again on focus, popular games are shown by default before you type anything, and results can be filtered by genre, platform and release year.
+- **Logging**: status, a rating out of 10 to the decimal (e.g. 7.4), and a personal review on a dedicated game page. Ratings are locked until a game has actually released. Every game page shows the community's average rating and vote count, plus the most-liked reviews.
+- **Public profiles**: every account has a `/u/username` page with tabs for logged games (grouped by status, paginated), reviews, liked reviews, and custom lists (e.g. "Top 10 horror games"). Up to 4 favorite games (picked from your rated games) are pinned at the top, alongside a bio and avatar.
+- **Social**: follow other players, see their reviews on your home feed alongside popular games, personalized recommendations (based on what your follows rated highly) and recent catalog additions. Like other people's reviews. The player search page suggests people through mutual follows, or shows recently joined players as a fallback, and a taste-compatibility score shows up on profiles you share rated games with.
+- **Notifications**: a bell in the header shows unread notifications for new followers and likes on your reviews.
 - **Account**: sign in with Google or Discord, link both to the same account, export your data, or delete your account.
 - **Languages**: French by default, English available at `/en`.
 
@@ -23,6 +23,7 @@ Personal, non-commercial project. Live at [quested.cc](https://quested.cc).
 - [next-intl](https://next-intl.dev) for French/English
 - [Tailwind CSS](https://tailwindcss.com)
 - [Vercel Blob](https://vercel.com/docs/vercel-blob) for avatars, hosted on Vercel
+- [Upstash Redis](https://upstash.com) for rate limiting
 - [IGDB](https://api-docs.igdb.com) and [RAWG](https://rawg.io/apidocs) as game data sources
 
 ## Running locally
@@ -66,6 +67,7 @@ cp .env.example .env
 - `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET`: requires a Twitch developer account, create one at [dev.twitch.tv/console](https://dev.twitch.tv/console)
 - `RAWG_API_KEY`: get one at [rawg.io/apidocs](https://rawg.io/apidocs)
 - `BLOB_STORE_ID` / `BLOB_READ_WRITE_TOKEN`: create a Vercel Blob store **in Public mode** (Storage → Create Database → Blob), otherwise avatar uploads will fail
+- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`: create a free database at [upstash.com](https://upstash.com), used for rate limiting
 
 ### Migrations and startup
 
