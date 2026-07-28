@@ -36,16 +36,16 @@ export default async function GamePage({ params }: PageProps) {
   if (!game) notFound();
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 gap-8 px-6 py-10">
-      <div className="w-48 shrink-0">
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 py-10 sm:flex-row sm:gap-8">
+      <div className="mx-auto w-40 shrink-0 sm:mx-0 sm:w-48">
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
           {game.coverUrl ? (
-            <Image src={game.coverUrl} alt={game.title} fill sizes="192px" className="object-cover" />
+            <Image src={game.coverUrl} alt={game.title} fill sizes="(max-width: 640px) 160px, 192px" className="object-cover" />
           ) : null}
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-6">
+      <div className="flex flex-1 flex-col gap-6 text-center sm:text-left">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{game.title}</h1>
           {game.releaseYear ? (
@@ -58,7 +58,7 @@ export default async function GamePage({ params }: PageProps) {
         {session?.user ? (
           <LogControls gameId={game.id} />
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
             <p className="text-sm text-muted-foreground">{t("signInPrompt")}</p>
             <Link href="/login">
               <Button variant="secondary">{t("signIn")}</Button>

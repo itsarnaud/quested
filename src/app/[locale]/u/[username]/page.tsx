@@ -59,7 +59,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-10">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           {user.image ? (
             <Image
@@ -77,7 +77,7 @@ export default async function ProfilePage({ params }: PageProps) {
         </div>
         {isOwnProfile ? (
           <div className="flex items-center gap-4">
-            <div className="h-10 w-px bg-border" aria-hidden="true" />
+            <div className="hidden h-10 w-px bg-border sm:block" aria-hidden="true" />
             <Link
               href="/account"
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"

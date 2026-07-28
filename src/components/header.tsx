@@ -5,6 +5,7 @@ import { Logo } from "@/components/icons/logo";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { MobileMenu } from "@/components/mobile-menu";
 
 export async function Header() {
   const [session, t, locale] = await Promise.all([
@@ -15,44 +16,55 @@ export async function Header() {
 
   const homeHref = locale === routing.defaultLocale ? "/" : `/${locale}`;
 
+  const navItems = (
+    <>
+      <Link href="/search" className="text-muted-foreground hover:text-foreground">
+        {t("search")}
+      </Link>
+      {session?.user ? (
+        <>
+          {session.user.username ? (
+            <Link
+              href={`/u/${session.user.username}`}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {t("profile")}
+            </Link>
+          ) : null}
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: homeHref });
+            }}
+          >
+            <Button type="submit" variant="secondary" className="w-full sm:w-auto">
+              {t("signOut")}
+            </Button>
+          </form>
+        </>
+      ) : (
+        <Link href="/login">
+          <Button variant="secondary" className="w-full sm:w-auto">
+            {t("signIn")}
+          </Button>
+        </Link>
+      )}
+      <LocaleSwitcher />
+    </>
+  );
+
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border px-6">
+    <header className="relative flex h-14 items-center justify-between border-b border-border px-6">
       <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
         <Logo />
         Quested
       </Link>
-      <nav className="flex items-center gap-4 text-sm">
-        <Link href="/search" className="text-muted-foreground hover:text-foreground">
-          {t("search")}
-        </Link>
-        {session?.user ? (
-          <>
-            {session.user.username ? (
-              <Link
-                href={`/u/${session.user.username}`}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                {t("profile")}
-              </Link>
-            ) : null}
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: homeHref });
-              }}
-            >
-              <Button type="submit" variant="secondary">
-                {t("signOut")}
-              </Button>
-            </form>
-          </>
-        ) : (
-          <Link href="/login">
-            <Button variant="secondary">{t("signIn")}</Button>
-          </Link>
-        )}
-        <LocaleSwitcher />
-      </nav>
+
+      <nav className="hidden items-center gap-4 text-sm sm:flex">{navItems}</nav>
+
+      <MobileMenu>
+        <div className="flex flex-col items-start gap-4 text-sm">{navItems}</div>
+      </MobileMenu>
     </header>
   );
 }

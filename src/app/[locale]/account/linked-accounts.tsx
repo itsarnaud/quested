@@ -41,22 +41,25 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
       <h2 className="text-sm font-medium">{t("linkedAccountsTitle")}</h2>
       <p className="text-sm text-muted-foreground">{t("linkedAccountsDescription")}</p>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         {PROVIDERS.map(({ id, name, labelKey, Icon }) => {
           const providerLabel = accountsByProvider.get(id);
           const isLinked = accountsByProvider.has(id);
 
           return (
-            <div key={id} className="flex items-center justify-between gap-3">
+            <div
+              key={id}
+              className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between"
+            >
               <div className="flex items-center gap-2 text-sm">
                 <Icon />
-                {isLinked ? (providerLabel ?? name) : t(labelKey)}
+                {isLinked ? (providerLabel ?? name) : name}
               </div>
 
               {isLinked ? (
                 accountsByProvider.size > 1 ? (
-                  <form action={unlink.bind(null, id)}>
-                    <Button type="submit" variant="secondary">
+                  <form action={unlink.bind(null, id)} className="w-full sm:w-auto">
+                    <Button type="submit" variant="secondary" className="w-full sm:w-auto">
                       {t("unlink")}
                     </Button>
                   </form>
@@ -69,8 +72,9 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                     "use server";
                     await signIn(id, { redirectTo: "/account" });
                   }}
+                  className="w-full sm:w-auto"
                 >
-                  <Button type="submit" variant="secondary">
+                  <Button type="submit" variant="secondary" className="w-full sm:w-auto">
                     {t(labelKey)}
                   </Button>
                 </form>
