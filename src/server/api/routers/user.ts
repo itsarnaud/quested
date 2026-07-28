@@ -94,6 +94,41 @@ export const userRouter = createTRPCRouter({
     return users.map((u) => ({ ...u, isFollowing: false, mutualCount: mutualCountById.get(u.id) ?? 0 }));
   }),
 
+  compareTaste: protectedProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const target = await ctx.prisma.user.findUnique({
+        where: { username: input.username },
+        select: { id: true },
+      });
+      if (!target) throw new TRPCError({ code: "NOT_FOUND" });
+      if (target.id === ctx.session.user.id) return null;
+
+      const [myLogs, theirLogs] = await Promise.all([
+        ctx.prisma.log.findMany({ where: { userId: ctx.session.user.id }, select: { gameId: true, rating: true } }),
+        ctx.prisma.log.findMany({ where: { userId: target.id }, select: { gameId: true, rating: true } }),
+      ]);
+
+      const myByGame = new Map(myLogs.map((l) => [l.gameId, l.rating]));
+      const theirByGame = new Map(theirLogs.map((l) => [l.gameId, l.rating]));
+
+      const commonGameIds = [...myByGame.keys()].filter((id) => theirByGame.has(id));
+      if (commonGameIds.length === 0) return { commonCount: 0, similarity: null };
+
+      const bothRated = commonGameIds
+        .map((id) => ({ mine: myByGame.get(id), theirs: theirByGame.get(id) }))
+        .filter((r): r is { mine: number; theirs: number } => r.mine != null && r.theirs != null);
+
+      let similarity: number | null = null;
+      if (bothRated.length > 0) {
+        const avgDiff =
+          bothRated.reduce((sum, r) => sum + Math.abs(r.mine - r.theirs), 0) / bothRated.length;
+        similarity = Math.round(Math.max(0, 100 - avgDiff * 10));
+      }
+
+      return { commonCount: commonGameIds.length, similarity };
+    }),
+
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findUniqueOrThrow({
       where: { id: ctx.session.user.id },

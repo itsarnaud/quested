@@ -79,7 +79,9 @@
     "favoritesRemove": "Retirer",
     "favoritesCancel": "Annuler",
     "favoritesFilterPlaceholder": "Filtrer tes jeux notés…",
-    "favoritesNoCandidates": "Note un jeu pour pouvoir le mettre en favori."
+    "favoritesNoCandidates": "Note un jeu pour pouvoir le mettre en favori.",
+    "tasteCommon": "{count, plural, one {# jeu en commun} other {# jeux en commun}}",
+    "tasteSimilarity": "{percent}% de goûts similaires"
   },
   "Follow": {
     "follow": "Suivre",

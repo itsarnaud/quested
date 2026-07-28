@@ -12,6 +12,7 @@ import { LikeButton } from "@/components/like-button";
 import { FollowSection } from "@/app/[locale]/u/[username]/follow-section";
 import { ProfileTabs } from "@/app/[locale]/u/[username]/profile-tabs";
 import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games-section";
+import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 
@@ -294,6 +295,8 @@ export default async function ProfilePage({ params }: PageProps) {
         isLoggedIn={Boolean(session?.user)}
         isOwnProfile={isOwnProfile}
       />
+
+      {!isOwnProfile && session?.user ? <TasteComparison username={username} /> : null}
 
       <FavoriteGamesSection
         initialFavorites={favoriteGames}

@@ -79,7 +79,9 @@
     "favoritesRemove": "Remove",
     "favoritesCancel": "Cancel",
     "favoritesFilterPlaceholder": "Filter your rated games…",
-    "favoritesNoCandidates": "Rate a game to be able to feature it here."
+    "favoritesNoCandidates": "Rate a game to be able to feature it here.",
+    "tasteCommon": "{count, plural, one {# game in common} other {# games in common}}",
+    "tasteSimilarity": "{percent}% similar taste"
   },
   "Follow": {
     "follow": "Follow",
