@@ -80,7 +80,30 @@
     "startedFollowing": "started following you",
     "empty": "No notifications yet."
   },
+  "About": {
+    "title": "About",
+    "sections": [
+      {
+        "heading": "Why Quested",
+        "body": "I always wanted to make a site a bit like Letterboxd, but I've been playing video games since I was a kid, so I wanted to make it for games instead of movies."
+      },
+      {
+        "heading": "Free, no ads, open source",
+        "body": "It matters to me that this kind of app stays accessible to everyone. Quested is free, ad-free, and the source code is entirely public on GitHub. It will stay that way."
+      },
+      {
+        "heading": "Who I am",
+        "body": "I'm Arnaud, a French fullstack developer. Quested is a personal project I build on my free time. You can check out my other projects at arnaudroyer.fr."
+      },
+      {
+        "heading": "Contact",
+        "body": "Question, bug, idea? Reach me at contact@arnaudroyer.fr."
+      }
+    ]
+  },
   "Footer": {
+    "about": "About",
+    "github": "Source code",
     "legal": "Legal notice",
     "privacy": "Privacy"
   },
