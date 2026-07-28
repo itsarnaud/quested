@@ -53,7 +53,8 @@
     "follow": "Suivre",
     "unfollow": "Ne plus suivre",
     "followers": "abonnés",
-    "following": "abonnements"
+    "following": "abonnements",
+    "signInToFollow": "Connecte-toi pour suivre"
   },
   "Footer": {
     "legal": "Mentions légales",

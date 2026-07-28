@@ -53,7 +53,8 @@
     "follow": "Follow",
     "unfollow": "Unfollow",
     "followers": "followers",
-    "following": "following"
+    "following": "following",
+    "signInToFollow": "Sign in to follow"
   },
   "Footer": {
     "legal": "Legal notice",

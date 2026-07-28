@@ -6,6 +6,13 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { GameCard } from "@/components/game-card";
 
+function getPopularGames() {
+  return prisma.game.findMany({
+    orderBy: { logs: { _count: "desc" } },
+    take: 12,
+  });
+}
+
 export default async function Home() {
   const session = await auth();
 
@@ -17,11 +24,11 @@ export default async function Home() {
 }
 
 async function MarketingHome() {
-  const t = await getTranslations("Home");
+  const [t, popularGames] = await Promise.all([getTranslations("Home"), getPopularGames()]);
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6">
-      <div className="flex w-full max-w-md flex-col gap-6 text-center">
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-12 px-6 py-16">
+      <div className="flex flex-col items-center gap-6 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">Quested</h1>
         <p className="text-muted-foreground">{t("tagline")}</p>
         <div className="flex justify-center gap-3">
@@ -33,6 +40,23 @@ async function MarketingHome() {
           </Link>
         </div>
       </div>
+
+      {popularGames.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">{t("popularTitle")}</h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+            {popularGames.map((game) => (
+              <GameCard
+                key={game.id}
+                slug={game.slug}
+                title={game.title}
+                releaseYear={game.releaseYear}
+                coverUrl={game.coverUrl}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -56,10 +80,7 @@ async function Feed({ userId }: { userId: string }) {
           take: 20,
         })
       : Promise.resolve([]),
-    prisma.game.findMany({
-      orderBy: { logs: { _count: "desc" } },
-      take: 12,
-    }),
+    getPopularGames(),
     prisma.game.findMany({
       where: { releaseYear: { not: null } },
       orderBy: { releaseYear: "desc" },

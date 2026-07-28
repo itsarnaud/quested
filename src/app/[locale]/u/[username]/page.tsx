@@ -91,7 +91,11 @@ export default async function ProfilePage({ params }: PageProps) {
         ) : null}
       </div>
 
-      <FollowSection username={username} showButton={Boolean(session?.user) && !isOwnProfile} />
+      <FollowSection
+        username={username}
+        isLoggedIn={Boolean(session?.user)}
+        isOwnProfile={isOwnProfile}
+      />
 
       {logsByStatus.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("noGames")}</p>

@@ -3,13 +3,16 @@
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 
 export function FollowSection({
   username,
-  showButton,
+  isLoggedIn,
+  isOwnProfile,
 }: {
   username: string;
-  showButton: boolean;
+  isLoggedIn: boolean;
+  isOwnProfile: boolean;
 }) {
   const t = useTranslations("Follow");
   const utils = trpc.useUtils();
@@ -28,7 +31,8 @@ export function FollowSection({
           <strong className="text-foreground">{data?.followingCount ?? 0}</strong> {t("following")}
         </span>
       </div>
-      {showButton ? (
+
+      {isOwnProfile ? null : isLoggedIn ? (
         <Button
           variant={data?.isFollowing ? "secondary" : "primary"}
           onClick={() => toggle.mutate({ username })}
@@ -36,7 +40,11 @@ export function FollowSection({
         >
           {data?.isFollowing ? t("unfollow") : t("follow")}
         </Button>
-      ) : null}
+      ) : (
+        <Link href="/login">
+          <Button variant="secondary">{t("signInToFollow")}</Button>
+        </Link>
+      )}
     </div>
   );
 }
