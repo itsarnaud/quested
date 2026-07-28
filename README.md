@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quested
 
-## Getting Started
+A Letterboxd-style tracker for video games. Search for a game, log it (backlog, playing, completed, dropped or wishlist), rate it out of 10, follow other players and see their activity on your home feed.
 
-First, run the development server:
+Personal, non-commercial project. Live at [quested.cc](https://quested.cc).
+
+## Features
+
+- **Search**: look up a game and it gets imported automatically from IGDB and RAWG. If it's already in the database (even approximately, matched by title and year), no duplicate is created, just a link to the extra source.
+- **Logging**: status, rating out of 10, and personal notes on a dedicated game page.
+- **Public profiles**: every account has a `/u/username` page listing logged games grouped by status, with a customizable bio and avatar.
+- **Follows**: follow other players, see their activity on your home feed, alongside popular games and recent additions to the catalog.
+- **Account**: sign in with Google or Discord, link both to the same account, export your data, or delete your account.
+- **Languages**: French by default, English available at `/en`.
+
+## Tech stack
+
+- [Next.js](https://nextjs.org) (App Router) + TypeScript
+- [Prisma](https://www.prisma.io) + Postgres ([Neon](https://neon.tech) in production, Docker locally)
+- [tRPC](https://trpc.io) for the API layer
+- [Auth.js](https://authjs.dev) (Google + Discord)
+- [next-intl](https://next-intl.dev) for French/English
+- [Tailwind CSS](https://tailwindcss.com)
+- [Vercel Blob](https://vercel.com/docs/vercel-blob) for avatars, hosted on Vercel
+- [IGDB](https://api-docs.igdb.com) and [RAWG](https://rawg.io/apidocs) as game data sources
+
+## Running locally
+
+### Requirements
+
+- Node.js 20+
+- Docker (for a local Postgres instance)
+
+### Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Database
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Start a local Postgres instance with Docker:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+docker run -d --name quested-db \
+  -e POSTGRES_USER=quested \
+  -e POSTGRES_PASSWORD=quested \
+  -e POSTGRES_DB=quested \
+  -p 5433:5432 \
+  postgres:16-alpine
+```
 
-## Learn More
+### Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.example` to `.env` and fill in the values:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cp .env.example .env
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `DATABASE_URL`: `postgresql://quested:quested@localhost:5433/quested` if you used the Docker command above
+- `AUTH_SECRET`: any random value, generate one with `openssl rand -base64 33`
+- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`: create these on [Google Cloud Console](https://console.cloud.google.com), redirect URI `http://localhost:3000/api/auth/callback/google`
+- `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET`: create these on the [Discord Developer Portal](https://discord.com/developers/applications), redirect URI `http://localhost:3000/api/auth/callback/discord`
+- `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET`: requires a Twitch developer account, create one at [dev.twitch.tv/console](https://dev.twitch.tv/console)
+- `RAWG_API_KEY`: get one at [rawg.io/apidocs](https://rawg.io/apidocs)
+- `BLOB_STORE_ID` / `BLOB_READ_WRITE_TOKEN`: create a Vercel Blob store **in Public mode** (Storage → Create Database → Blob), otherwise avatar uploads will fail
 
-## Deploy on Vercel
+### Migrations and startup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npx prisma migrate dev
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The site runs at [http://localhost:3000](http://localhost:3000).
+
+## Deployment
+
+The project is built for Vercel + Neon:
+
+- The Vercel function region should match the Neon database region (Paris/Frankfurt in this case), otherwise every DB request makes an unnecessary transatlantic round trip.
+- Migrations don't run automatically at build time (Vercel's network to Neon proved unreliable for this) — after any schema change, run `npx prisma migrate deploy` manually against the production database.
