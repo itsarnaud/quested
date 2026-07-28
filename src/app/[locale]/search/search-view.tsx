@@ -18,10 +18,15 @@ export function SearchView() {
     return () => clearTimeout(id);
   }, [query]);
 
+  const isSearching = debouncedQuery.trim().length > 1;
+
   const { data: games, isFetching } = trpc.game.search.useQuery(
     { query: debouncedQuery },
-    { enabled: debouncedQuery.trim().length > 1 },
+    { enabled: isSearching },
   );
+  const { data: popularGames } = trpc.game.popular.useQuery(undefined, { enabled: !isSearching });
+
+  const displayedGames = isSearching ? games : popularGames;
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 py-10">
@@ -56,8 +61,12 @@ export function SearchView() {
 
       {isFetching ? <p className="text-sm text-muted-foreground">{t("searching")}</p> : null}
 
+      {!isSearching && popularGames && popularGames.length > 0 ? (
+        <h2 className="text-sm font-medium text-muted-foreground">{t("popularTitle")}</h2>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
-        {games?.map((game) => (
+        {displayedGames?.map((game) => (
           <GameCard
             key={game.id}
             slug={game.slug}

@@ -30,7 +30,8 @@
     "title": "Search",
     "description": "Search for a game to track, rate and add to your library.",
     "placeholder": "Search for a game…",
-    "searching": "Searching…"
+    "searching": "Searching…",
+    "popularTitle": "Popular games"
   },
   "SearchHistory": {
     "recent": "Recent searches",
@@ -41,7 +42,10 @@
     "description": "Search for a player by name or username to follow them.",
     "placeholder": "Search for a player…",
     "searching": "Searching…",
-    "noResults": "No players found."
+    "noResults": "No players found.",
+    "suggestionsTitle": "Suggestions",
+    "recentTitle": "New players",
+    "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}"
   },
   "GamePage": {
     "signInPrompt": "Sign in to track this game.",

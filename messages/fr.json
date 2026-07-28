@@ -30,7 +30,8 @@
     "title": "Recherche",
     "description": "Recherche un jeu à suivre, noter et ajouter à ta bibliothèque.",
     "placeholder": "Rechercher un jeu…",
-    "searching": "Recherche en cours…"
+    "searching": "Recherche en cours…",
+    "popularTitle": "Jeux populaires"
   },
   "SearchHistory": {
     "recent": "Recherches récentes",
@@ -41,7 +42,10 @@
     "description": "Recherche un joueur par nom ou pseudo pour le suivre.",
     "placeholder": "Rechercher un joueur…",
     "searching": "Recherche en cours…",
-    "noResults": "Aucun joueur trouvé."
+    "noResults": "Aucun joueur trouvé.",
+    "suggestionsTitle": "Suggestions",
+    "recentTitle": "Nouveaux joueurs",
+    "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}"
   },
   "GamePage": {
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",

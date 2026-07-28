@@ -9,9 +9,61 @@ import { Button } from "@/components/ui/button";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
 import { useSearchHistory } from "@/lib/use-search-history";
 
+type Person = {
+  id: string;
+  username: string | null;
+  name: string | null;
+  image: string | null;
+  isFollowing: boolean;
+};
+
+function PersonRow({
+  user,
+  subtitle,
+  onNavigate,
+  onToggleFollow,
+  isTogglePending,
+}: {
+  user: Person;
+  subtitle: string;
+  onNavigate?: () => void;
+  onToggleFollow: () => void;
+  isTogglePending: boolean;
+}) {
+  const tFollow = useTranslations("Follow");
+
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
+      <Link
+        href={`/u/${user.username}`}
+        className="flex min-w-0 items-center gap-3"
+        onClick={onNavigate}
+      >
+        <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+          {user.image ? (
+            <Image
+              src={user.image}
+              alt={user.name ?? user.username ?? ""}
+              fill
+              unoptimized
+              className="object-cover"
+            />
+          ) : null}
+        </div>
+        <div className="min-w-0 flex flex-col">
+          <span className="truncate text-sm font-medium">{user.name ?? user.username}</span>
+          <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
+        </div>
+      </Link>
+      <Button variant={user.isFollowing ? "secondary" : "primary"} onClick={onToggleFollow} disabled={isTogglePending}>
+        {user.isFollowing ? tFollow("unfollow") : tFollow("follow")}
+      </Button>
+    </div>
+  );
+}
+
 export function PeopleView() {
   const t = useTranslations("People");
-  const tFollow = useTranslations("Follow");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const history = useSearchHistory("people");
@@ -21,14 +73,30 @@ export function PeopleView() {
     return () => clearTimeout(id);
   }, [query]);
 
+  const isSearching = debouncedQuery.trim().length > 1;
+
   const utils = trpc.useUtils();
   const { data: users, isFetching } = trpc.user.search.useQuery(
     { query: debouncedQuery },
-    { enabled: debouncedQuery.trim().length > 1 },
+    { enabled: isSearching },
   );
-  const toggle = trpc.follow.toggle.useMutation({
-    onSuccess: () => utils.user.search.invalidate({ query: debouncedQuery }),
+  const { data: suggestions } = trpc.user.suggestions.useQuery(undefined, { enabled: !isSearching });
+  const { data: recentUsers } = trpc.user.recent.useQuery(undefined, {
+    enabled: !isSearching && (suggestions?.length ?? 0) === 0,
   });
+  const toggle = trpc.follow.toggle.useMutation({
+    onSuccess: () => {
+      utils.user.search.invalidate();
+      utils.user.suggestions.invalidate();
+      utils.user.recent.invalidate();
+    },
+  });
+
+  const discovery = suggestions && suggestions.length > 0
+    ? { title: t("suggestionsTitle"), people: suggestions, mutual: true }
+    : recentUsers && recentUsers.length > 0
+      ? { title: t("recentTitle"), people: recentUsers, mutual: false }
+      : null;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10">
@@ -63,47 +131,43 @@ export function PeopleView() {
 
       {isFetching ? <p className="text-sm text-muted-foreground">{t("searching")}</p> : null}
 
-      {!isFetching && users && users.length === 0 && debouncedQuery.trim().length > 1 ? (
+      {isSearching && !isFetching && users && users.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("noResults")}</p>
       ) : null}
 
-      <div className="flex flex-col gap-2">
-        {users?.map((user) => (
-          <div
-            key={user.id}
-            className="flex items-center justify-between gap-3 rounded-md border border-border p-3"
-          >
-            <Link
-              href={`/u/${user.username}`}
-              className="flex min-w-0 items-center gap-3"
-              onClick={() => query.trim().length > 1 && history.commit(query.trim())}
-            >
-              <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-                {user.image ? (
-                  <Image
-                    src={user.image}
-                    alt={user.name ?? user.username ?? ""}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                ) : null}
-              </div>
-              <div className="min-w-0 flex flex-col">
-                <span className="truncate text-sm font-medium">{user.name ?? user.username}</span>
-                <span className="truncate text-xs text-muted-foreground">@{user.username}</span>
-              </div>
-            </Link>
-            <Button
-              variant={user.isFollowing ? "secondary" : "primary"}
-              onClick={() => user.username && toggle.mutate({ username: user.username })}
-              disabled={toggle.isPending}
-            >
-              {user.isFollowing ? tFollow("unfollow") : tFollow("follow")}
-            </Button>
+      {isSearching ? (
+        <div className="flex flex-col gap-2">
+          {users?.map((user) => (
+            <PersonRow
+              key={user.id}
+              user={user}
+              subtitle={`@${user.username}`}
+              onNavigate={() => query.trim().length > 1 && history.commit(query.trim())}
+              onToggleFollow={() => user.username && toggle.mutate({ username: user.username })}
+              isTogglePending={toggle.isPending}
+            />
+          ))}
+        </div>
+      ) : discovery ? (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">{discovery.title}</h2>
+          <div className="flex flex-col gap-2">
+            {discovery.people.map((user) => (
+              <PersonRow
+                key={user.id}
+                user={user}
+                subtitle={
+                  discovery.mutual && "mutualCount" in user
+                    ? `${user.mutualCount} ${t("mutualFollows", { count: Number(user.mutualCount) })}`
+                    : `@${user.username}`
+                }
+                onToggleFollow={() => user.username && toggle.mutate({ username: user.username })}
+                isTogglePending={toggle.isPending}
+              />
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 }

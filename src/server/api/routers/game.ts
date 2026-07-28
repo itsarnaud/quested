@@ -44,4 +44,11 @@ export const gameRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return ctx.prisma.game.findUnique({ where: { slug: input.slug } });
     }),
+
+  popular: publicProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.game.findMany({
+      orderBy: { logs: { _count: "desc" } },
+      take: 12,
+    });
+  }),
 });
