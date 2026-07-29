@@ -42,7 +42,8 @@
     "popularTitle": "Jeux populaires",
     "newTitle": "Nouveaux jeux",
     "recommendedTitle": "Recommandé pour toi",
-    "recommendedBy": "{count, plural, one {# abonnement l'a aimé} other {# abonnements l'ont aimé}}"
+    "recommendedBecauseGenre": "Parce que tu aimes le genre {genre}",
+    "recommendedByFollows": "Aimé par tes abonnements"
   },
   "Login": {
     "title": "Se connecter",

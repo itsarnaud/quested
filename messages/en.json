@@ -42,7 +42,8 @@
     "popularTitle": "Popular games",
     "newTitle": "New games",
     "recommendedTitle": "Recommended for you",
-    "recommendedBy": "{count, plural, one {liked by # follow} other {liked by # follows}}"
+    "recommendedBecauseGenre": "Because you like {genre}",
+    "recommendedByFollows": "Liked by people you follow"
   },
   "Login": {
     "title": "Sign in",
