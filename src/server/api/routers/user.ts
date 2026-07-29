@@ -36,7 +36,7 @@ export const userRouter = createTRPCRouter({
             { name: { contains: input.query, mode: "insensitive" } },
           ],
         },
-        select: { id: true, username: true, name: true, image: true, bio: true },
+        select: { id: true, username: true, name: true, image: true, bio: true, badges: true },
         take: 20,
       });
 
@@ -52,7 +52,7 @@ export const userRouter = createTRPCRouter({
         id: ctx.session?.user ? { not: ctx.session.user.id } : undefined,
       },
       orderBy: { createdAt: "desc" },
-      select: { id: true, username: true, name: true, image: true, bio: true },
+      select: { id: true, username: true, name: true, image: true, bio: true, badges: true },
       take: 12,
     });
 
@@ -87,7 +87,7 @@ export const userRouter = createTRPCRouter({
     const mutualCountById = new Map(mutuals.map((m) => [m.followingId, m._count.followingId]));
     const users = await ctx.prisma.user.findMany({
       where: { id: { in: [...mutualCountById.keys()] }, username: { not: null } },
-      select: { id: true, username: true, name: true, image: true, bio: true },
+      select: { id: true, username: true, name: true, image: true, bio: true, badges: true },
     });
     users.sort(
       (a, b) => (mutualCountById.get(b.id) ?? 0) - (mutualCountById.get(a.id) ?? 0),

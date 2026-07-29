@@ -1,10 +1,12 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import type { Badge } from "@/generated/prisma/client";
 import { BadgeIcon } from "@/components/badge-icons";
 
-export async function UserBadges({ badges }: { badges: Badge[] }) {
+export function UserBadgesClient({ badges }: { badges: Badge[] }) {
+  const t = useTranslations("Badges");
   if (badges.length === 0) return null;
-  const t = await getTranslations("Badges");
 
   return (
     <span className="inline-flex items-center gap-1">

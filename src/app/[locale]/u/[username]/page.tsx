@@ -81,7 +81,7 @@ export default async function ProfilePage({ params }: PageProps) {
       log: {
         include: {
           game: true,
-          user: { select: { username: true } },
+          user: { select: { username: true, name: true, badges: true } },
           likes: { select: { userId: true } },
         },
       },
@@ -192,10 +192,11 @@ export default async function ProfilePage({ params }: PageProps) {
             <div key={log.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
               <div className="flex items-center justify-between gap-3">
                 <Link href={`/u/${log.user.username}`} className="text-sm hover:underline">
-                  <span className="font-medium">@{log.user.username}</span>
+                  <span className="font-medium">{log.user.name ?? log.user.username}</span>{" "}
+                  <UserBadges badges={log.user.badges} />
                   <span className="text-muted-foreground">
                     {" "}
-                    · {tStatus(log.status)}
+                    @{log.user.username} · {tStatus(log.status)}
                     {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
                   </span>
                 </Link>

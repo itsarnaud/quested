@@ -147,10 +147,10 @@ async function Feed({ userId }: { userId: string }) {
                         />
                       ) : null}
                     </div>
-                    <span className="truncate font-medium">@{log.user.username}</span>
+                    <span className="truncate font-medium">{log.user.name ?? log.user.username}</span>
                     <UserBadges badges={log.user.badges} />
                     <span className="shrink-0 text-muted-foreground">
-                      · {tStatus(log.status)}
+                      @{log.user.username} · {tStatus(log.status)}
                       {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
                     </span>
                   </Link>

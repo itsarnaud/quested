@@ -8,12 +8,15 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
 import { useSearchHistory } from "@/lib/use-search-history";
+import { UserBadgesClient } from "@/components/user-badges-client";
+import type { Badge } from "@/generated/prisma/client";
 
 type Person = {
   id: string;
   username: string | null;
   name: string | null;
   image: string | null;
+  badges: Badge[];
   isFollowing: boolean;
 };
 
@@ -51,7 +54,10 @@ function PersonRow({
           ) : null}
         </div>
         <div className="min-w-0 flex flex-col">
-          <span className="truncate text-sm font-medium">{user.name ?? user.username}</span>
+          <span className="flex items-center gap-1 truncate text-sm font-medium">
+            {user.name ?? user.username}
+            <UserBadgesClient badges={user.badges} />
+          </span>
           <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
         </div>
       </Link>
