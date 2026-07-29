@@ -1,0 +1,39 @@
+import { GhostBody } from "@/components/icons/ghost-body";
+
+export function LostIllustration(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 120 100" width="140" height="110" shapeRendering="crispEdges" {...props}>
+      {/* Sparkles, floating around the lost little guy */}
+      <g fill="currentColor" opacity="0.35">
+        <rect x="11" y="11" width="6" height="6" transform="rotate(45 14 14)" />
+        <rect x="97" y="57" width="8" height="8" transform="rotate(45 101 61)" />
+        <rect x="9" y="69" width="5" height="5" transform="rotate(45 11.5 71.5)" />
+      </g>
+
+      {/* Question mark, pixel style */}
+      <g fill="currentColor" opacity="0.55">
+        <rect x="84" y="6" width="6" height="6" />
+        <rect x="90" y="6" width="6" height="6" />
+        <rect x="96" y="6" width="6" height="6" />
+        <rect x="78" y="12" width="6" height="6" />
+        <rect x="102" y="12" width="6" height="6" />
+        <rect x="78" y="18" width="6" height="6" />
+        <rect x="102" y="18" width="6" height="6" />
+        <rect x="90" y="24" width="6" height="6" />
+        <rect x="96" y="24" width="6" height="6" />
+        <rect x="84" y="30" width="6" height="6" />
+        <rect x="90" y="30" width="6" height="6" />
+        <rect x="84" y="42" width="6" height="6" />
+        <rect x="90" y="42" width="6" height="6" />
+      </g>
+
+      <GhostBody />
+
+      {/* Eyes */}
+      <g fill="var(--color-background)">
+        <rect x="36" y="46" width="8" height="8" />
+        <rect x="60" y="46" width="8" height="8" />
+      </g>
+    </svg>
+  );
+}

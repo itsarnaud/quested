@@ -2,6 +2,19 @@
   "Metadata": {
     "description": "Track, rate and share the games you play."
   },
+  "NotFound": {
+    "eyebrow": "404 error",
+    "title": "Page not found",
+    "description": "This page doesn't exist or has been moved.",
+    "backHome": "Back to home"
+  },
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "description": "An error happened on our end. Try again, or head back home.",
+    "digestLabel": "Reference: {digest}",
+    "retry": "Try again",
+    "backHome": "Back to home"
+  },
   "InstallPrompt": {
     "title": "Install Quested",
     "description": "Add Quested to your home screen for one-tap access, just like a real app.",

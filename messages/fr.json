@@ -2,6 +2,19 @@
   "Metadata": {
     "description": "Suis, note et partage les jeux auxquels tu joues."
   },
+  "NotFound": {
+    "eyebrow": "Erreur 404",
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
+  },
+  "ErrorPage": {
+    "title": "Une erreur est survenue",
+    "description": "Quelque chose s'est mal passé de notre côté. Réessaie, ou reviens à l'accueil.",
+    "digestLabel": "Référence : {digest}",
+    "retry": "Réessayer",
+    "backHome": "Retour à l'accueil"
+  },
   "InstallPrompt": {
     "title": "Installe Quested",
     "description": "Ajoute Quested à ton écran d'accueil pour y accéder en un tap, comme une vraie application.",
