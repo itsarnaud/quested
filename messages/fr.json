@@ -2,6 +2,14 @@
   "Metadata": {
     "description": "Suis, note et partage les jeux auxquels tu joues."
   },
+  "InstallPrompt": {
+    "title": "Installe Quested",
+    "description": "Ajoute Quested à ton écran d'accueil pour y accéder en un tap, comme une vraie application.",
+    "iosDescription": "Appuie sur Partager, puis \"Sur l'écran d'accueil\" pour l'installer.",
+    "install": "Installer",
+    "dismiss": "Non merci",
+    "gotIt": "Compris"
+  },
   "Header": {
     "home": "Accueil",
     "search": "Recherche",

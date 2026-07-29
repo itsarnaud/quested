@@ -2,6 +2,14 @@
   "Metadata": {
     "description": "Track, rate and share the games you play."
   },
+  "InstallPrompt": {
+    "title": "Install Quested",
+    "description": "Add Quested to your home screen for one-tap access, just like a real app.",
+    "iosDescription": "Tap Share, then \"Add to Home Screen\" to install it.",
+    "install": "Install",
+    "dismiss": "No thanks",
+    "gotIt": "Got it"
+  },
   "Header": {
     "home": "Home",
     "search": "Search",
