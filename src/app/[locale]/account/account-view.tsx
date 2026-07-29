@@ -28,6 +28,12 @@ export function AccountView() {
 
   return (
     <div className="flex flex-col gap-10">
+      <div className="sm:hidden">
+        <Button variant="secondary" className="w-fit" onClick={() => signOut({ callbackUrl: "/" })}>
+          {t("signOut")}
+        </Button>
+      </div>
+
       <div className="flex flex-col gap-2">
         <h2 className="text-sm font-medium">{t("exportTitle")}</h2>
         <p className="text-sm text-muted-foreground">{t("exportDescription")}</p>

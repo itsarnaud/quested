@@ -3,8 +3,10 @@
     "description": "Track, rate and share the games you play."
   },
   "Header": {
+    "home": "Home",
     "search": "Search",
     "people": "Players",
+    "notifications": "Notifications",
     "profile": "Profile",
     "account": "Account",
     "signOut": "Sign out",
@@ -165,6 +167,7 @@
   },
   "Account": {
     "title": "My account",
+    "signOut": "Sign out",
     "notificationsTitle": "Email notifications",
     "notificationsDescription": "Off by default, turn them on if you want to be notified even when you're not on the site.",
     "notifyOnFollow": "Email me when someone follows me",

@@ -1,0 +1,81 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { Link } from "@/i18n/navigation";
+
+type PageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Notifications" });
+  return { title: t("title"), robots: { index: false, follow: false } };
+}
+
+export default async function NotificationsPage({ params }: PageProps) {
+  const { locale } = await params;
+  const session = await auth();
+  if (!session?.user) {
+    redirect({ href: "/login", locale });
+    return;
+  }
+
+  const t = await getTranslations("Notifications");
+
+  const notifications = await prisma.notification.findMany({
+    where: { userId: session.user.id },
+    include: {
+      actor: { select: { username: true, name: true, image: true } },
+      log: { select: { game: { select: { slug: true, title: true } } } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+
+  await prisma.notification.updateMany({
+    where: { userId: session.user.id, read: false },
+    data: { read: true },
+  });
+
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10">
+      <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+
+      {notifications.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+      ) : (
+        <div className="flex flex-col divide-y divide-border">
+          {notifications.map((n) => (
+            <Link
+              key={n.id}
+              href={n.type === "LIKE" && n.log ? `/games/${n.log.game.slug}` : `/u/${n.actor.username}`}
+              className="flex items-center gap-3 py-3 hover:bg-muted"
+            >
+              <div className="relative size-9 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+                {n.actor.image ? (
+                  <Image
+                    src={n.actor.image}
+                    alt={n.actor.username ?? ""}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
+                ) : null}
+              </div>
+              <span className="text-sm">
+                <span className="font-medium">@{n.actor.username}</span>{" "}
+                {n.type === "LIKE" && n.log
+                  ? t("liked", { game: n.log.game.title })
+                  : t("startedFollowing")}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -70,7 +70,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col pb-14 sm:pb-0">
         <NextIntlClientProvider messages={messages}>
           <TRPCProvider>
             <Header />
