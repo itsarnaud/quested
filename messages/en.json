@@ -138,7 +138,11 @@
     "unfollow": "Unfollow",
     "followers": "followers",
     "following": "following",
-    "signInToFollow": "Sign in to follow"
+    "signInToFollow": "Sign in to follow",
+    "backToProfile": "Back to profile",
+    "noFollowers": "No followers yet.",
+    "noFollowing": "Not following anyone yet.",
+    "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}"
   },
   "Notifications": {
     "title": "Notifications",

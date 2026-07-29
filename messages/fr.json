@@ -138,7 +138,11 @@
     "unfollow": "Ne plus suivre",
     "followers": "abonnés",
     "following": "abonnements",
-    "signInToFollow": "Connecte-toi pour suivre"
+    "signInToFollow": "Connecte-toi pour suivre",
+    "backToProfile": "Retour au profil",
+    "noFollowers": "Aucun abonné pour l'instant.",
+    "noFollowing": "Ne suit personne pour l'instant.",
+    "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}"
   },
   "Notifications": {
     "title": "Notifications",

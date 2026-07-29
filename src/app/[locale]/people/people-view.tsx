@@ -1,72 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
 import { useSearchHistory } from "@/lib/use-search-history";
-import { UserBadgesClient } from "@/components/user-badges-client";
-import type { Badge } from "@/generated/prisma/client";
-
-type Person = {
-  id: string;
-  username: string | null;
-  name: string | null;
-  image: string | null;
-  badges: Badge[];
-  isFollowing: boolean;
-};
-
-function PersonRow({
-  user,
-  subtitle,
-  onNavigate,
-  onToggleFollow,
-  isTogglePending,
-}: {
-  user: Person;
-  subtitle: string;
-  onNavigate?: () => void;
-  onToggleFollow: () => void;
-  isTogglePending: boolean;
-}) {
-  const tFollow = useTranslations("Follow");
-
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
-      <Link
-        href={`/u/${user.username}`}
-        className="flex min-w-0 items-center gap-3"
-        onClick={onNavigate}
-      >
-        <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-          {user.image ? (
-            <Image
-              src={user.image}
-              alt={user.name ?? user.username ?? ""}
-              fill
-              unoptimized
-              className="object-cover"
-            />
-          ) : null}
-        </div>
-        <div className="min-w-0 flex flex-col">
-          <span className="flex min-w-0 items-center gap-1 text-sm font-medium">
-            <span className="truncate">{user.name ?? user.username}</span>
-            <UserBadgesClient badges={user.badges} />
-          </span>
-          <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
-        </div>
-      </Link>
-      <Button variant={user.isFollowing ? "secondary" : "primary"} onClick={onToggleFollow} disabled={isTogglePending}>
-        {user.isFollowing ? tFollow("unfollow") : tFollow("follow")}
-      </Button>
-    </div>
-  );
-}
+import { PersonRow } from "@/components/person-row";
 
 export function PeopleView() {
   const t = useTranslations("People");

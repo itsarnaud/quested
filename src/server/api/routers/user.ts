@@ -6,7 +6,7 @@ import { standardRatelimit } from "@/lib/redis";
 import { sendEmail } from "@/lib/mailer";
 import { renderAccountDeletedEmail } from "@/lib/email-templates";
 
-async function withFollowingFlag<T extends { id: string }>(
+export async function withFollowingFlag<T extends { id: string }>(
   sessionUserId: string | undefined,
   users: T[],
 ) {

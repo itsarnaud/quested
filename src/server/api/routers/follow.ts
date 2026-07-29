@@ -4,6 +4,9 @@ import { createTRPCRouter, protectedProcedure, publicProcedure, withRateLimit } 
 import { standardRatelimit } from "@/lib/redis";
 import { sendEmail } from "@/lib/mailer";
 import { renderFollowEmail } from "@/lib/email-templates";
+import { withFollowingFlag } from "@/server/api/routers/user";
+
+const USER_CARD_SELECT = { id: true, username: true, name: true, image: true, badges: true } as const;
 
 export const followRouter = createTRPCRouter({
   toggle: protectedProcedure
@@ -69,5 +72,65 @@ export const followRouter = createTRPCRouter({
         followingCount: target._count.following,
         isFollowing,
       };
+    }),
+
+  list: publicProcedure
+    .input(z.object({ username: z.string(), type: z.enum(["followers", "following"]) }))
+    .query(async ({ ctx, input }) => {
+      const target = await ctx.prisma.user.findUnique({
+        where: { username: input.username },
+        select: { id: true },
+      });
+      if (!target) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const users = await (input.type === "followers"
+        ? ctx.prisma.follow
+            .findMany({
+              where: { followingId: target.id },
+              select: { follower: { select: USER_CARD_SELECT } },
+              orderBy: { createdAt: "desc" },
+            })
+            .then((rows) => rows.map((r) => r.follower))
+        : ctx.prisma.follow
+            .findMany({
+              where: { followerId: target.id },
+              select: { following: { select: USER_CARD_SELECT } },
+              orderBy: { createdAt: "desc" },
+            })
+            .then((rows) => rows.map((r) => r.following)));
+
+      return withFollowingFlag(ctx.session?.user?.id, users);
+    }),
+
+  mutuals: publicProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const viewerId = ctx.session?.user?.id;
+      if (!viewerId) return { count: 0, users: [] };
+
+      const target = await ctx.prisma.user.findUnique({
+        where: { username: input.username },
+        select: { id: true },
+      });
+      if (!target || target.id === viewerId) return { count: 0, users: [] };
+
+      const viewerFollowing = await ctx.prisma.follow.findMany({
+        where: { followerId: viewerId },
+        select: { followingId: true },
+      });
+      const viewerFollowingIds = viewerFollowing.map((f) => f.followingId);
+      if (viewerFollowingIds.length === 0) return { count: 0, users: [] };
+
+      const where = { followingId: target.id, followerId: { in: viewerFollowingIds } };
+      const [count, rows] = await Promise.all([
+        ctx.prisma.follow.count({ where }),
+        ctx.prisma.follow.findMany({
+          where,
+          select: { follower: { select: USER_CARD_SELECT } },
+          take: 3,
+        }),
+      ]);
+
+      return { count, users: rows.map((r) => r.follower) };
     }),
 });
