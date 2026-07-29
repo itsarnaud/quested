@@ -78,7 +78,7 @@ export function InstallPrompt() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-14 z-30 border-t border-border bg-card px-4 py-3 shadow-sm sm:hidden">
+    <div className="fixed inset-x-0 bottom-20 z-30 border-t border-border bg-card px-4 py-3 shadow-sm sm:hidden">
       <div className="flex items-center gap-3">
         <Logo width={32} height={32} className="shrink-0" />
         <div className="flex-1 text-sm">

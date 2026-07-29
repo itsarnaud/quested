@@ -62,13 +62,14 @@ export function MobileTabBar({
             href={href}
             aria-label={label}
             className={cn(
-              "relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-muted-foreground",
+              "relative flex flex-1 flex-col items-center gap-1 py-3 text-muted-foreground",
               isActive && "text-accent",
             )}
           >
-            <Icon className="size-5" />
+            <Icon className="size-7" />
+            <span className="text-[11px] leading-none font-medium">{label}</span>
             {showDot ? (
-              <span className="absolute right-[calc(50%-14px)] top-1.5 size-1.5 rounded-full bg-accent" />
+              <span className="absolute right-[calc(50%-18px)] top-2 size-1.5 rounded-full bg-accent" />
             ) : null}
           </Link>
         );
