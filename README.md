@@ -68,6 +68,7 @@ cp .env.example .env
 - `RAWG_API_KEY`: get one at [rawg.io/apidocs](https://rawg.io/apidocs)
 - `BLOB_STORE_ID` / `BLOB_READ_WRITE_TOKEN`: create a Vercel Blob store **in Public mode** (Storage → Create Database → Blob), otherwise avatar uploads will fail
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`: create a free database at [upstash.com](https://upstash.com), used for rate limiting
+- `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `ALERT_EMAIL_TO`: optional, only needed to receive an email when a server error happens in production (see `src/instrumentation.ts`). Leave empty to disable
 
 ### Migrations and startup
 
