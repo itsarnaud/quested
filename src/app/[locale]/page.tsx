@@ -7,19 +7,23 @@ import { Button } from "@/components/ui/button";
 import { GameCard } from "@/components/game-card";
 import { LikeButton } from "@/components/like-button";
 import { UserBadges } from "@/components/user-badges";
+import { Tabs, TabPanel } from "@/components/tabs";
 import type { Game } from "@/generated/prisma/client";
+
+const DISCOVERY_GAMES_LIMIT = 24;
 
 function getPopularGames() {
   return prisma.game.findMany({
     orderBy: { logs: { _count: "desc" } },
-    take: 12,
+    take: DISCOVERY_GAMES_LIMIT,
   });
 }
 
 const RECOMMENDATION_RATING_THRESHOLD = 7;
-const GAMES_PER_SECTION = 6;
+const GAMES_PER_SECTION = 12;
 const MAX_GENRE_SECTIONS = 3;
-const CANDIDATE_POOL_SIZE = 100;
+const CANDIDATE_POOL_SIZE = 150;
+const ACTIVITY_LIMIT = 20;
 
 // Weights for how much each shared taxonomy field counts toward a content
 // match — genres are the strongest taste signal, developers next. Platform
@@ -200,139 +204,152 @@ async function Feed({ userId }: { userId: string }) {
           where: { userId: { in: followingIds } },
           include: { game: true, user: true, likes: { select: { userId: true } } },
           orderBy: { updatedAt: "desc" },
-          take: 5,
+          take: ACTIVITY_LIMIT,
         })
       : Promise.resolve([]),
     getPopularGames(),
     prisma.game.findMany({
       where: { releaseYear: { not: null } },
       orderBy: { releaseYear: "desc" },
-      take: 12,
+      take: DISCOVERY_GAMES_LIMIT,
     }),
     getRecommendationSections(userId, followingIds, t),
   ]);
 
-  return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-10 px-6 py-10">
-      <div className="flex flex-col gap-3">
-        <h2 className="text-base font-semibold tracking-tight">{t("activityTitle")}</h2>
-        {activity.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noActivity")}</p>
-        ) : (
-          <div className="flex flex-col divide-y divide-border">
-            {activity.map((log) => (
-              <div key={log.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
-                <div className="flex items-center justify-between gap-3">
-                  <Link
-                    href={`/u/${log.user.username}`}
-                    className="flex min-w-0 items-center gap-2 text-sm hover:underline"
-                  >
-                    <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-                      {log.user.image ? (
-                        <Image
-                          src={log.user.image}
-                          alt={log.user.username ?? ""}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
-                      ) : null}
-                    </div>
-                    <span className="truncate font-medium">{log.user.name ?? log.user.username}</span>
-                    <UserBadges badges={log.user.badges} />
-                    <span className="shrink-0 text-muted-foreground">
-                      @{log.user.username} · {tStatus(log.status)}
-                      {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
-                    </span>
-                  </Link>
-
-                  <LikeButton
-                    logId={log.id}
-                    initialLiked={log.likes.some((like) => like.userId === userId)}
-                    initialCount={log.likes.length}
-                  />
+  const activityContent =
+    activity.length === 0 ? (
+      <p className="text-sm text-muted-foreground">{t("noActivity")}</p>
+    ) : (
+      <div className="flex flex-col divide-y divide-border">
+        {activity.map((log) => (
+          <div key={log.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
+            <div className="flex items-center justify-between gap-3">
+              <Link
+                href={`/u/${log.user.username}`}
+                className="flex min-w-0 items-center gap-2 text-sm hover:underline"
+              >
+                <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+                  {log.user.image ? (
+                    <Image
+                      src={log.user.image}
+                      alt={log.user.username ?? ""}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  ) : null}
                 </div>
+                <span className="truncate font-medium">{log.user.name ?? log.user.username}</span>
+                <UserBadges badges={log.user.badges} />
+                <span className="shrink-0 text-muted-foreground">
+                  @{log.user.username} · {tStatus(log.status)}
+                  {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
+                </span>
+              </Link>
 
-                <Link href={`/games/${log.game.slug}`} className="flex gap-3 hover:opacity-90">
-                  <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
-                    {log.game.coverUrl ? (
-                      <Image
-                        src={log.game.coverUrl}
-                        alt={log.game.title}
-                        fill
-                        sizes="72px"
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="flex flex-col justify-center">
-                    <span className="font-medium">{log.game.title}</span>
-                    {log.game.releaseYear ? (
-                      <span className="text-sm text-muted-foreground">{log.game.releaseYear}</span>
-                    ) : null}
-                  </div>
-                </Link>
+              <LikeButton
+                logId={log.id}
+                initialLiked={log.likes.some((like) => like.userId === userId)}
+                initialCount={log.likes.length}
+              />
+            </div>
 
-                {log.notes ? (
-                  <p className="whitespace-pre-wrap text-sm text-muted-foreground">{log.notes}</p>
+            <Link href={`/games/${log.game.slug}`} className="flex gap-3 hover:opacity-90">
+              <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
+                {log.game.coverUrl ? (
+                  <Image
+                    src={log.game.coverUrl}
+                    alt={log.game.title}
+                    fill
+                    sizes="72px"
+                    className="object-cover"
+                  />
                 ) : null}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {recommendationSections.length > 0 ? (
-        <div className="flex flex-col gap-8">
-          <h2 className="text-base font-semibold tracking-tight">{t("recommendedTitle")}</h2>
-          {recommendationSections.map((section) => (
-            <div key={section.key} className="flex flex-col gap-3">
-              <h3 className="text-sm font-medium text-muted-foreground">{section.heading}</h3>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
-                {section.games.map((game) => (
-                  <GameCard
-                    key={game.id}
-                    slug={game.slug}
-                    title={game.title}
-                    releaseYear={game.releaseYear}
-                    coverUrl={game.coverUrl}
-                  />
-                ))}
+              <div className="flex flex-col justify-center">
+                <span className="font-medium">{log.game.title}</span>
+                {log.game.releaseYear ? (
+                  <span className="text-sm text-muted-foreground">{log.game.releaseYear}</span>
+                ) : null}
               </div>
+            </Link>
+
+            {log.notes ? (
+              <p className="whitespace-pre-wrap text-sm text-muted-foreground">{log.notes}</p>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    );
+
+  const recommendedContent =
+    recommendationSections.length === 0 ? (
+      <p className="text-sm text-muted-foreground">{t("noRecommendations")}</p>
+    ) : (
+      <div className="flex flex-col gap-8">
+        {recommendationSections.map((section) => (
+          <div key={section.key} className="flex flex-col gap-3">
+            <h3 className="text-sm font-medium text-muted-foreground">{section.heading}</h3>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+              {section.games.map((game) => (
+                <GameCard
+                  key={game.id}
+                  slug={game.slug}
+                  title={game.title}
+                  releaseYear={game.releaseYear}
+                  coverUrl={game.coverUrl}
+                />
+              ))}
             </div>
-          ))}
-        </div>
-      ) : null}
-
-      <div className="flex flex-col gap-3">
-        <h2 className="text-base font-semibold tracking-tight">{t("popularTitle")}</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
-          {popularGames.map((game) => (
-            <GameCard
-              key={game.id}
-              slug={game.slug}
-              title={game.title}
-              releaseYear={game.releaseYear}
-              coverUrl={game.coverUrl}
-            />
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
+    );
 
-      <div className="flex flex-col gap-3">
-        <h2 className="text-base font-semibold tracking-tight">{t("newTitle")}</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
-          {newGames.map((game) => (
-            <GameCard
-              key={game.id}
-              slug={game.slug}
-              title={game.title}
-              releaseYear={game.releaseYear}
-              coverUrl={game.coverUrl}
-            />
-          ))}
-        </div>
-      </div>
+  const popularContent = (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      {popularGames.map((game) => (
+        <GameCard
+          key={game.id}
+          slug={game.slug}
+          title={game.title}
+          releaseYear={game.releaseYear}
+          coverUrl={game.coverUrl}
+        />
+      ))}
+    </div>
+  );
+
+  const newContent = (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      {newGames.map((game) => (
+        <GameCard
+          key={game.id}
+          slug={game.slug}
+          title={game.title}
+          releaseYear={game.releaseYear}
+          coverUrl={game.coverUrl}
+        />
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-6 py-10">
+      <Tabs defaultTab="activity">
+        <TabPanel key="activity" tabKey="activity" label={t("activityTab")}>
+          {activityContent}
+        </TabPanel>
+        <TabPanel key="recommended" tabKey="recommended" label={t("recommendedTab")}>
+          {recommendedContent}
+        </TabPanel>
+        <TabPanel key="popular" tabKey="popular" label={t("popularTab")}>
+          {popularContent}
+        </TabPanel>
+        <TabPanel key="new" tabKey="new" label={t("newTab")}>
+          {newContent}
+        </TabPanel>
+      </Tabs>
     </div>
   );
 }

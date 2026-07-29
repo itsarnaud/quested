@@ -11,7 +11,7 @@ import { ReviewRow } from "@/components/review-row";
 import { LikedLogRow } from "@/components/liked-log-row";
 import { DiaryEntries, type DiaryLogEntry } from "@/components/diary-entries";
 import { FollowSection } from "@/app/[locale]/u/[username]/follow-section";
-import { ProfileTabs } from "@/app/[locale]/u/[username]/profile-tabs";
+import { Tabs, TabPanel } from "@/components/tabs";
 import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games-section";
 import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
 import { ProfileGameGrid } from "@/app/[locale]/u/[username]/profile-game-grid";
@@ -297,18 +297,23 @@ export default async function ProfilePage({ params }: PageProps) {
         canEdit={isOwnProfile}
       />
 
-      <ProfileTabs
-        gamesLabel={t("gamesTab")}
-        diaryLabel={t("diaryTab")}
-        reviewsLabel={t("reviewsTab")}
-        likesLabel={t("likesTab")}
-        listsLabel={t("listsTab")}
-        gamesContent={gamesContent}
-        diaryContent={diaryContent}
-        reviewsContent={reviewsContent}
-        likesContent={likesContent}
-        listsContent={<GameListsSection username={username} canEdit={isOwnProfile} />}
-      />
+      <Tabs defaultTab="games">
+        <TabPanel key="games" tabKey="games" label={t("gamesTab")}>
+          {gamesContent}
+        </TabPanel>
+        <TabPanel key="diary" tabKey="diary" label={t("diaryTab")}>
+          {diaryContent}
+        </TabPanel>
+        <TabPanel key="reviews" tabKey="reviews" label={t("reviewsTab")}>
+          {reviewsContent}
+        </TabPanel>
+        <TabPanel key="likes" tabKey="likes" label={t("likesTab")}>
+          {likesContent}
+        </TabPanel>
+        <TabPanel key="lists" tabKey="lists" label={t("listsTab")}>
+          <GameListsSection username={username} canEdit={isOwnProfile} />
+        </TabPanel>
+      </Tabs>
     </div>
   );
 }
