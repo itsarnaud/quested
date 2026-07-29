@@ -15,6 +15,7 @@ import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games
 import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
 import { PaginatedGameGrid } from "@/app/[locale]/u/[username]/paginated-game-grid";
 import { ShowMoreList } from "@/app/[locale]/u/[username]/show-more-list";
+import { UserBadges } from "@/components/user-badges";
 import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
@@ -253,7 +254,10 @@ export default async function ProfilePage({ params }: PageProps) {
             />
           ) : null}
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">{user.name ?? username}</h1>
+            <div className="flex items-center justify-center gap-1.5 sm:justify-start">
+              <h1 className="text-xl font-semibold tracking-tight">{user.name ?? username}</h1>
+              <UserBadges badges={user.badges} />
+            </div>
             <p className="text-sm text-muted-foreground">@{username}</p>
             {user.bio ? <p className="mt-1 text-sm">{user.bio}</p> : null}
           </div>

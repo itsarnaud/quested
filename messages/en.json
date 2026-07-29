@@ -98,6 +98,11 @@
     "tasteCommon": "{count, plural, one {# game in common} other {# games in common}}",
     "tasteSimilarity": "{percent}% similar taste"
   },
+  "Badges": {
+    "FOUNDER": "Founder",
+    "EARLY_ADOPTER": "Early adopter",
+    "BETA_TESTER": "Beta tester"
+  },
   "Lists": {
     "createButton": "New list",
     "titlePlaceholder": "List name",

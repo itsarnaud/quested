@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { GameCard } from "@/components/game-card";
 import { LikeButton } from "@/components/like-button";
+import { UserBadges } from "@/components/user-badges";
 
 function getPopularGames() {
   return prisma.game.findMany({
@@ -147,6 +148,7 @@ async function Feed({ userId }: { userId: string }) {
                       ) : null}
                     </div>
                     <span className="truncate font-medium">@{log.user.username}</span>
+                    <UserBadges badges={log.user.badges} />
                     <span className="shrink-0 text-muted-foreground">
                       · {tStatus(log.status)}
                       {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}

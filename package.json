@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "backfill:taxonomy": "tsx --env-file=.env -r tsconfig-paths/register scripts/backfill-game-taxonomy.ts"
+    "backfill:taxonomy": "tsx --env-file=.env -r tsconfig-paths/register scripts/backfill-game-taxonomy.ts",
+    "grant-badge": "tsx --env-file=.env -r tsconfig-paths/register scripts/grant-badge.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
