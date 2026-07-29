@@ -1,5 +1,6 @@
 import type { Badge } from "@/generated/prisma/client";
 import { Logo } from "@/components/icons/logo";
+import { BadgeTooltip } from "@/components/badge-tooltip";
 
 const BADGE_COLOR: Record<Exclude<Badge, "FOUNDER">, string> = {
   EARLY_ADOPTER: "text-emerald-500",
@@ -24,13 +25,13 @@ function CheckBadgeIcon({ className, title }: { className?: string; title: strin
 }
 
 export function BadgeIcon({ badge, label }: { badge: Badge; label: string }) {
-  if (badge === "FOUNDER") {
-    return (
-      <span title={label}>
+  return (
+    <BadgeTooltip label={label}>
+      {badge === "FOUNDER" ? (
         <Logo width={14} height={14} role="img" aria-label={label} />
-      </span>
-    );
-  }
-
-  return <CheckBadgeIcon className={BADGE_COLOR[badge]} title={label} />;
+      ) : (
+        <CheckBadgeIcon className={BADGE_COLOR[badge]} title={label} />
+      )}
+    </BadgeTooltip>
+  );
 }

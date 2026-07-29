@@ -54,8 +54,8 @@ function PersonRow({
           ) : null}
         </div>
         <div className="min-w-0 flex flex-col">
-          <span className="flex items-center gap-1 truncate text-sm font-medium">
-            {user.name ?? user.username}
+          <span className="flex min-w-0 items-center gap-1 text-sm font-medium">
+            <span className="truncate">{user.name ?? user.username}</span>
             <UserBadgesClient badges={user.badges} />
           </span>
           <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
