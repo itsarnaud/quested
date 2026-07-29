@@ -14,6 +14,7 @@ export type Person = {
   image: string | null;
   badges: Badge[];
   isFollowing: boolean;
+  isViewer: boolean;
 };
 
 export function PersonRow({
@@ -53,9 +54,11 @@ export function PersonRow({
           <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
         </div>
       </Link>
-      <Button variant={user.isFollowing ? "secondary" : "primary"} onClick={onToggleFollow} disabled={isTogglePending}>
-        {user.isFollowing ? tFollow("unfollow") : tFollow("follow")}
-      </Button>
+      {user.isViewer ? null : (
+        <Button variant={user.isFollowing ? "secondary" : "primary"} onClick={onToggleFollow} disabled={isTogglePending}>
+          {user.isFollowing ? tFollow("unfollow") : tFollow("follow")}
+        </Button>
+      )}
     </div>
   );
 }

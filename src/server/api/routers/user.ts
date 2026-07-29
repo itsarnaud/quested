@@ -21,7 +21,11 @@ export async function withFollowingFlag<T extends { id: string }>(
       )
     : new Set<string>();
 
-  return users.map((u) => ({ ...u, isFollowing: followingIds.has(u.id) }));
+  return users.map((u) => ({
+    ...u,
+    isFollowing: followingIds.has(u.id),
+    isViewer: u.id === sessionUserId,
+  }));
 }
 
 export const userRouter = createTRPCRouter({
@@ -95,7 +99,12 @@ export const userRouter = createTRPCRouter({
       (a, b) => (mutualCountById.get(b.id) ?? 0) - (mutualCountById.get(a.id) ?? 0),
     );
 
-    return users.map((u) => ({ ...u, isFollowing: false, mutualCount: mutualCountById.get(u.id) ?? 0 }));
+    return users.map((u) => ({
+      ...u,
+      isFollowing: false,
+      isViewer: false,
+      mutualCount: mutualCountById.get(u.id) ?? 0,
+    }));
   }),
 
   compareTaste: protectedProcedure
