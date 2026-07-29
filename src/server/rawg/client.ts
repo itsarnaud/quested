@@ -7,6 +7,7 @@ export type RawgGame = {
   background_image: string | null;
   genres?: { name: string }[];
   platforms?: { platform: { name: string } }[];
+  developers?: { name: string }[];
 };
 
 export async function searchRawgGames(query: string, limit = 20): Promise<RawgGame[]> {

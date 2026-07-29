@@ -160,16 +160,18 @@ enum GameStatus {
 // A game aggregated from external sources (IGDB, RAWG, ...), deduplicated
 // into a single canonical entry that logs point to.
 model Game {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String    @id @default(cuid())
+  slug        String    @unique
   title       String
   releaseYear Int?
+  releaseDate DateTime?
   coverUrl    String?
-  summary     String?  @db.Text
-  genres      String[] @default([])
-  platforms   String[] @default([])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  summary     String?   @db.Text
+  genres      String[]  @default([])
+  platforms   String[]  @default([])
+  developers  String[]  @default([])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   externalIds   GameExternalId[]
   logs          Log[]

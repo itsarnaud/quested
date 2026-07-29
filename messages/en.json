@@ -57,7 +57,12 @@
   "GamePage": {
     "signInPrompt": "Sign in to track this game.",
     "signIn": "Sign in",
-    "topReviewsTitle": "Top reviews"
+    "topReviewsTitle": "Top reviews",
+    "byDevelopers": "by",
+    "releasedBadge": "Released",
+    "unreleasedBadge": "Upcoming",
+    "genresLabel": "Genres:",
+    "platformsLabel": "Platforms:"
   },
   "GameStatus": {
     "BACKLOG": "Backlog",

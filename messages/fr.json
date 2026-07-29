@@ -57,7 +57,12 @@
   "GamePage": {
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",
     "signIn": "Se connecter",
-    "topReviewsTitle": "Avis les mieux notés"
+    "topReviewsTitle": "Avis les mieux notés",
+    "byDevelopers": "par",
+    "releasedBadge": "Sorti",
+    "unreleasedBadge": "À venir",
+    "genresLabel": "Genres :",
+    "platformsLabel": "Plateformes :"
   },
   "GameStatus": {
     "BACKLOG": "Backlog",

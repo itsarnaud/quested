@@ -36,6 +36,7 @@ export type IgdbGame = {
   cover?: { url: string };
   genres?: { name: string }[];
   platforms?: { name: string }[];
+  involved_companies?: { company: { name: string }; developer: boolean }[];
 };
 
 export async function searchIgdbGames(query: string, limit = 20): Promise<IgdbGame[]> {
@@ -48,7 +49,7 @@ export async function searchIgdbGames(query: string, limit = 20): Promise<IgdbGa
       Authorization: `Bearer ${token}`,
       "Content-Type": "text/plain",
     },
-    body: `search "${query.replace(/"/g, '\\"')}"; fields name,summary,first_release_date,cover.url,genres.name,platforms.name; limit ${limit};`,
+    body: `search "${query.replace(/"/g, '\\"')}"; fields name,summary,first_release_date,cover.url,genres.name,platforms.name,involved_companies.company.name,involved_companies.developer; limit ${limit};`,
   });
 
   if (!res.ok) {

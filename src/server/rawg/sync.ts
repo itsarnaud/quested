@@ -7,9 +7,9 @@ import {
   enrichGameTaxonomy,
 } from "@/server/games/dedup";
 
-function releaseYear(rawgGame: RawgGame): number | null {
+function releaseDate(rawgGame: RawgGame): Date | null {
   if (!rawgGame.released) return null;
-  return new Date(rawgGame.released).getUTCFullYear();
+  return new Date(rawgGame.released);
 }
 
 /**
@@ -28,23 +28,27 @@ export async function upsertGameFromRawg(rawgGame: RawgGame) {
   });
   if (existingLink) return existingLink.game;
 
-  const year = releaseYear(rawgGame);
+  const date = releaseDate(rawgGame);
+  const year = date ? date.getUTCFullYear() : null;
   const genres = rawgGame.genres?.map((g) => g.name) ?? [];
   const platforms = rawgGame.platforms?.map((p) => p.platform.name) ?? [];
+  const developers = rawgGame.developers?.map((d) => d.name) ?? [];
   const match = await findMatchingGame(rawgGame.name, year);
 
   if (match) {
     await linkExternalId(match.id, "RAWG", sourceId);
-    return enrichGameTaxonomy(match, genres, platforms);
+    return enrichGameTaxonomy(match, genres, platforms, developers);
   }
 
   return createCanonicalGame({
     title: rawgGame.name,
     year,
+    releaseDate: date,
     coverUrl: rawgGame.background_image,
     summary: null,
     genres,
     platforms,
+    developers,
     source: "RAWG",
     sourceId,
   });

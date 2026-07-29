@@ -28,31 +28,34 @@ export async function findMatchingGame(title: string, year: number | null) {
 }
 
 /**
- * Fills in genres/platforms on an already-canonical game if it doesn't have
- * them yet — happens when the game was first imported from a source that
- * didn't return this data, and a later source (searched again) does.
+ * Fills in genres/platforms/developers on an already-canonical game if it
+ * doesn't have them yet — happens when the game was first imported from a
+ * source that didn't return this data, and a later source (searched again) does.
  */
 export async function enrichGameTaxonomy<
-  T extends { id: string; genres: string[]; platforms: string[] },
->(game: T, genres: string[], platforms: string[]): Promise<T> {
-  if (game.genres.length > 0 || game.platforms.length > 0) return game;
-  if (genres.length === 0 && platforms.length === 0) return game;
+  T extends { id: string; genres: string[]; platforms: string[]; developers: string[] },
+>(game: T, genres: string[], platforms: string[], developers: string[]): Promise<T> {
+  const hasTaxonomy = game.genres.length > 0 || game.platforms.length > 0 || game.developers.length > 0;
+  if (hasTaxonomy) return game;
+  if (genres.length === 0 && platforms.length === 0 && developers.length === 0) return game;
 
   await prisma.game.update({
     where: { id: game.id },
-    data: { genres, platforms },
+    data: { genres, platforms, developers },
   });
 
-  return { ...game, genres, platforms };
+  return { ...game, genres, platforms, developers };
 }
 
 export async function createCanonicalGame(input: {
   title: string;
   year: number | null;
+  releaseDate: Date | null;
   coverUrl: string | null;
   summary: string | null;
   genres: string[];
   platforms: string[];
+  developers: string[];
   source: GameSource;
   sourceId: string;
 }) {
@@ -64,10 +67,12 @@ export async function createCanonicalGame(input: {
       slug,
       title: input.title,
       releaseYear: input.year,
+      releaseDate: input.releaseDate,
       coverUrl: input.coverUrl,
       summary: input.summary,
       genres: input.genres,
       platforms: input.platforms,
+      developers: input.developers,
       externalIds: {
         create: { source: input.source, sourceId: input.sourceId },
       },

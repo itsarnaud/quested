@@ -19,6 +19,10 @@ type PageProps = {
   params: Promise<{ slug: string; locale: string }>;
 };
 
+function formatReleaseDate(date: Date, locale: string) {
+  return new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", day: "numeric" }).format(date);
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const game = await getGame(slug);
@@ -34,7 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function GamePage({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const [game, session, t, tStatus] = await Promise.all([
     getGame(slug),
     auth(),
@@ -75,11 +79,25 @@ export default async function GamePage({ params }: PageProps) {
         </div>
 
         <div className="flex flex-1 flex-col gap-6 text-center sm:text-left">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">{game.title}</h1>
-            {game.releaseYear ? (
-              <p className="text-sm text-muted-foreground">{game.releaseYear}</p>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <h1 className="text-2xl font-semibold tracking-tight">{game.title}</h1>
+              {game.releaseDate ? (
+                <span className="inline-flex w-fit shrink-0 items-center gap-1 rounded-full border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                  {isUnreleased ? t("unreleasedBadge") : t("releasedBadge")} ·{" "}
+                  {formatReleaseDate(game.releaseDate, locale)}
+                </span>
+              ) : game.releaseYear ? (
+                <span className="text-sm text-muted-foreground">{game.releaseYear}</span>
+              ) : null}
+            </div>
+
+            {game.developers.length > 0 ? (
+              <p className="text-sm text-muted-foreground">
+                {t("byDevelopers")} <span className="font-medium text-foreground">{game.developers.join(", ")}</span>
+              </p>
             ) : null}
+
             {ratingStats._count.rating > 0 ? (
               <p className="text-sm text-muted-foreground">
                 {(ratingStats._avg.rating ?? 0).toFixed(1)}/10 ({ratingStats._count.rating})
@@ -88,6 +106,26 @@ export default async function GamePage({ params }: PageProps) {
           </div>
 
           {game.summary ? <p className="text-sm text-muted-foreground">{game.summary}</p> : null}
+
+          {game.genres.length > 0 ? (
+            <p className="text-xs text-muted-foreground">
+              <span className="font-medium">{t("genresLabel")}</span> {game.genres.join(" · ")}
+            </p>
+          ) : null}
+
+          {game.platforms.length > 0 ? (
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-start">
+              <span className="text-xs font-medium text-muted-foreground">{t("platformsLabel")}</span>
+              {game.platforms.map((platform) => (
+                <span
+                  key={platform}
+                  className="rounded-md border border-border px-2 py-0.5 text-xs text-muted-foreground"
+                >
+                  {platform}
+                </span>
+              ))}
+            </div>
+          ) : null}
 
           {session?.user ? (
             <LogControls gameId={game.id} isUnreleased={isUnreleased} />
