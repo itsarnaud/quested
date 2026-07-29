@@ -73,6 +73,7 @@
   },
   "LogControls": {
     "rating": "Rating",
+    "clearRating": "Clear",
     "notes": "Review",
     "notesPlaceholder": "What did you think of this game?",
     "save": "Save",

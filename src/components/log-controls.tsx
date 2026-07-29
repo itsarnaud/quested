@@ -81,30 +81,43 @@ function RatingAndNotes({
   isPending: boolean;
 }) {
   const tRating = useTranslations("LogControls");
-  const [ratingInput, setRatingInput] = useState(log?.rating != null ? String(log.rating) : "");
+  const [rating, setRating] = useState(log?.rating ?? 5);
+  const [hasRating, setHasRating] = useState(log?.rating != null);
   const [notes, setNotes] = useState(log?.notes ?? "");
   const notesDirty = notes !== (log?.notes ?? "");
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <span className="text-sm text-muted-foreground">{tRating("rating")}</span>
         <input
-          type="number"
-          step={0.1}
+          type="range"
           min={0}
           max={10}
-          value={ratingInput}
-          onChange={(e) => setRatingInput(e.target.value)}
-          onBlur={() => {
-            const value = ratingInput.trim();
-            const rating = value ? Math.min(10, Math.max(0, Number(value))) : undefined;
-            onSave({ rating });
+          step={0.1}
+          value={rating}
+          onChange={(e) => {
+            setRating(Number(e.target.value));
+            setHasRating(true);
           }}
-          placeholder="—"
-          className="h-9 w-20 rounded-md border border-border bg-card px-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+          onMouseUp={() => onSave({ rating })}
+          onTouchEnd={() => onSave({ rating })}
+          onKeyUp={() => onSave({ rating })}
+          className="h-2 w-40 cursor-pointer accent-accent"
         />
-        <span className="text-sm text-muted-foreground">/10</span>
+        <span className="w-14 text-sm font-medium">{hasRating ? `${rating.toFixed(1)}/10` : "—"}</span>
+        {hasRating ? (
+          <button
+            type="button"
+            onClick={() => {
+              setHasRating(false);
+              onSave({ rating: undefined });
+            }}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            {tRating("clearRating")}
+          </button>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-2">

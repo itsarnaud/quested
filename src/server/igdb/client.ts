@@ -39,7 +39,10 @@ export type IgdbGame = {
   involved_companies?: { company: { name: string }; developer: boolean }[];
 };
 
-export async function searchIgdbGames(query: string, limit = 20): Promise<IgdbGame[]> {
+const GAME_FIELDS =
+  "name,summary,first_release_date,cover.url,genres.name,platforms.name,involved_companies.company.name,involved_companies.developer";
+
+async function postGamesQuery(body: string): Promise<IgdbGame[]> {
   const token = await getAppAccessToken();
 
   const res = await fetch(`${API_URL}/games`, {
@@ -49,14 +52,25 @@ export async function searchIgdbGames(query: string, limit = 20): Promise<IgdbGa
       Authorization: `Bearer ${token}`,
       "Content-Type": "text/plain",
     },
-    body: `search "${query.replace(/"/g, '\\"')}"; fields name,summary,first_release_date,cover.url,genres.name,platforms.name,involved_companies.company.name,involved_companies.developer; limit ${limit};`,
+    body,
   });
 
   if (!res.ok) {
-    throw new Error(`IGDB search failed: ${res.status} ${await res.text()}`);
+    throw new Error(`IGDB query failed: ${res.status} ${await res.text()}`);
   }
 
   return (await res.json()) as IgdbGame[];
+}
+
+export async function searchIgdbGames(query: string, limit = 20): Promise<IgdbGame[]> {
+  return postGamesQuery(
+    `search "${query.replace(/"/g, '\\"')}"; fields ${GAME_FIELDS}; limit ${limit};`,
+  );
+}
+
+export async function getIgdbGamesByIds(ids: number[]): Promise<IgdbGame[]> {
+  if (ids.length === 0) return [];
+  return postGamesQuery(`fields ${GAME_FIELDS}; where id = (${ids.join(",")}); limit ${ids.length};`);
 }
 
 export function toCoverUrl(cover?: { url: string }): string | null {

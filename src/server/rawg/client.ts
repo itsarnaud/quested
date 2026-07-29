@@ -25,3 +25,15 @@ export async function searchRawgGames(query: string, limit = 20): Promise<RawgGa
   const data = (await res.json()) as { results: RawgGame[] };
   return data.results;
 }
+
+export async function getRawgGameById(id: number): Promise<RawgGame | null> {
+  const params = new URLSearchParams({ key: process.env.RAWG_API_KEY! });
+
+  const res = await fetch(`${API_URL}/games/${id}?${params.toString()}`);
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error(`RAWG game fetch failed: ${res.status} ${await res.text()}`);
+  }
+
+  return (await res.json()) as RawgGame;
+}

@@ -73,6 +73,7 @@
   },
   "LogControls": {
     "rating": "Note",
+    "clearRating": "Retirer",
     "notes": "Avis",
     "notesPlaceholder": "Qu'as-tu pensé de ce jeu ?",
     "save": "Enregistrer",
