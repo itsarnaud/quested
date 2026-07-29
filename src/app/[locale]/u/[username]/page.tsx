@@ -2,7 +2,7 @@ import { cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
@@ -15,6 +15,7 @@ import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games
 import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
 import { PaginatedGameGrid } from "@/app/[locale]/u/[username]/paginated-game-grid";
 import { ShowMoreList } from "@/app/[locale]/u/[username]/show-more-list";
+import { DiaryTab, type DiaryLogEntry } from "@/app/[locale]/u/[username]/diary-tab";
 import { UserBadges } from "@/components/user-badges";
 import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
 
@@ -53,11 +54,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProfilePage({ params }: PageProps) {
   const { username } = await params;
 
-  const [user, session, t, tStatus] = await Promise.all([
+  const [user, session, t, tStatus, locale] = await Promise.all([
     getUserProfile(username),
     auth(),
     getTranslations("Profile"),
     getTranslations("GameStatus"),
+    getLocale(),
   ]);
 
   if (!user) notFound();
@@ -176,6 +178,25 @@ export default async function ProfilePage({ params }: PageProps) {
       />
     );
 
+  const diaryLogs: DiaryLogEntry[] = [...user.logs]
+    .sort((a, b) => {
+      const dateA = (a.finishedAt ?? a.updatedAt).getTime();
+      const dateB = (b.finishedAt ?? b.updatedAt).getTime();
+      return dateB - dateA;
+    })
+    .map((log) => ({
+      id: log.id,
+      gameSlug: log.game.slug,
+      gameTitle: log.game.title,
+      coverUrl: log.game.coverUrl,
+      status: log.status,
+      rating: log.rating,
+      notes: log.notes,
+      date: (log.finishedAt ?? log.updatedAt).toISOString(),
+    }));
+
+  const diaryContent = <DiaryTab logs={diaryLogs} locale={locale} />;
+
   const likesContent =
     likedByUser.length === 0 ? (
       <p className="text-sm text-muted-foreground">{t("noLikes")}</p>
@@ -292,10 +313,12 @@ export default async function ProfilePage({ params }: PageProps) {
 
       <ProfileTabs
         gamesLabel={t("gamesTab")}
+        diaryLabel={t("diaryTab")}
         reviewsLabel={t("reviewsTab")}
         likesLabel={t("likesTab")}
         listsLabel={t("listsTab")}
         gamesContent={gamesContent}
+        diaryContent={diaryContent}
         reviewsContent={reviewsContent}
         likesContent={likesContent}
         listsContent={<GameListsSection username={username} canEdit={isOwnProfile} />}

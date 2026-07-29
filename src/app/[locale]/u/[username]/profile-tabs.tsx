@@ -3,23 +3,27 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-type Tab = "games" | "reviews" | "likes" | "lists";
+type Tab = "games" | "diary" | "reviews" | "likes" | "lists";
 
 export function ProfileTabs({
   gamesLabel,
+  diaryLabel,
   reviewsLabel,
   likesLabel,
   listsLabel,
   gamesContent,
+  diaryContent,
   reviewsContent,
   likesContent,
   listsContent,
 }: {
   gamesLabel: string;
+  diaryLabel: string;
   reviewsLabel: string;
   likesLabel: string;
   listsLabel: string;
   gamesContent: React.ReactNode;
+  diaryContent: React.ReactNode;
   reviewsContent: React.ReactNode;
   likesContent: React.ReactNode;
   listsContent: React.ReactNode;
@@ -28,6 +32,7 @@ export function ProfileTabs({
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "games", label: gamesLabel },
+    { key: "diary", label: diaryLabel },
     { key: "reviews", label: reviewsLabel },
     { key: "likes", label: likesLabel },
     { key: "lists", label: listsLabel },
@@ -35,6 +40,7 @@ export function ProfileTabs({
 
   const content = {
     games: gamesContent,
+    diary: diaryContent,
     reviews: reviewsContent,
     likes: likesContent,
     lists: listsContent,
