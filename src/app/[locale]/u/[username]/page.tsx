@@ -7,19 +7,20 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { GearIcon } from "@/components/icons/gear-icon";
-import { HeartIcon } from "@/components/icons/heart-icon";
-import { LikeButton } from "@/components/like-button";
+import { ReviewRow } from "@/components/review-row";
+import { LikedLogRow } from "@/components/liked-log-row";
+import { DiaryEntries, type DiaryLogEntry } from "@/components/diary-entries";
 import { FollowSection } from "@/app/[locale]/u/[username]/follow-section";
 import { ProfileTabs } from "@/app/[locale]/u/[username]/profile-tabs";
 import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games-section";
 import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
-import { PaginatedGameGrid } from "@/app/[locale]/u/[username]/paginated-game-grid";
-import { ShowMoreList } from "@/app/[locale]/u/[username]/show-more-list";
-import { DiaryTab, type DiaryLogEntry } from "@/app/[locale]/u/[username]/diary-tab";
+import { ProfileGameGrid } from "@/app/[locale]/u/[username]/profile-game-grid";
 import { UserBadges } from "@/components/user-badges";
 import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
+import { STATUS_SLUGS } from "@/lib/game-status";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
+const PREVIEW_SIZE = 12;
 
 const getUserProfile = cache((username: string) =>
   prisma.user.findUnique({
@@ -89,7 +90,10 @@ export default async function ProfilePage({ params }: PageProps) {
       },
     },
     orderBy: { createdAt: "desc" },
+    take: PREVIEW_SIZE,
   });
+
+  const likedCount = await prisma.like.count({ where: { userId: user.id } });
 
   const isOwnProfile = session?.user?.username === username;
   const canLike = Boolean(session?.user) && !isOwnProfile;
@@ -111,7 +115,7 @@ export default async function ProfilePage({ params }: PageProps) {
             <h2 className="text-sm font-medium text-muted-foreground">
               {tStatus(group.status)} · {group.logs.length}
             </h2>
-            <PaginatedGameGrid
+            <ProfileGameGrid
               games={group.logs.map((log) => ({
                 id: log.id,
                 slug: log.game.slug,
@@ -120,6 +124,8 @@ export default async function ProfilePage({ params }: PageProps) {
                 rating: log.rating,
                 notes: log.notes,
               }))}
+              moreHref={`/u/${username}/games/${STATUS_SLUGS[group.status]}`}
+              moreLabel={t("showMore")}
             />
           </div>
         ))}
@@ -130,52 +136,39 @@ export default async function ProfilePage({ params }: PageProps) {
     reviews.length === 0 ? (
       <p className="text-sm text-muted-foreground">{t("noReviews")}</p>
     ) : (
-      <ShowMoreList
-        items={reviews.map((log) => {
-          const likeCount = log.likes.length;
-          const isLiked = Boolean(
-            session?.user && log.likes.some((like) => like.userId === session.user.id),
-          );
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col divide-y divide-border">
+          {reviews.slice(0, PREVIEW_SIZE).map((log) => {
+            const likeCount = log.likes.length;
+            const isLiked = Boolean(
+              session?.user && log.likes.some((like) => like.userId === session.user.id),
+            );
 
-          return (
-            <div key={log.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
-              <div className="flex items-center justify-between gap-3">
-                <Link href={`/games/${log.game.slug}`} className="flex gap-3 hover:opacity-90">
-                  <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
-                    {log.game.coverUrl ? (
-                      <Image
-                        src={log.game.coverUrl}
-                        alt={log.game.title}
-                        fill
-                        sizes="72px"
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="flex flex-col justify-center">
-                    <span className="font-medium">{log.game.title}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {tStatus(log.status)}
-                      {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
-                    </span>
-                  </div>
-                </Link>
-
-                {canLike ? (
-                  <LikeButton logId={log.id} initialLiked={isLiked} initialCount={likeCount} />
-                ) : likeCount > 0 ? (
-                  <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <HeartIcon filled />
-                    {likeCount}
-                  </span>
-                ) : null}
-              </div>
-
-              <p className="whitespace-pre-wrap text-sm text-muted-foreground">{log.notes}</p>
-            </div>
-          );
-        })}
-      />
+            return (
+              <ReviewRow
+                key={log.id}
+                log={{
+                  id: log.id,
+                  gameSlug: log.game.slug,
+                  gameTitle: log.game.title,
+                  coverUrl: log.game.coverUrl,
+                  rating: log.rating,
+                  notes: log.notes,
+                }}
+                statusLabel={tStatus(log.status)}
+                canLike={canLike}
+                isLiked={isLiked}
+                likeCount={likeCount}
+              />
+            );
+          })}
+        </div>
+        {reviews.length > PREVIEW_SIZE ? (
+          <Link href={`/u/${username}/reviews`} className="w-fit text-sm text-muted-foreground hover:text-foreground">
+            {t("showMore")}
+          </Link>
+        ) : null}
+      </div>
     );
 
   const diaryLogs: DiaryLogEntry[] = [...user.logs]
@@ -184,6 +177,7 @@ export default async function ProfilePage({ params }: PageProps) {
       const dateB = (b.finishedAt ?? b.updatedAt).getTime();
       return dateB - dateA;
     })
+    .slice(0, PREVIEW_SIZE)
     .map((log) => ({
       id: log.id,
       gameSlug: log.game.slug,
@@ -195,70 +189,62 @@ export default async function ProfilePage({ params }: PageProps) {
       date: (log.finishedAt ?? log.updatedAt).toISOString(),
     }));
 
-  const diaryContent = <DiaryTab logs={diaryLogs} locale={locale} />;
+  const diaryContent =
+    diaryLogs.length === 0 ? (
+      <p className="text-sm text-muted-foreground">{t("noDiaryEntries")}</p>
+    ) : (
+      <div className="flex flex-col gap-4">
+        <DiaryEntries logs={diaryLogs} locale={locale} statusLabel={tStatus} />
+        {user.logs.length > PREVIEW_SIZE ? (
+          <Link href={`/u/${username}/diary`} className="w-fit text-sm text-muted-foreground hover:text-foreground">
+            {t("showMore")}
+          </Link>
+        ) : null}
+      </div>
+    );
 
   const likesContent =
     likedByUser.length === 0 ? (
       <p className="text-sm text-muted-foreground">{t("noLikes")}</p>
     ) : (
-      <ShowMoreList
-        items={likedByUser.map(({ log }) => {
-          const likeCount = log.likes.length;
-          const isLiked = Boolean(
-            session?.user && log.likes.some((like) => like.userId === session.user.id),
-          );
-          const canLikeThis = Boolean(session?.user) && session?.user.id !== log.userId;
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col divide-y divide-border">
+          {likedByUser.map(({ log }) => {
+            const likeCount = log.likes.length;
+            const isLiked = Boolean(
+              session?.user && log.likes.some((like) => like.userId === session.user.id),
+            );
+            const canLikeThis = Boolean(session?.user) && session?.user.id !== log.userId;
 
-          return (
-            <div key={log.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
-              <div className="flex items-center justify-between gap-3">
-                <Link href={`/u/${log.user.username}`} className="text-sm hover:underline">
-                  <span className="font-medium">{log.user.name ?? log.user.username}</span>{" "}
-                  <UserBadges badges={log.user.badges} />
-                  <span className="text-muted-foreground">
-                    {" "}
-                    @{log.user.username} · {tStatus(log.status)}
-                    {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}
-                  </span>
-                </Link>
-
-                {canLikeThis ? (
-                  <LikeButton logId={log.id} initialLiked={isLiked} initialCount={likeCount} />
-                ) : likeCount > 0 ? (
-                  <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <HeartIcon filled />
-                    {likeCount}
-                  </span>
-                ) : null}
-              </div>
-
-              <Link href={`/games/${log.game.slug}`} className="flex gap-3 hover:opacity-90">
-                <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
-                  {log.game.coverUrl ? (
-                    <Image
-                      src={log.game.coverUrl}
-                      alt={log.game.title}
-                      fill
-                      sizes="72px"
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
-                <div className="flex flex-col justify-center">
-                  <span className="font-medium">{log.game.title}</span>
-                  {log.game.releaseYear ? (
-                    <span className="text-sm text-muted-foreground">{log.game.releaseYear}</span>
-                  ) : null}
-                </div>
-              </Link>
-
-              {log.notes ? (
-                <p className="whitespace-pre-wrap text-sm text-muted-foreground">{log.notes}</p>
-              ) : null}
-            </div>
-          );
-        })}
-      />
+            return (
+              <LikedLogRow
+                key={log.id}
+                log={{
+                  id: log.id,
+                  gameSlug: log.game.slug,
+                  gameTitle: log.game.title,
+                  gameReleaseYear: log.game.releaseYear,
+                  coverUrl: log.game.coverUrl,
+                  rating: log.rating,
+                  notes: log.notes,
+                  userUsername: log.user.username,
+                  userName: log.user.name,
+                  userBadges: log.user.badges,
+                }}
+                statusLabel={tStatus(log.status)}
+                canLike={canLikeThis}
+                isLiked={isLiked}
+                likeCount={likeCount}
+              />
+            );
+          })}
+        </div>
+        {likedCount > PREVIEW_SIZE ? (
+          <Link href={`/u/${username}/likes`} className="w-fit text-sm text-muted-foreground hover:text-foreground">
+            {t("showMore")}
+          </Link>
+        ) : null}
+      </div>
     );
 
   return (
