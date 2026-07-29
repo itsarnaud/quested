@@ -14,6 +14,7 @@ export function GameTile({ game }: { game: GameTileData }) {
   return (
     <Link
       href={`/games/${game.slug}`}
+      prefetch={false}
       className="flex flex-col gap-2 hover:opacity-90"
       title={game.notes ?? undefined}
     >

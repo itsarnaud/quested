@@ -28,7 +28,7 @@ export function ReviewRow({
   return (
     <div className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
       <div className="flex items-center justify-between gap-3">
-        <Link href={`/games/${log.gameSlug}`} className="flex gap-3 hover:opacity-90">
+        <Link href={`/games/${log.gameSlug}`} prefetch={false} className="flex gap-3 hover:opacity-90">
           <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
             {log.coverUrl ? (
               <Image src={log.coverUrl} alt={log.gameTitle} fill sizes="72px" className="object-cover" />

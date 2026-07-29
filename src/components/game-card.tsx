@@ -12,7 +12,7 @@ type GameCardProps = {
 
 export function GameCard({ slug, title, releaseYear, coverUrl, subtitle, onClick }: GameCardProps) {
   return (
-    <Link href={`/games/${slug}`} className="flex flex-col gap-2" onClick={onClick}>
+    <Link href={`/games/${slug}`} prefetch={false} className="flex flex-col gap-2" onClick={onClick}>
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
         {coverUrl ? (
           <Image

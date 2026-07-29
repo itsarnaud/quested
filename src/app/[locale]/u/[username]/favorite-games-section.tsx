@@ -83,7 +83,7 @@ export function FavoriteGamesSection({
               ) : null}
             </div>
             <div className="flex flex-col" title={game.notes ?? undefined}>
-              <Link href={`/games/${game.slug}`} className="truncate text-sm font-medium hover:underline">
+              <Link href={`/games/${game.slug}`} prefetch={false} className="truncate text-sm font-medium hover:underline">
                 {game.title}
               </Link>
               {game.rating != null ? (

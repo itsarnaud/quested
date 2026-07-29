@@ -34,7 +34,7 @@ export function PersonRow({
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
-      <Link href={`/u/${user.username}`} className="flex min-w-0 items-center gap-3" onClick={onNavigate}>
+      <Link href={`/u/${user.username}`} prefetch={false} className="flex min-w-0 items-center gap-3" onClick={onNavigate}>
         <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
           {user.image ? (
             <Image

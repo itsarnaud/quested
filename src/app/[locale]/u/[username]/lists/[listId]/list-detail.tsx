@@ -169,7 +169,7 @@ export function ListDetail({
                 </button>
               ) : null}
             </div>
-            <Link href={`/games/${game.slug}`} className="truncate text-sm font-medium hover:underline">
+            <Link href={`/games/${game.slug}`} prefetch={false} className="truncate text-sm font-medium hover:underline">
               {game.title}
             </Link>
           </div>

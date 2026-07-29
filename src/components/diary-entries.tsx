@@ -48,7 +48,7 @@ export function DiaryEntries({
           <div className="text-xs uppercase text-muted-foreground">{weekdayFormatter.format(date)}</div>
           <div className="text-lg font-semibold tracking-tight">{dayFormatter.format(date)}</div>
         </div>
-        <Link href={`/games/${log.gameSlug}`} className="flex min-w-0 flex-1 gap-3 hover:opacity-90">
+        <Link href={`/games/${log.gameSlug}`} prefetch={false} className="flex min-w-0 flex-1 gap-3 hover:opacity-90">
           <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded border border-border bg-muted">
             {log.coverUrl ? (
               <Image src={log.coverUrl} alt={log.gameTitle} fill sizes="48px" className="object-cover" />
