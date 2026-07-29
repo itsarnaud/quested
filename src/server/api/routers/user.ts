@@ -3,6 +3,8 @@ import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure, publicProcedure, withRateLimit } from "@/server/api/trpc";
 import { prisma } from "@/lib/prisma";
 import { standardRatelimit } from "@/lib/redis";
+import { sendEmail } from "@/lib/mailer";
+import { renderAccountDeletedEmail } from "@/lib/email-templates";
 
 async function withFollowingFlag<T extends { id: string }>(
   sessionUserId: string | undefined,
@@ -138,6 +140,23 @@ export const userRouter = createTRPCRouter({
     });
   }),
 
+  getNotificationPreferences: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.user.findUniqueOrThrow({
+      where: { id: ctx.session.user.id },
+      select: { emailOnFollow: true, emailOnLike: true },
+    });
+  }),
+
+  updateNotificationPreferences: protectedProcedure
+    .input(z.object({ emailOnFollow: z.boolean(), emailOnLike: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: input,
+        select: { emailOnFollow: true, emailOnLike: true },
+      });
+    }),
+
   getFavorites: protectedProcedure.query(async ({ ctx }) => {
     const favorites = await ctx.prisma.favoriteGame.findMany({
       where: { userId: ctx.session.user.id },
@@ -245,7 +264,20 @@ export const userRouter = createTRPCRouter({
 
   // GDPR right to erasure. Account/Session/Log all cascade on delete via the schema.
   deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUniqueOrThrow({
+      where: { id: ctx.session.user.id },
+      select: { email: true },
+    });
+
     await ctx.prisma.user.delete({ where: { id: ctx.session.user.id } });
+
+    if (user.email) {
+      const { subject, html } = renderAccountDeletedEmail();
+      await sendEmail({ to: user.email, subject, html }).catch((err) =>
+        console.error("Failed to send account deleted email:", err),
+      );
+    }
+
     return { success: true };
   }),
 });

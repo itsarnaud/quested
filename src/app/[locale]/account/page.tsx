@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { AccountView } from "@/app/[locale]/account/account-view";
 import { LinkedAccounts } from "@/app/[locale]/account/linked-accounts";
 import { ProfileEditForm } from "@/app/[locale]/account/profile-edit-form";
+import { NotificationPreferences } from "@/app/[locale]/account/notification-preferences";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -37,6 +38,7 @@ export default async function AccountPage({ params }: PageProps) {
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-6 py-10">
       <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
       <ProfileEditForm initialProfile={profile} />
+      <NotificationPreferences />
       <LinkedAccounts userId={session.user.id} />
       <AccountView />
     </div>

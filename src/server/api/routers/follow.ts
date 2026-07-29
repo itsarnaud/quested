@@ -2,6 +2,8 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure, publicProcedure, withRateLimit } from "@/server/api/trpc";
 import { standardRatelimit } from "@/lib/redis";
+import { sendEmail } from "@/lib/mailer";
+import { renderFollowEmail } from "@/lib/email-templates";
 
 export const followRouter = createTRPCRouter({
   toggle: protectedProcedure
@@ -29,6 +31,14 @@ export const followRouter = createTRPCRouter({
       await ctx.prisma.notification.create({
         data: { userId: target.id, actorId: ctx.session.user.id, type: "FOLLOW" },
       });
+
+      if (target.emailOnFollow && target.email && ctx.session.user.username) {
+        const { subject, html } = renderFollowEmail({ actorUsername: ctx.session.user.username });
+        sendEmail({ to: target.email, subject, html }).catch((err) =>
+          console.error("Failed to send follow email:", err),
+        );
+      }
+
       return { following: true };
     }),
 

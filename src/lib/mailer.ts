@@ -18,14 +18,19 @@ function getTransporter() {
   return transporter;
 }
 
+function isConfigured() {
+  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD);
+}
+
 export async function sendAlertEmail(subject: string, text: string) {
   const to = process.env.ALERT_EMAIL_TO;
-  const from = process.env.SMTP_USER;
+  if (!to || !isConfigured()) return;
 
-  if (!to || !from || !process.env.SMTP_HOST) {
-    // Not configured (e.g. local dev without SMTP env vars) — skip silently.
-    return;
-  }
+  await getTransporter().sendMail({ from: process.env.SMTP_USER, to, subject, text });
+}
 
-  await getTransporter().sendMail({ from, to, subject, text });
+export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  if (!isConfigured()) return;
+
+  await getTransporter().sendMail({ from: `Quested <${process.env.SMTP_USER}>`, to, subject, html });
 }

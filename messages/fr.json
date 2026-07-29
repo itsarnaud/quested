@@ -165,6 +165,10 @@
   },
   "Account": {
     "title": "Mon compte",
+    "notificationsTitle": "Notifications par email",
+    "notificationsDescription": "Désactivées par défaut, active-les si tu veux être prévenu même quand tu n'es pas sur le site.",
+    "notifyOnFollow": "M'envoyer un email quand quelqu'un me suit",
+    "notifyOnLike": "M'envoyer un email quand quelqu'un aime mon avis",
     "exportTitle": "Exporter mes données",
     "exportDescription": "Télécharge un fichier JSON contenant ton profil et tous tes jeux enregistrés.",
     "exportButton": "Télécharger mes données",

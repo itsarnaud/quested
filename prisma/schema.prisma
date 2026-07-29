@@ -80,6 +80,11 @@ model User {
   gameLists GameList[]
 
   badges Badge[] @default([])
+
+  // Off by default — transactional emails (welcome, account deletion)
+  // always send regardless of these.
+  emailOnFollow Boolean @default(false)
+  emailOnLike   Boolean @default(false)
 }
 
 enum Badge {

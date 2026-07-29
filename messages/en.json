@@ -165,6 +165,10 @@
   },
   "Account": {
     "title": "My account",
+    "notificationsTitle": "Email notifications",
+    "notificationsDescription": "Off by default, turn them on if you want to be notified even when you're not on the site.",
+    "notifyOnFollow": "Email me when someone follows me",
+    "notifyOnLike": "Email me when someone likes my review",
     "exportTitle": "Export my data",
     "exportDescription": "Download a JSON file containing your profile and all your logged games.",
     "exportButton": "Download my data",

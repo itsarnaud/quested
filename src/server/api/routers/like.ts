@@ -2,6 +2,8 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure, withRateLimit } from "@/server/api/trpc";
 import { standardRatelimit } from "@/lib/redis";
+import { sendEmail } from "@/lib/mailer";
+import { renderLikeEmail } from "@/lib/email-templates";
 
 export const likeRouter = createTRPCRouter({
   toggle: protectedProcedure
@@ -10,7 +12,12 @@ export const likeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const log = await ctx.prisma.log.findUnique({
         where: { id: input.logId },
-        select: { userId: true },
+        select: {
+          userId: true,
+          notes: true,
+          game: { select: { title: true, slug: true } },
+          user: { select: { email: true, emailOnLike: true } },
+        },
       });
       if (!log) throw new TRPCError({ code: "NOT_FOUND" });
       if (log.userId === ctx.session.user.id) throw new TRPCError({ code: "BAD_REQUEST" });
@@ -30,6 +37,19 @@ export const likeRouter = createTRPCRouter({
       await ctx.prisma.notification.create({
         data: { userId: log.userId, actorId: ctx.session.user.id, type: "LIKE", logId: input.logId },
       });
+
+      if (log.user.emailOnLike && log.user.email && log.notes && ctx.session.user.username) {
+        const { subject, html } = renderLikeEmail({
+          actorUsername: ctx.session.user.username,
+          gameTitle: log.game.title,
+          gameSlug: log.game.slug,
+          reviewSnippet: log.notes,
+        });
+        sendEmail({ to: log.user.email, subject, html }).catch((err) =>
+          console.error("Failed to send like email:", err),
+        );
+      }
+
       return { liked: true };
     }),
 });
