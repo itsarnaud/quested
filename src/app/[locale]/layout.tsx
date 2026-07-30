@@ -9,6 +9,7 @@ import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 import { Footer } from "@/components/footer";
 import { InstallPrompt } from "@/components/install-prompt";
+import { getLatestVersion } from "@/lib/github-releases";
 import { siteUrl, siteName } from "@/lib/site";
 import { routing } from "@/i18n/routing";
 import "./globals.css";
@@ -79,7 +80,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   }
   setRequestLocale(locale);
 
-  const [messages, session] = await Promise.all([getMessages(), auth()]);
+  const [messages, session, version] = await Promise.all([getMessages(), auth(), getLatestVersion()]);
 
   return (
     <html
@@ -89,7 +90,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <body className="min-h-full flex flex-col pb-20 sm:flex-row sm:pb-0">
         <NextIntlClientProvider messages={messages}>
           <TRPCProvider>
-            <Sidebar isLoggedIn={Boolean(session?.user)} username={session?.user?.username ?? null} />
+            <Sidebar isLoggedIn={Boolean(session?.user)} username={session?.user?.username ?? null} version={version} />
             <div className="flex min-w-0 flex-1 flex-col">
               <Header />
               {children}

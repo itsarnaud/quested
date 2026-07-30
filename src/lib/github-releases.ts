@@ -37,3 +37,8 @@ export async function fetchReleases(): Promise<GithubRelease[]> {
       htmlUrl: r.html_url,
     }));
 }
+
+export async function getLatestVersion(): Promise<string | null> {
+  const releases = await fetchReleases();
+  return releases[0]?.tagName ?? null;
+}

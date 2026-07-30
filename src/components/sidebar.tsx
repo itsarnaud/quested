@@ -24,9 +24,11 @@ type NavItem = {
 export function Sidebar({
   isLoggedIn,
   username,
+  version,
 }: {
   isLoggedIn: boolean;
   username: string | null;
+  version: string | null;
 }) {
   const pathname = usePathname();
   const t = useTranslations("Header");
@@ -100,6 +102,14 @@ export function Sidebar({
             </Button>
           </Link>
         )}
+        {version ? (
+          <Link
+            href="/changelog"
+            className="px-2 text-xs text-muted-foreground/70 hover:text-muted-foreground"
+          >
+            {version}
+          </Link>
+        ) : null}
       </div>
     </aside>
   );
