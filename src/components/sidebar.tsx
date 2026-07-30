@@ -83,6 +83,7 @@ export function Sidebar({
       </div>
 
       <div className="flex flex-col gap-3">
+        <LocaleSwitcher variant="row" />
         {isLoggedIn ? (
           <Button
             type="button"
@@ -99,9 +100,6 @@ export function Sidebar({
             </Button>
           </Link>
         )}
-        <div className="px-2">
-          <LocaleSwitcher />
-        </div>
       </div>
     </aside>
   );
