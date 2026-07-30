@@ -58,7 +58,7 @@ export function FavoriteGamesSection({
   return (
     <div className="flex flex-col gap-3">
       <h2 className="text-sm font-medium text-muted-foreground">{t("favoritesTitle")}</h2>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
         {list.map((game) => (
           <div key={game.id} className="flex flex-col gap-2">
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">

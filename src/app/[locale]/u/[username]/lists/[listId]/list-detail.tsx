@@ -162,7 +162,7 @@ export function ListDetail({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
         {items.map((game) => (
           <div key={game.id} className="flex flex-col gap-2">
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">

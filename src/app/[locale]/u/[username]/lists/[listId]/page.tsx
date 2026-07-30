@@ -38,7 +38,7 @@ export default async function ListDetailPage({ params }: PageProps) {
   const canClone = Boolean(session?.user) && !canEdit;
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 py-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
       <Link href={`/u/${username}`} className="w-fit text-sm text-muted-foreground hover:text-foreground">
         ← {t("backToProfile")}
       </Link>

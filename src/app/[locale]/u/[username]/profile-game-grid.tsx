@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { GameTile, type GameTileData } from "@/components/game-tile";
 
-const PREVIEW_SIZE = 12;
+const PREVIEW_SIZE = 16;
 
 export function ProfileGameGrid({
   games,
@@ -16,7 +16,7 @@ export function ProfileGameGrid({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
         {shown.map((game) => (
           <GameTile key={game.id} game={game} />
         ))}

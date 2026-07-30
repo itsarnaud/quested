@@ -99,7 +99,7 @@ export const gameRouter = createTRPCRouter({
   popular: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.game.findMany({
       orderBy: { logs: { _count: "desc" } },
-      take: 12,
+      take: 16,
     });
   }),
 });

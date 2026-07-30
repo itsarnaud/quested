@@ -49,7 +49,7 @@ export default async function GamesByStatusPage({ params, searchParams }: PagePr
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 py-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
       <Link href={`/u/${username}`} className="w-fit text-sm text-muted-foreground hover:text-foreground">
         ← {t("backToProfile")}
       </Link>
@@ -60,7 +60,7 @@ export default async function GamesByStatusPage({ params, searchParams }: PagePr
       {logs.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("noGames")}</p>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
           {logs.map((log) => (
             <GameTile
               key={log.id}

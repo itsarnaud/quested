@@ -190,7 +190,7 @@ async function MarketingHome() {
   const [t, popularGames] = await Promise.all([getTranslations("Home"), getPopularGames()]);
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-12 px-6 py-16">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-12 px-6 py-16">
       <div className="flex flex-col items-center gap-6 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">Quested</h1>
         <p className="text-muted-foreground">{t("tagline")}</p>
@@ -207,7 +207,7 @@ async function MarketingHome() {
       {popularGames.length > 0 ? (
         <div className="flex flex-col gap-3">
           <h2 className="text-base font-semibold tracking-tight">{t("popularTitle")}</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
             {popularGames.map((game) => (
               <GameCard
                 key={game.id}
@@ -329,7 +329,7 @@ async function Feed({ userId }: { userId: string }) {
         {recommendationSections.map((section) => (
           <div key={section.key} className="flex flex-col gap-3">
             <h3 className="text-sm font-medium text-muted-foreground">{section.heading}</h3>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
               {section.games.map((game) => (
                 <GameCard
                   key={game.id}
@@ -346,7 +346,7 @@ async function Feed({ userId }: { userId: string }) {
     );
 
   const popularContent = (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
       {popularGames.map((game) => (
         <GameCard
           key={game.id}
@@ -360,7 +360,7 @@ async function Feed({ userId }: { userId: string }) {
   );
 
   const newContent = (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
       {newGames.map((game) => (
         <GameCard
           key={game.id}
@@ -377,7 +377,7 @@ async function Feed({ userId }: { userId: string }) {
     topRatedGames.length === 0 ? (
       <p className="text-sm text-muted-foreground">{t("noTopRated")}</p>
     ) : (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
         {topRatedGames.map((game) => (
           <GameCard
             key={game.id}
@@ -394,7 +394,7 @@ async function Feed({ userId }: { userId: string }) {
     mostAnticipatedGames.length === 0 ? (
       <p className="text-sm text-muted-foreground">{t("noMostAnticipated")}</p>
     ) : (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
         {mostAnticipatedGames.map((game) => (
           <GameCard
             key={game.id}
@@ -408,7 +408,7 @@ async function Feed({ userId }: { userId: string }) {
     );
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-6 py-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10">
       <Tabs defaultTab="activity">
         <TabPanel key="activity" tabKey="activity" label={t("activityTab")}>
           {activityContent}

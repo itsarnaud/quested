@@ -24,7 +24,7 @@ export default async function FollowersPage({ params }: PageProps) {
   if (!user) notFound();
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
       <Link href={`/u/${username}`} className="w-fit text-sm text-muted-foreground hover:text-foreground">
         ← {t("backToProfile")}
       </Link>
