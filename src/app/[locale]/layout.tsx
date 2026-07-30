@@ -4,7 +4,9 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TRPCProvider } from "@/lib/trpc/provider";
+import { auth } from "@/auth";
 import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
 import { Footer } from "@/components/footer";
 import { InstallPrompt } from "@/components/install-prompt";
 import { siteUrl, siteName } from "@/lib/site";
@@ -77,19 +79,22 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   }
   setRequestLocale(locale);
 
-  const messages = await getMessages();
+  const [messages, session] = await Promise.all([getMessages(), auth()]);
 
   return (
     <html
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col pb-20 sm:pb-0">
+      <body className="min-h-full flex flex-col pb-20 sm:flex-row sm:pb-0">
         <NextIntlClientProvider messages={messages}>
           <TRPCProvider>
-            <Header />
-            {children}
-            <Footer />
+            <Sidebar isLoggedIn={Boolean(session?.user)} username={session?.user?.username ?? null} />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <Header />
+              {children}
+              <Footer />
+            </div>
             <InstallPrompt />
           </TRPCProvider>
         </NextIntlClientProvider>
