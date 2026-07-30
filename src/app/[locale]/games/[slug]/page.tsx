@@ -13,7 +13,7 @@ import { Link } from "@/i18n/navigation";
 
 const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
 
-const TOP_REVIEWS_LIMIT = 3;
+const TOP_REVIEWS_LIMIT = 8;
 
 type PageProps = {
   params: Promise<{ slug: string; locale: string }>;
@@ -68,8 +68,8 @@ export default async function GamePage({ params }: PageProps) {
   ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-10 px-6 py-10">
-      <div className="flex flex-col gap-6 sm:flex-row sm:gap-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-6 py-10">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 sm:flex-row sm:gap-8">
         <div className="mx-auto w-40 shrink-0 sm:mx-0 sm:w-48">
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
             {game.coverUrl ? (
@@ -143,7 +143,7 @@ export default async function GamePage({ params }: PageProps) {
       {topReviews.length > 0 ? (
         <div className="flex flex-col gap-3">
           <h2 className="text-sm font-medium text-muted-foreground">{t("topReviewsTitle")}</h2>
-          <div className="flex flex-col divide-y divide-border">
+          <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
             {topReviews.map((review) => {
               const likeCount = review.likes.length;
               const isLiked = Boolean(
@@ -152,7 +152,7 @@ export default async function GamePage({ params }: PageProps) {
               const canLike = Boolean(session?.user) && session?.user.id !== review.userId;
 
               return (
-                <div key={review.id} className="flex flex-col gap-2 py-4 first:pt-0 last:pb-0">
+                <div key={review.id} className="flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-3">
                     <Link href={`/u/${review.user.username}`} className="text-sm hover:underline">
                       <span className="font-medium">@{review.user.username}</span>
