@@ -6,6 +6,7 @@ import { signOut } from "next-auth/react";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons/logo";
+import { HomeIcon } from "@/components/icons/home-icon";
 import { SearchIcon } from "@/components/icons/search-icon";
 import { PeopleIcon } from "@/components/icons/people-icon";
 import { TrophyIcon } from "@/components/icons/trophy-icon";
@@ -39,6 +40,7 @@ export function Sidebar({
   });
 
   const items: NavItem[] = [
+    { href: "/", label: t("home"), icon: HomeIcon },
     { href: "/search", label: t("search"), icon: SearchIcon },
     { href: "/people", label: t("people"), icon: PeopleIcon },
     ...(isLoggedIn
