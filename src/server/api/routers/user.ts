@@ -136,17 +136,17 @@ export const userRouter = createTRPCRouter({
   getNotificationPreferences: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findUniqueOrThrow({
       where: { id: ctx.session.user.id },
-      select: { emailOnFollow: true, emailOnLike: true },
+      select: { emailOnFollow: true, emailOnLike: true, emailOnRelease: true },
     });
   }),
 
   updateNotificationPreferences: protectedProcedure
-    .input(z.object({ emailOnFollow: z.boolean(), emailOnLike: z.boolean() }))
+    .input(z.object({ emailOnFollow: z.boolean(), emailOnLike: z.boolean(), emailOnRelease: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
         data: input,
-        select: { emailOnFollow: true, emailOnLike: true },
+        select: { emailOnFollow: true, emailOnLike: true, emailOnRelease: true },
       });
     }),
 

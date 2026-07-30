@@ -23,9 +23,7 @@ export function NotificationPreferences() {
         <input
           type="checkbox"
           checked={prefs.emailOnFollow}
-          onChange={(e) =>
-            update.mutate({ emailOnFollow: e.target.checked, emailOnLike: prefs.emailOnLike })
-          }
+          onChange={(e) => update.mutate({ ...prefs, emailOnFollow: e.target.checked })}
           className="size-4 rounded border-border accent-accent"
         />
         {t("notifyOnFollow")}
@@ -35,12 +33,20 @@ export function NotificationPreferences() {
         <input
           type="checkbox"
           checked={prefs.emailOnLike}
-          onChange={(e) =>
-            update.mutate({ emailOnFollow: prefs.emailOnFollow, emailOnLike: e.target.checked })
-          }
+          onChange={(e) => update.mutate({ ...prefs, emailOnLike: e.target.checked })}
           className="size-4 rounded border-border accent-accent"
         />
         {t("notifyOnLike")}
+      </label>
+
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={prefs.emailOnRelease}
+          onChange={(e) => update.mutate({ ...prefs, emailOnRelease: e.target.checked })}
+          className="size-4 rounded border-border accent-accent"
+        />
+        {t("notifyOnRelease")}
       </label>
     </div>
   );

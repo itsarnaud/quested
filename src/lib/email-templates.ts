@@ -117,6 +117,24 @@ export function renderAccountDeletedEmail() {
   };
 }
 
+export function renderGameReleasedEmail({ gameTitle, gameSlug }: { gameTitle: string; gameSlug: string }) {
+  const title = escapeHtml(gameTitle);
+
+  return {
+    subject: `${gameTitle} est sorti !`,
+    html: layout({
+      eyebrow: "Sortie de jeu",
+      footer: NOTIFICATION_SETTINGS_FOOTER,
+      content: `
+        <p style="margin:0 0 24px 0;font-size:16px;color:${COLORS.foreground};line-height:1.5;">
+          <strong>${title}</strong>, que tu as mis en liste d'envies, est maintenant disponible.
+        </p>
+        ${button(`${siteUrl}/games/${gameSlug}`, "Voir le jeu")}
+      `,
+    }),
+  };
+}
+
 export function renderLikeEmail({
   actorUsername,
   gameTitle,

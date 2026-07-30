@@ -58,7 +58,13 @@ export function NotificationBell() {
                 {notifications.map((n) => (
                   <Link
                     key={n.id}
-                    href={n.type === "LIKE" && n.log ? `/games/${n.log.game.slug}` : `/u/${n.actor.username}`}
+                    href={
+                      n.type === "RELEASE" && n.game
+                        ? `/games/${n.game.slug}`
+                        : n.type === "LIKE" && n.log
+                          ? `/games/${n.log.game.slug}`
+                          : `/u/${n.actor?.username}`
+                    }
                     className={cn(
                       "flex items-center gap-2 rounded px-1 py-2 text-sm hover:bg-muted",
                       !n.read && "bg-muted/50",
@@ -66,7 +72,9 @@ export function NotificationBell() {
                     onClick={() => setOpen(false)}
                   >
                     <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-                      {n.actor.image ? (
+                      {n.type === "RELEASE" && n.game?.coverUrl ? (
+                        <Image src={n.game.coverUrl} alt={n.game.title} fill sizes="28px" className="object-cover" />
+                      ) : n.actor?.image ? (
                         <Image
                           src={n.actor.image}
                           alt={n.actor.username ?? ""}
@@ -77,10 +85,14 @@ export function NotificationBell() {
                       ) : null}
                     </div>
                     <span>
-                      <span className="font-medium">@{n.actor.username}</span>{" "}
-                      {n.type === "LIKE" && n.log
-                        ? t("liked", { game: n.log.game.title })
-                        : t("startedFollowing")}
+                      {n.type === "RELEASE" && n.game ? (
+                        t("gameReleased", { game: n.game.title })
+                      ) : (
+                        <>
+                          <span className="font-medium">@{n.actor?.username}</span>{" "}
+                          {n.type === "LIKE" && n.log ? t("liked", { game: n.log.game.title }) : t("startedFollowing")}
+                        </>
+                      )}
                     </span>
                   </Link>
                 ))}

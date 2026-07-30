@@ -7,6 +7,7 @@ export const notificationRouter = createTRPCRouter({
       include: {
         actor: { select: { username: true, name: true, image: true } },
         log: { select: { game: { select: { slug: true, title: true } } } },
+        game: { select: { slug: true, title: true, coverUrl: true } },
       },
       orderBy: { createdAt: "desc" },
       take: 20,

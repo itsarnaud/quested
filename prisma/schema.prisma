@@ -83,8 +83,9 @@ model User {
 
   // Off by default — transactional emails (welcome, account deletion)
   // always send regardless of these.
-  emailOnFollow Boolean @default(false)
-  emailOnLike   Boolean @default(false)
+  emailOnFollow  Boolean @default(false)
+  emailOnLike    Boolean @default(false)
+  emailOnRelease Boolean @default(false)
 }
 
 enum Badge {
@@ -147,12 +148,16 @@ model Notification {
   user   User   @relation("NotificationsReceived", fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  actor   User   @relation("NotificationsSent", fields: [actorId], references: [id], onDelete: Cascade)
-  actorId String
+  actor   User?   @relation("NotificationsSent", fields: [actorId], references: [id], onDelete: Cascade)
+  actorId String?
 
   log   Log?    @relation(fields: [logId], references: [id], onDelete: Cascade)
   logId String?
 
+  game   Game?   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId String?
+
+  @@unique([userId, gameId, type])
   @@index([userId, read])
   @@index([createdAt])
 }
@@ -160,6 +165,7 @@ model Notification {
 enum NotificationType {
   FOLLOW
   LIKE
+  RELEASE
 }
 
 enum GameStatus {
@@ -190,6 +196,7 @@ model Game {
   logs          Log[]
   favoritedBy   FavoriteGame[]
   listItems     GameListItem[]
+  notifications Notification[]
 
   @@index([title])
 }

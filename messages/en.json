@@ -167,6 +167,7 @@
     "title": "Notifications",
     "startedFollowing": "started following you",
     "liked": "liked your review on {game}",
+    "gameReleased": "{game}, on your wishlist, is out now!",
     "empty": "No notifications yet."
   },
   "About": {
@@ -203,6 +204,7 @@
     "notificationsDescription": "Off by default, turn them on if you want to be notified even when you're not on the site.",
     "notifyOnFollow": "Email me when someone follows me",
     "notifyOnLike": "Email me when someone likes my review",
+    "notifyOnRelease": "Email me when a wishlisted game is released",
     "exportTitle": "Export my data",
     "exportDescription": "Download a JSON file containing your profile and all your logged games.",
     "exportButton": "Download my data",

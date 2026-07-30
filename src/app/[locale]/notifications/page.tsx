@@ -31,6 +31,7 @@ export default async function NotificationsPage({ params }: PageProps) {
     include: {
       actor: { select: { username: true, name: true, image: true } },
       log: { select: { game: { select: { slug: true, title: true } } } },
+      game: { select: { slug: true, title: true, coverUrl: true } },
     },
     orderBy: { createdAt: "desc" },
     take: 50,
@@ -52,11 +53,19 @@ export default async function NotificationsPage({ params }: PageProps) {
           {notifications.map((n) => (
             <Link
               key={n.id}
-              href={n.type === "LIKE" && n.log ? `/games/${n.log.game.slug}` : `/u/${n.actor.username}`}
+              href={
+                n.type === "RELEASE" && n.game
+                  ? `/games/${n.game.slug}`
+                  : n.type === "LIKE" && n.log
+                    ? `/games/${n.log.game.slug}`
+                    : `/u/${n.actor?.username}`
+              }
               className="flex items-center gap-3 py-3 hover:bg-muted"
             >
               <div className="relative size-9 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-                {n.actor.image ? (
+                {n.type === "RELEASE" && n.game?.coverUrl ? (
+                  <Image src={n.game.coverUrl} alt={n.game.title} fill sizes="36px" className="object-cover" />
+                ) : n.actor?.image ? (
                   <Image
                     src={n.actor.image}
                     alt={n.actor.username ?? ""}
@@ -67,10 +76,14 @@ export default async function NotificationsPage({ params }: PageProps) {
                 ) : null}
               </div>
               <span className="text-sm">
-                <span className="font-medium">@{n.actor.username}</span>{" "}
-                {n.type === "LIKE" && n.log
-                  ? t("liked", { game: n.log.game.title })
-                  : t("startedFollowing")}
+                {n.type === "RELEASE" && n.game ? (
+                  t("gameReleased", { game: n.game.title })
+                ) : (
+                  <>
+                    <span className="font-medium">@{n.actor?.username}</span>{" "}
+                    {n.type === "LIKE" && n.log ? t("liked", { game: n.log.game.title }) : t("startedFollowing")}
+                  </>
+                )}
               </span>
             </Link>
           ))}
