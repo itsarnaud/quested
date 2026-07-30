@@ -77,7 +77,6 @@
     "searching": "Searching…",
     "noResults": "No players found.",
     "suggestionsTitle": "Suggestions",
-    "recentTitle": "New players",
     "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}"
   },
   "GamePage": {

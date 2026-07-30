@@ -49,22 +49,6 @@ export const userRouter = createTRPCRouter({
       return withFollowingFlag(ctx.session?.user?.id, users);
     }),
 
-  // Newest joined players — shown as a fallback when there aren't enough
-  // mutual connections yet to compute suggestions.
-  recent: publicProcedure.query(async ({ ctx }) => {
-    const users = await ctx.prisma.user.findMany({
-      where: {
-        username: { not: null },
-        id: ctx.session?.user ? { not: ctx.session.user.id } : undefined,
-      },
-      orderBy: { createdAt: "desc" },
-      select: { id: true, username: true, name: true, image: true, bio: true, badges: true },
-      take: 12,
-    });
-
-    return withFollowingFlag(ctx.session?.user?.id, users);
-  }),
-
   // Players followed by the people you follow, ranked by how many of your
   // follows also follow them — classic "people you may know".
   suggestions: publicProcedure.query(async ({ ctx }) => {

@@ -26,22 +26,14 @@ export function PeopleView() {
     { enabled: isSearching },
   );
   const { data: suggestions } = trpc.user.suggestions.useQuery(undefined, { enabled: !isSearching });
-  const { data: recentUsers } = trpc.user.recent.useQuery(undefined, {
-    enabled: !isSearching && (suggestions?.length ?? 0) === 0,
-  });
   const toggle = trpc.follow.toggle.useMutation({
     onSuccess: () => {
       utils.user.search.invalidate();
       utils.user.suggestions.invalidate();
-      utils.user.recent.invalidate();
     },
   });
 
-  const discovery = suggestions && suggestions.length > 0
-    ? { title: t("suggestionsTitle"), people: suggestions, mutual: true }
-    : recentUsers && recentUsers.length > 0
-      ? { title: t("recentTitle"), people: recentUsers, mutual: false }
-      : null;
+  const discovery = suggestions && suggestions.length > 0 ? suggestions : null;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10">
@@ -95,17 +87,13 @@ export function PeopleView() {
         </div>
       ) : discovery ? (
         <div className="flex flex-col gap-3">
-          <h2 className="text-sm font-medium text-muted-foreground">{discovery.title}</h2>
+          <h2 className="text-sm font-medium text-muted-foreground">{t("suggestionsTitle")}</h2>
           <div className="flex flex-col gap-2">
-            {discovery.people.map((user) => (
+            {discovery.map((user) => (
               <PersonRow
                 key={user.id}
                 user={user}
-                subtitle={
-                  discovery.mutual && "mutualCount" in user
-                    ? `${user.mutualCount} ${t("mutualFollows", { count: Number(user.mutualCount) })}`
-                    : `@${user.username}`
-                }
+                subtitle={`${user.mutualCount} ${t("mutualFollows", { count: user.mutualCount })}`}
                 onToggleFollow={() => user.username && toggle.mutate({ username: user.username })}
                 isTogglePending={toggle.isPending}
               />

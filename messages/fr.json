@@ -77,7 +77,6 @@
     "searching": "Recherche en cours…",
     "noResults": "Aucun joueur trouvé.",
     "suggestionsTitle": "Suggestions",
-    "recentTitle": "Nouveaux joueurs",
     "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}"
   },
   "GamePage": {
