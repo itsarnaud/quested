@@ -134,7 +134,14 @@
     "favoritesFilterPlaceholder": "Filter your rated games…",
     "favoritesNoCandidates": "Rate a game to be able to feature it here.",
     "tasteCommon": "{count, plural, one {# game in common} other {# games in common}}",
-    "tasteSimilarity": "{percent}% similar taste"
+    "tasteSimilarity": "{percent}% similar taste",
+    "statsAvgRating": "Average rating",
+    "statsTotalGames": "Total games",
+    "statsPlayedThisYear": "Completed this year",
+    "statsBacklog": "Backlog",
+    "statsReviews": "Reviews",
+    "statsLists": "Lists",
+    "recentlyPlayedTitle": "Recently played"
   },
   "Badges": {
     "FOUNDER": "Founder",

@@ -134,7 +134,14 @@
     "favoritesFilterPlaceholder": "Filtrer tes jeux notés…",
     "favoritesNoCandidates": "Note un jeu pour pouvoir le mettre en favori.",
     "tasteCommon": "{count, plural, one {# jeu en commun} other {# jeux en commun}}",
-    "tasteSimilarity": "{percent}% de goûts similaires"
+    "tasteSimilarity": "{percent}% de goûts similaires",
+    "statsAvgRating": "Note moyenne",
+    "statsTotalGames": "Jeux au total",
+    "statsPlayedThisYear": "Terminés cette année",
+    "statsBacklog": "Backlog",
+    "statsReviews": "Avis",
+    "statsLists": "Listes",
+    "recentlyPlayedTitle": "Joués récemment"
   },
   "Badges": {
     "FOUNDER": "Fondateur",

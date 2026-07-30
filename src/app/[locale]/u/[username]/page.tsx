@@ -18,6 +18,8 @@ import { ProfileGameGrid } from "@/app/[locale]/u/[username]/profile-game-grid";
 import { UserBadges } from "@/components/user-badges";
 import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
 import { STATUS_SLUGS } from "@/lib/game-status";
+import { RatingHistogram } from "@/components/rating-histogram";
+import { GameTile } from "@/components/game-tile";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 const PREVIEW_SIZE = 12;
@@ -94,6 +96,7 @@ export default async function ProfilePage({ params }: PageProps) {
   });
 
   const likedCount = await prisma.like.count({ where: { userId: user.id } });
+  const ownedListsCount = await prisma.gameList.count({ where: { userId: user.id } });
 
   const isOwnProfile = session?.user?.username === username;
   const canLike = Boolean(session?.user) && !isOwnProfile;
@@ -104,6 +107,28 @@ export default async function ProfilePage({ params }: PageProps) {
   })).filter((group) => group.logs.length > 0);
 
   const reviews = user.logs.filter((log) => log.notes);
+
+  const personalRatings = user.logs.filter((log) => log.rating != null).map((log) => log.rating!);
+  const personalAverageRating =
+    personalRatings.length > 0 ? personalRatings.reduce((sum, r) => sum + r, 0) / personalRatings.length : null;
+  const currentYear = new Date().getFullYear();
+  const completedThisYear = user.logs.filter(
+    (log) => log.status === "COMPLETED" && (log.finishedAt ?? log.updatedAt).getFullYear() === currentYear,
+  ).length;
+  const backlogCount = user.logs.filter((log) => log.status === "BACKLOG").length;
+
+  const recentlyPlayed = [...user.logs]
+    .filter((log) => log.status === "COMPLETED")
+    .sort((a, b) => (b.finishedAt ?? b.updatedAt).getTime() - (a.finishedAt ?? a.updatedAt).getTime())
+    .slice(0, 6)
+    .map((log) => ({
+      id: log.game.id,
+      slug: log.game.slug,
+      title: log.game.title,
+      coverUrl: log.game.coverUrl,
+      rating: log.rating,
+      notes: log.notes,
+    }));
 
   const gamesContent =
     logsByStatus.length === 0 ? (
@@ -296,6 +321,42 @@ export default async function ProfilePage({ params }: PageProps) {
         initialFavorites={favoriteGames}
         canEdit={isOwnProfile}
       />
+
+      {user.logs.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
+          <RatingHistogram
+            averageRating={personalAverageRating}
+            ratingCount={personalRatings.length}
+            ratings={personalRatings}
+            ratingLabel={t("statsAvgRating")}
+          />
+          <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))] gap-2">
+            {[
+              { label: t("statsTotalGames"), count: user.logs.length },
+              { label: t("statsPlayedThisYear"), count: completedThisYear },
+              { label: t("statsBacklog"), count: backlogCount },
+              { label: t("statsReviews"), count: reviews.length },
+              { label: t("statsLists"), count: ownedListsCount },
+            ].map((tile) => (
+              <div key={tile.label} className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-md border border-border p-3 text-center">
+                <span className="text-lg font-semibold tracking-tight">{tile.count}</span>
+                <span className="text-xs text-muted-foreground">{tile.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {recentlyPlayed.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">{t("recentlyPlayedTitle")}</h2>
+          <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+            {recentlyPlayed.map((game) => (
+              <GameTile key={game.id} game={game} />
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <Tabs defaultTab="games">
         <TabPanel key="games" tabKey="games" label={t("gamesTab")}>

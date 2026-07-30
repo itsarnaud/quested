@@ -10,7 +10,7 @@ import { LikeButton } from "@/components/like-button";
 import { HeartIcon } from "@/components/icons/heart-icon";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { GameStatsBox } from "@/components/game-stats-box";
+import { RatingHistogram } from "@/components/rating-histogram";
 
 const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
 
@@ -161,26 +161,31 @@ export default async function GamePage({ params }: PageProps) {
         </div>
       </div>
 
-      <GameStatsBox
-        averageRating={ratingStats._avg.rating}
-        ratingCount={ratingStats._count.rating}
-        ratings={ratingRows.map((r) => r.rating!)}
-        statusCounts={statusCounts}
-        reviewCount={reviewCount}
-        listCount={listCount}
-        labels={{
-          avgRating: t("avgRating"),
-          reviews: t("reviewsCount"),
-          lists: t("listsCount"),
-          statusLabels: {
-            BACKLOG: tStatus("BACKLOG"),
-            PLAYING: tStatus("PLAYING"),
-            COMPLETED: tStatus("COMPLETED"),
-            DROPPED: tStatus("DROPPED"),
-            WISHLIST: tStatus("WISHLIST"),
-          },
-        }}
-      />
+      <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
+        <RatingHistogram
+          averageRating={ratingStats._avg.rating}
+          ratingCount={ratingStats._count.rating}
+          ratings={ratingRows.map((r) => r.rating!)}
+          ratingLabel={t("avgRating")}
+        />
+
+        <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))] gap-2">
+          {[
+            { label: tStatus("BACKLOG"), count: statusCounts.BACKLOG },
+            { label: tStatus("PLAYING"), count: statusCounts.PLAYING },
+            { label: tStatus("COMPLETED"), count: statusCounts.COMPLETED },
+            { label: tStatus("DROPPED"), count: statusCounts.DROPPED },
+            { label: tStatus("WISHLIST"), count: statusCounts.WISHLIST },
+            { label: t("reviewsCount"), count: reviewCount },
+            { label: t("listsCount"), count: listCount },
+          ].map((tile) => (
+            <div key={tile.label} className="flex min-w-0 flex-col gap-1 rounded-md border border-border p-3 text-center items-center justify-center">
+              <span className="text-lg font-semibold tracking-tight">{tile.count}</span>
+              <span className="text-xs text-muted-foreground">{tile.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {topReviews.length > 0 ? (
         <div className="flex flex-col gap-3">
