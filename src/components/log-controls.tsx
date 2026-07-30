@@ -103,7 +103,7 @@ function RatingAndNotes({
           onMouseUp={() => onSave({ rating })}
           onTouchEnd={() => onSave({ rating })}
           onKeyUp={() => onSave({ rating })}
-          className="h-2 w-40 cursor-pointer accent-accent"
+          className="h-2 w-40 cursor-pointer accent-accent [&::-moz-range-thumb]:transition-transform [&::-moz-range-thumb]:hover:scale-125 [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-125"
         />
         <span className="w-14 text-sm font-medium">{hasRating ? `${rating.toFixed(1)}/10` : "—"}</span>
         {hasRating ? (
@@ -128,7 +128,7 @@ function RatingAndNotes({
           placeholder={tRating("notesPlaceholder")}
           maxLength={2000}
           rows={4}
-          className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+          className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
         />
         {notesDirty ? (
           <Button

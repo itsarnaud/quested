@@ -15,10 +15,10 @@ export function GameTile({ game }: { game: GameTileData }) {
     <Link
       href={`/games/${game.slug}`}
       prefetch={false}
-      className="flex flex-col gap-2 hover:opacity-90"
+      className="group flex flex-col gap-2"
       title={game.notes ?? undefined}
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-md">
         {game.coverUrl ? (
           <Image
             src={game.coverUrl}

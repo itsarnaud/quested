@@ -2,6 +2,7 @@
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { HomeIcon } from "@/components/icons/home-icon";
 import { SearchIcon } from "@/components/icons/search-icon";
@@ -48,12 +49,19 @@ export function MobileTabBar({
             href={href}
             aria-label={label}
             className={cn(
-              "flex flex-1 flex-col items-center gap-1 py-3 text-muted-foreground",
+              "relative flex flex-1 flex-col items-center gap-1 py-3 text-muted-foreground",
               isActive && "text-accent",
             )}
           >
-            <Icon className="size-7" />
-            <span className="text-[11px] leading-none font-medium">{label}</span>
+            {isActive ? (
+              <motion.div
+                layoutId="mobile-tab-active-indicator"
+                className="absolute inset-x-3 top-0 h-0.5 bg-accent"
+                transition={{ type: "spring", stiffness: 500, damping: 40 }}
+              />
+            ) : null}
+            <Icon className="relative size-7" />
+            <span className="relative text-[11px] leading-none font-medium">{label}</span>
           </Link>
         );
       })}

@@ -24,7 +24,7 @@ export function NotificationPreferences() {
           type="checkbox"
           checked={prefs.emailOnFollow}
           onChange={(e) => update.mutate({ ...prefs, emailOnFollow: e.target.checked })}
-          className="size-4 rounded border-border accent-accent"
+          className="size-4 rounded border-border accent-accent transition-transform active:scale-90"
         />
         {t("notifyOnFollow")}
       </label>
@@ -34,7 +34,7 @@ export function NotificationPreferences() {
           type="checkbox"
           checked={prefs.emailOnLike}
           onChange={(e) => update.mutate({ ...prefs, emailOnLike: e.target.checked })}
-          className="size-4 rounded border-border accent-accent"
+          className="size-4 rounded border-border accent-accent transition-transform active:scale-90"
         />
         {t("notifyOnLike")}
       </label>
@@ -44,7 +44,7 @@ export function NotificationPreferences() {
           type="checkbox"
           checked={prefs.emailOnRelease}
           onChange={(e) => update.mutate({ ...prefs, emailOnRelease: e.target.checked })}
-          className="size-4 rounded border-border accent-accent"
+          className="size-4 rounded border-border accent-accent transition-transform active:scale-90"
         />
         {t("notifyOnRelease")}
       </label>

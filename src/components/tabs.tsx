@@ -1,6 +1,7 @@
 "use client";
 
 import { Children, isValidElement, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export function TabPanel({
@@ -32,18 +33,35 @@ export function Tabs({ defaultTab, children }: { defaultTab: string; children: R
             type="button"
             onClick={() => setActive(panel.props.tabKey)}
             className={cn(
-              "shrink-0 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium",
+              "relative shrink-0 whitespace-nowrap px-3 py-2 text-sm font-medium transition-colors",
               active === panel.props.tabKey
-                ? "border-accent text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {panel.props.label}
+            {active === panel.props.tabKey ? (
+              <motion.div
+                layoutId="tabs-underline"
+                className="absolute inset-x-0 -bottom-px h-0.5 bg-accent"
+                transition={{ type: "spring", stiffness: 500, damping: 40 }}
+              />
+            ) : null}
           </button>
         ))}
       </div>
 
-      {activePanel}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={active}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+        >
+          {activePanel}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

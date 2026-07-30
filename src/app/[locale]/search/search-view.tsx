@@ -74,7 +74,7 @@ export function SearchView() {
         <select
           value={genre}
           onChange={(e) => setGenre(e.target.value)}
-          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
         >
           <option value="">{t("filterGenre")}</option>
           {filterOptions?.genres.map((g) => (
@@ -87,7 +87,7 @@ export function SearchView() {
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
-          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
         >
           <option value="">{t("filterPlatform")}</option>
           {filterOptions?.platforms.map((p) => (
@@ -100,7 +100,7 @@ export function SearchView() {
         <select
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+          className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
         >
           <option value="">{t("filterYear")}</option>
           {filterOptions?.years.map((y) => (

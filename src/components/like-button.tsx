@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "motion/react";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { HeartIcon } from "@/components/icons/heart-icon";
@@ -37,7 +38,15 @@ export function LikeButton({
         liked && "text-red-500 hover:text-red-500",
       )}
     >
-      <HeartIcon filled={liked} />
+      <motion.span
+        key={liked ? "liked" : "unliked"}
+        initial={liked ? { scale: 0.6 } : false}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 500, damping: 15 }}
+        className="inline-flex"
+      >
+        <HeartIcon filled={liked} />
+      </motion.span>
       {count > 0 ? count : null}
     </button>
   );

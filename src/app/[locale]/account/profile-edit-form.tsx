@@ -97,7 +97,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+            className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
           />
         </div>
 
@@ -109,7 +109,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+            className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
           />
           <p className="text-xs text-muted-foreground">{t("usernameInvalid")}</p>
         </div>
@@ -125,7 +125,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
             placeholder={t("bioPlaceholder")}
             maxLength={280}
             rows={3}
-            className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent"
+            className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
           />
         </div>
 
