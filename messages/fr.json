@@ -32,7 +32,8 @@
     "profile": "Profil",
     "account": "Compte",
     "signOut": "Se déconnecter",
-    "signIn": "Se connecter"
+    "signIn": "Se connecter",
+    "settings": "Paramètres"
   },
   "Home": {
     "tagline": "Suis, note et partage les jeux auxquels tu joues.",
@@ -148,7 +149,9 @@
     "statsBacklog": "Backlog",
     "statsReviews": "Avis",
     "statsLists": "Listes",
-    "recentlyPlayedTitle": "Joués récemment"
+    "recentlyPlayedTitle": "Joués récemment",
+    "statsCompleted": "Terminés",
+    "statsPlaying": "En cours"
   },
   "Badges": {
     "FOUNDER": "Fondateur",

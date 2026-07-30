@@ -81,10 +81,10 @@ export function GameListsSection({ username, canEdit }: { username: string; canE
             <Link
               key={list.id}
               href={`/u/${username}/lists/${list.id}`}
-              className="flex flex-col gap-3 rounded-md border border-border p-4 hover:bg-muted"
+              className="group flex flex-col gap-3"
             >
               <div className="flex flex-col">
-                <span className="font-medium">{list.title}</span>
+                <span className="font-medium group-hover:underline">{list.title}</span>
                 <span className="text-sm text-muted-foreground">
                   {t("itemCount", { count: list.itemCount })}
                 </span>

@@ -16,9 +16,11 @@ export function ProfileGameGrid({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+      <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0 md:grid-cols-6 lg:grid-cols-8">
         {shown.map((game) => (
-          <GameTile key={game.id} game={game} />
+          <div key={game.id} className="w-28 shrink-0 sm:w-auto">
+            <GameTile game={game} />
+          </div>
         ))}
       </div>
 

@@ -115,7 +115,7 @@ export function TopNav({
                     onClick={() => setMenuOpen(false)}
                     className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
-                    {t("account")}
+                    {t("settings")}
                   </Link>
                   <LocaleSwitcher variant="row" />
                   <button

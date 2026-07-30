@@ -116,6 +116,8 @@ export default async function ProfilePage({ params }: PageProps) {
     (log) => log.status === "COMPLETED" && (log.finishedAt ?? log.updatedAt).getFullYear() === currentYear,
   ).length;
   const backlogCount = user.logs.filter((log) => log.status === "BACKLOG").length;
+  const completedCount = user.logs.filter((log) => log.status === "COMPLETED").length;
+  const playingCount = user.logs.filter((log) => log.status === "PLAYING").length;
 
   const recentlyPlayed = [...user.logs]
     .filter((log) => log.status === "COMPLETED")
@@ -274,37 +276,46 @@ export default async function ProfilePage({ params }: PageProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-10">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
-          {user.image ? (
-            <Image
-              src={user.image}
-              alt={user.name ?? username}
-              width={56}
-              height={56}
-              unoptimized
-              className="rounded-full"
-            />
-          ) : null}
-          <div>
-            <div className="flex items-center justify-center gap-1.5 sm:justify-start">
-              <h1 className="text-xl font-semibold tracking-tight">{user.name ?? username}</h1>
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex items-center gap-5">
+          <div className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border bg-muted sm:size-24">
+            {user.image ? (
+              <Image src={user.image} alt={user.name ?? username} fill unoptimized className="object-cover" />
+            ) : null}
+          </div>
+          <div className="flex min-w-0 flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <h1 className="truncate text-2xl font-bold tracking-tight">{user.name ?? username}</h1>
               <UserBadges badges={user.badges} />
+              {isOwnProfile ? (
+                <Link
+                  href="/account"
+                  aria-label={t("settings")}
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <GearIcon />
+                </Link>
+              ) : null}
             </div>
             <p className="text-sm text-muted-foreground">@{username}</p>
-            {user.bio ? <p className="mt-1 text-sm">{user.bio}</p> : null}
+            {user.bio ? <p className="text-sm text-muted-foreground">{user.bio}</p> : null}
           </div>
         </div>
-        {isOwnProfile ? (
-          <div className="flex items-center gap-4">
-            <div className="hidden h-10 w-px bg-border sm:block" aria-hidden="true" />
-            <Link
-              href="/account"
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-            >
-              <GearIcon />
-              {t("settings")}
-            </Link>
+
+        {user.logs.length > 0 ? (
+          <div className="flex shrink-0 gap-8 lg:pt-2">
+            {[
+              { label: t("statsCompleted"), count: completedCount },
+              { label: t("statsPlaying"), count: playingCount },
+              { label: t("statsReviews"), count: reviews.length },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center gap-0.5 text-center">
+                <span className="text-2xl font-bold tracking-tight">{stat.count}</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
           </div>
         ) : null}
       </div>
@@ -349,10 +360,14 @@ export default async function ProfilePage({ params }: PageProps) {
 
       {recentlyPlayed.length > 0 ? (
         <div className="flex flex-col gap-3">
-          <h2 className="text-sm font-medium text-muted-foreground">{t("recentlyPlayedTitle")}</h2>
-          <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("recentlyPlayedTitle")}
+          </h2>
+          <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-6 sm:overflow-visible sm:pb-0">
             {recentlyPlayed.map((game) => (
-              <GameTile key={game.id} game={game} />
+              <div key={game.id} className="w-28 shrink-0 sm:w-auto">
+                <GameTile game={game} />
+              </div>
             ))}
           </div>
         </div>

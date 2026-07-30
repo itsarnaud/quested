@@ -32,7 +32,8 @@
     "profile": "Profile",
     "account": "Account",
     "signOut": "Sign out",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "settings": "Settings"
   },
   "Home": {
     "tagline": "Track, rate and share the games you play.",
@@ -148,7 +149,9 @@
     "statsBacklog": "Backlog",
     "statsReviews": "Reviews",
     "statsLists": "Lists",
-    "recentlyPlayedTitle": "Recently played"
+    "recentlyPlayedTitle": "Recently played",
+    "statsCompleted": "Completed",
+    "statsPlaying": "Playing"
   },
   "Badges": {
     "FOUNDER": "Founder",
