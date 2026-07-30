@@ -45,7 +45,7 @@ export const followRouter = createTRPCRouter({
 
       if (ctx.session.user.username) {
         sendPushToUser(target.id, {
-          title: "Quested",
+          title: "Nouvel abonné",
           body: `@${ctx.session.user.username} a commencé à te suivre`,
           url: `/u/${ctx.session.user.username}`,
         }).catch((err) => console.error("Failed to send follow push:", err));

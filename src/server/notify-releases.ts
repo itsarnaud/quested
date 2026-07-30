@@ -52,7 +52,7 @@ export async function notifyGameReleases() {
       }
 
       sendPushToUser(log.user.id, {
-        title: "Quested",
+        title: "Sortie de jeu",
         body: `${game.title}, dans ta liste d'envies, est sorti !`,
         url: `/games/${game.slug}`,
       }).catch((err) => console.error("Failed to send release push:", err));

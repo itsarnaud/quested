@@ -53,7 +53,7 @@ export const likeRouter = createTRPCRouter({
 
       if (ctx.session.user.username) {
         sendPushToUser(log.userId, {
-          title: "Quested",
+          title: "Nouveau like",
           body: `@${ctx.session.user.username} a aimé ton avis sur ${log.game.title}`,
           url: `/games/${log.game.slug}`,
         }).catch((err) => console.error("Failed to send like push:", err));
