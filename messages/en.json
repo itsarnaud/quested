@@ -170,6 +170,11 @@
     "gameReleased": "{game}, on your wishlist, is out now!",
     "empty": "No notifications yet."
   },
+  "Changelog": {
+    "title": "Changelog",
+    "subtitle": "What's changed on Quested, release by release.",
+    "empty": "No releases published yet."
+  },
   "About": {
     "title": "About",
     "sections": [
@@ -193,6 +198,7 @@
   },
   "Footer": {
     "about": "About",
+    "changelog": "Changelog",
     "github": "Source code",
     "legal": "Legal notice",
     "privacy": "Privacy"

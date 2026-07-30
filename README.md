@@ -14,6 +14,7 @@ Personal, non-commercial project. Live at [quested.cc](https://quested.cc).
 - **Mobile**: a native-app-style bottom tab bar instead of a burger menu, and the site is installable as a PWA (with a dismissible install prompt on supported browsers).
 - **Account**: sign in with Google or Discord, link both to the same account, manage email notification preferences, export your data, or delete your account.
 - **Languages**: French by default, English available at `/en`.
+- **Changelog**: `/changelog` lists what's shipped, pulled live from the project's GitHub Releases.
 
 ## Tech stack
 

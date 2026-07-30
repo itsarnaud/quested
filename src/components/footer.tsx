@@ -12,6 +12,9 @@ export async function Footer() {
       <Link href="/a-propos" className="hover:text-foreground">
         {t("about")}
       </Link>
+      <Link href="/changelog" className="hover:text-foreground">
+        {t("changelog")}
+      </Link>
       <Link href="/mentions-legales" className="hover:text-foreground">
         {t("legal")}
       </Link>

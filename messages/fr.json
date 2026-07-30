@@ -170,6 +170,11 @@
     "gameReleased": "{game}, dans ta liste d'envies, est sorti !",
     "empty": "Aucune notification pour l'instant."
   },
+  "Changelog": {
+    "title": "Mises à jour",
+    "subtitle": "Ce qui a changé sur Quested, au fil des versions.",
+    "empty": "Aucune mise à jour publiée pour l'instant."
+  },
   "About": {
     "title": "À propos",
     "sections": [
@@ -193,6 +198,7 @@
   },
   "Footer": {
     "about": "À propos",
+    "changelog": "Mises à jour",
     "github": "Code source",
     "legal": "Mentions légales",
     "privacy": "Confidentialité"
