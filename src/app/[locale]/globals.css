@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
+/* Dark is the one and only theme of the app (aligned with the DA mockups). */
 :root {
-  --background: #ffffff;
-  --foreground: #1c1c1f;
-  --muted: #f5f5f6;
-  --muted-foreground: #6b6b71;
-  --border: #e4e4e7;
-  --card: #ffffff;
-  --accent: #5b5bd6;
+  --background: #101012;
+  --foreground: #ededef;
+  --muted: #1a1a1d;
+  --muted-foreground: #8b8b93;
+  --border: #232326;
+  --card: #17171a;
+  --accent: #7170ff;
   --accent-foreground: #ffffff;
 }
 
@@ -24,17 +25,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #101012;
-    --foreground: #ededef;
-    --muted: #1a1a1d;
-    --muted-foreground: #8b8b93;
-    --border: #232326;
-    --card: #17171a;
-    --accent: #7170ff;
-    --accent-foreground: #ffffff;
-  }
+html {
+  /* Native controls (selects, checkboxes, scrollbars) must render dark too. */
+  color-scheme: dark;
 }
 
 body {

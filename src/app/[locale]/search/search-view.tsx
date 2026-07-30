@@ -7,10 +7,10 @@ import { GameCard } from "@/components/game-card";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
 import { useSearchHistory } from "@/lib/use-search-history";
 
-export function SearchView() {
+export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
   const t = useTranslations("Search");
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [genre, setGenre] = useState("");
   const [platform, setPlatform] = useState("");
   const [year, setYear] = useState("");

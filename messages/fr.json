@@ -50,7 +50,14 @@
     "topRatedTab": "Mieux notés",
     "noTopRated": "Pas encore assez de notes pour établir ce classement.",
     "mostAnticipatedTab": "Plus attendus",
-    "noMostAnticipated": "Aucun jeu à venir n'a encore été ajouté à une liste d'envies."
+    "noMostAnticipated": "Aucun jeu à venir n'a encore été ajouté à une liste d'envies.",
+    "featuredBadge": "Populaire cette semaine",
+    "latestActivity": "Dernières activités des joueurs",
+    "widgetPopularWeek": "Populaires cette semaine",
+    "widgetPlayersWeek": "{count, plural, one {# joueur} other {# joueurs}}",
+    "widgetLeaderboard": "Classement abonnements",
+    "widgetLeaderboardAll": "Comparer tout",
+    "widgetSuggestions": "Membres à suivre"
   },
   "Login": {
     "title": "Se connecter",

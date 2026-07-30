@@ -6,7 +6,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { TRPCProvider } from "@/lib/trpc/provider";
 import { auth } from "@/auth";
 import { Header } from "@/components/header";
-import { Sidebar } from "@/components/sidebar";
+import { TopNav } from "@/components/top-nav";
 import { Footer } from "@/components/footer";
 import { InstallPrompt } from "@/components/install-prompt";
 import { getLatestVersion } from "@/lib/github-releases";
@@ -25,7 +25,7 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#5b5bd6",
+  themeColor: "#101012",
 };
 
 export function generateStaticParams() {
@@ -87,15 +87,18 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col pb-20 sm:flex-row sm:pb-0">
+      <body className="flex min-h-full flex-col pb-20 sm:pb-0">
         <NextIntlClientProvider messages={messages}>
           <TRPCProvider>
-            <Sidebar isLoggedIn={Boolean(session?.user)} username={session?.user?.username ?? null} version={version} />
-            <div className="flex min-w-0 flex-1 flex-col">
-              <Header />
-              {children}
-              <Footer />
-            </div>
+            <TopNav
+              isLoggedIn={Boolean(session?.user)}
+              username={session?.user?.username ?? null}
+              userImage={session?.user?.image ?? null}
+              version={version}
+            />
+            <Header />
+            {children}
+            <Footer />
             <InstallPrompt />
           </TRPCProvider>
         </NextIntlClientProvider>

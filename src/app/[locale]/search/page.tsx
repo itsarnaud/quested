@@ -4,6 +4,7 @@ import { SearchView } from "@/app/[locale]/search/search-view";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ q?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function SearchPage() {
-  return <SearchView />;
+export default async function SearchPage({ searchParams }: PageProps) {
+  const { q } = await searchParams;
+  return <SearchView initialQuery={q ?? ""} />;
 }
