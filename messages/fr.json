@@ -46,7 +46,11 @@
     "recommendedTab": "Recommandé",
     "noRecommendations": "Note quelques jeux ou suis d'autres joueurs pour obtenir des recommandations.",
     "recommendedBecauseGenre": "Parce que tu aimes le genre {genre}",
-    "recommendedByFollows": "Aimé par tes abonnements"
+    "recommendedByFollows": "Aimé par tes abonnements",
+    "topRatedTab": "Mieux notés",
+    "noTopRated": "Pas encore assez de notes pour établir ce classement.",
+    "mostAnticipatedTab": "Plus attendus",
+    "noMostAnticipated": "Aucun jeu à venir n'a encore été ajouté à une liste d'envies."
   },
   "Login": {
     "title": "Se connecter",

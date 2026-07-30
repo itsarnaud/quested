@@ -46,7 +46,11 @@
     "recommendedTab": "Recommended",
     "noRecommendations": "Rate a few games or follow other players to get recommendations.",
     "recommendedBecauseGenre": "Because you like {genre}",
-    "recommendedByFollows": "Liked by people you follow"
+    "recommendedByFollows": "Liked by people you follow",
+    "topRatedTab": "Top rated",
+    "noTopRated": "Not enough ratings yet to build this list.",
+    "mostAnticipatedTab": "Most anticipated",
+    "noMostAnticipated": "No upcoming game has been wishlisted yet."
   },
   "Login": {
     "title": "Sign in",

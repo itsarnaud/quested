@@ -8,17 +8,17 @@ export async function Footer() {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="flex h-12 items-center justify-center gap-4 border-t border-border px-6 text-xs text-muted-foreground">
-      <Link href="/a-propos" className="hover:text-foreground">
+    <footer className="flex min-h-12 flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-border px-6 py-3 text-xs text-muted-foreground">
+      <Link href="/a-propos" className="whitespace-nowrap hover:text-foreground">
         {t("about")}
       </Link>
-      <Link href="/changelog" className="hover:text-foreground">
+      <Link href="/changelog" className="whitespace-nowrap hover:text-foreground">
         {t("changelog")}
       </Link>
-      <Link href="/mentions-legales" className="hover:text-foreground">
+      <Link href="/mentions-legales" className="whitespace-nowrap hover:text-foreground">
         {t("legal")}
       </Link>
-      <Link href="/confidentialite" className="hover:text-foreground">
+      <Link href="/confidentialite" className="whitespace-nowrap hover:text-foreground">
         {t("privacy")}
       </Link>
       <a

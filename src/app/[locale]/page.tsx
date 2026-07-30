@@ -19,6 +19,42 @@ function getPopularGames() {
   });
 }
 
+// Ranked by wishlist count among unreleased games, not just release date —
+// a game coming out next week with zero wishlists isn't "anticipated".
+async function getMostAnticipatedGames(): Promise<Game[]> {
+  const grouped = await prisma.log.groupBy({
+    by: ["gameId"],
+    where: { status: "WISHLIST", game: { releaseDate: { gt: new Date() } } },
+    _count: { gameId: true },
+    orderBy: { _count: { gameId: "desc" } },
+    take: DISCOVERY_GAMES_LIMIT,
+  });
+  if (grouped.length === 0) return [];
+
+  const games = await prisma.game.findMany({ where: { id: { in: grouped.map((g) => g.gameId) } } });
+  const gameById = new Map(games.map((g) => [g.id, g]));
+  return grouped.map((g) => gameById.get(g.gameId)).filter((g): g is Game => Boolean(g));
+}
+
+const MIN_RATINGS_FOR_TOP_RATED = 3;
+
+async function getTopRatedGames(): Promise<Game[]> {
+  const grouped = await prisma.log.groupBy({
+    by: ["gameId"],
+    where: { rating: { not: null } },
+    _avg: { rating: true },
+    _count: { rating: true },
+    having: { rating: { _count: { gte: MIN_RATINGS_FOR_TOP_RATED } } },
+    orderBy: { _avg: { rating: "desc" } },
+    take: DISCOVERY_GAMES_LIMIT,
+  });
+  if (grouped.length === 0) return [];
+
+  const games = await prisma.game.findMany({ where: { id: { in: grouped.map((g) => g.gameId) } } });
+  const gameById = new Map(games.map((g) => [g.id, g]));
+  return grouped.map((g) => gameById.get(g.gameId)).filter((g): g is Game => Boolean(g));
+}
+
 const RECOMMENDATION_RATING_THRESHOLD = 7;
 const GAMES_PER_SECTION = 12;
 const MAX_GENRE_SECTIONS = 3;
@@ -198,23 +234,26 @@ async function Feed({ userId }: { userId: string }) {
   });
   const followingIds = following.map((f) => f.followingId);
 
-  const [activity, popularGames, newGames, recommendationSections] = await Promise.all([
-    followingIds.length > 0
-      ? prisma.log.findMany({
-          where: { userId: { in: followingIds } },
-          include: { game: true, user: true, likes: { select: { userId: true } } },
-          orderBy: { updatedAt: "desc" },
-          take: ACTIVITY_LIMIT,
-        })
-      : Promise.resolve([]),
-    getPopularGames(),
-    prisma.game.findMany({
-      where: { releaseYear: { not: null } },
-      orderBy: { releaseYear: "desc" },
-      take: DISCOVERY_GAMES_LIMIT,
-    }),
-    getRecommendationSections(userId, followingIds, t),
-  ]);
+  const [activity, popularGames, newGames, topRatedGames, mostAnticipatedGames, recommendationSections] =
+    await Promise.all([
+      followingIds.length > 0
+        ? prisma.log.findMany({
+            where: { userId: { in: followingIds } },
+            include: { game: true, user: true, likes: { select: { userId: true } } },
+            orderBy: { updatedAt: "desc" },
+            take: ACTIVITY_LIMIT,
+          })
+        : Promise.resolve([]),
+      getPopularGames(),
+      prisma.game.findMany({
+        where: { releaseYear: { not: null } },
+        orderBy: { releaseYear: "desc" },
+        take: DISCOVERY_GAMES_LIMIT,
+      }),
+      getTopRatedGames(),
+      getMostAnticipatedGames(),
+      getRecommendationSections(userId, followingIds, t),
+    ]);
 
   const activityContent =
     activity.length === 0 ? (
@@ -334,6 +373,40 @@ async function Feed({ userId }: { userId: string }) {
     </div>
   );
 
+  const topRatedContent =
+    topRatedGames.length === 0 ? (
+      <p className="text-sm text-muted-foreground">{t("noTopRated")}</p>
+    ) : (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+        {topRatedGames.map((game) => (
+          <GameCard
+            key={game.id}
+            slug={game.slug}
+            title={game.title}
+            releaseYear={game.releaseYear}
+            coverUrl={game.coverUrl}
+          />
+        ))}
+      </div>
+    );
+
+  const mostAnticipatedContent =
+    mostAnticipatedGames.length === 0 ? (
+      <p className="text-sm text-muted-foreground">{t("noMostAnticipated")}</p>
+    ) : (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6">
+        {mostAnticipatedGames.map((game) => (
+          <GameCard
+            key={game.id}
+            slug={game.slug}
+            title={game.title}
+            releaseYear={game.releaseYear}
+            coverUrl={game.coverUrl}
+          />
+        ))}
+      </div>
+    );
+
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-6 py-10">
       <Tabs defaultTab="activity">
@@ -346,8 +419,14 @@ async function Feed({ userId }: { userId: string }) {
         <TabPanel key="popular" tabKey="popular" label={t("popularTab")}>
           {popularContent}
         </TabPanel>
+        <TabPanel key="topRated" tabKey="topRated" label={t("topRatedTab")}>
+          {topRatedContent}
+        </TabPanel>
         <TabPanel key="new" tabKey="new" label={t("newTab")}>
           {newContent}
+        </TabPanel>
+        <TabPanel key="mostAnticipated" tabKey="mostAnticipated" label={t("mostAnticipatedTab")}>
+          {mostAnticipatedContent}
         </TabPanel>
       </Tabs>
     </div>
