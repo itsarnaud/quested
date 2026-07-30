@@ -10,6 +10,7 @@ import { LikeButton } from "@/components/like-button";
 import { HeartIcon } from "@/components/icons/heart-icon";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { GameStatsBox } from "@/components/game-stats-box";
 
 const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
 
@@ -50,12 +51,23 @@ export default async function GamePage({ params }: PageProps) {
 
   const isUnreleased = Boolean(game.releaseYear && game.releaseYear > new Date().getFullYear());
 
-  const [ratingStats, topReviews] = await Promise.all([
+  const [ratingStats, ratingRows, statusGroups, reviewCount, listCount, topReviews] = await Promise.all([
     prisma.log.aggregate({
       where: { gameId: game.id, rating: { not: null } },
       _avg: { rating: true },
       _count: { rating: true },
     }),
+    prisma.log.findMany({
+      where: { gameId: game.id, rating: { not: null } },
+      select: { rating: true },
+    }),
+    prisma.log.groupBy({
+      by: ["status"],
+      where: { gameId: game.id },
+      _count: { status: true },
+    }),
+    prisma.log.count({ where: { gameId: game.id, notes: { not: null } } }),
+    prisma.gameListItem.count({ where: { gameId: game.id } }),
     prisma.log.findMany({
       where: { gameId: game.id, notes: { not: null } },
       include: {
@@ -67,9 +79,18 @@ export default async function GamePage({ params }: PageProps) {
     }),
   ]);
 
+  const statusCounts: Record<string, number> = {
+    BACKLOG: 0,
+    PLAYING: 0,
+    COMPLETED: 0,
+    DROPPED: 0,
+    WISHLIST: 0,
+  };
+  for (const group of statusGroups) statusCounts[group.status] = group._count.status;
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-6 py-10">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 sm:flex-row sm:gap-8">
+      <div className="flex w-full max-w-3xl flex-col gap-6 sm:flex-row sm:gap-8">
         <div className="mx-auto w-40 shrink-0 sm:mx-0 sm:w-48">
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
             {game.coverUrl ? (
@@ -139,6 +160,27 @@ export default async function GamePage({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      <GameStatsBox
+        averageRating={ratingStats._avg.rating}
+        ratingCount={ratingStats._count.rating}
+        ratings={ratingRows.map((r) => r.rating!)}
+        statusCounts={statusCounts}
+        reviewCount={reviewCount}
+        listCount={listCount}
+        labels={{
+          avgRating: t("avgRating"),
+          reviews: t("reviewsCount"),
+          lists: t("listsCount"),
+          statusLabels: {
+            BACKLOG: tStatus("BACKLOG"),
+            PLAYING: tStatus("PLAYING"),
+            COMPLETED: tStatus("COMPLETED"),
+            DROPPED: tStatus("DROPPED"),
+            WISHLIST: tStatus("WISHLIST"),
+          },
+        }}
+      />
 
       {topReviews.length > 0 ? (
         <div className="flex flex-col gap-3">

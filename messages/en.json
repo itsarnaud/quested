@@ -93,7 +93,10 @@
     "releasedBadge": "Released",
     "unreleasedBadge": "Upcoming",
     "genresLabel": "Genres:",
-    "platformsLabel": "Platforms:"
+    "platformsLabel": "Platforms:",
+    "avgRating": "Average rating",
+    "reviewsCount": "Reviews",
+    "listsCount": "In lists"
   },
   "GameStatus": {
     "BACKLOG": "Backlog",
