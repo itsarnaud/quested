@@ -27,6 +27,7 @@
     "home": "Accueil",
     "search": "Recherche",
     "people": "Joueurs",
+    "leaderboard": "Classement",
     "notifications": "Notifications",
     "profile": "Profil",
     "account": "Compte",
@@ -77,7 +78,8 @@
     "searching": "Recherche en cours…",
     "noResults": "Aucun joueur trouvé.",
     "suggestionsTitle": "Suggestions",
-    "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}"
+    "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}",
+    "viewLeaderboard": "Voir le classement entre tes abonnements"
   },
   "GamePage": {
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",
@@ -152,6 +154,16 @@
     "noDescription": "Aucune description.",
     "backToProfile": "Retour au profil",
     "cloneList": "Cloner cette liste"
+  },
+  "Leaderboard": {
+    "title": "Classement",
+    "subtitle": "Toi et tes abonnements, comparés.",
+    "noFollows": "Suis d'autres joueurs pour voir le classement.",
+    "completedTitle": "Jeux terminés",
+    "averageRatingTitle": "Note moyenne donnée",
+    "gamesCompleted": "{count, plural, one {# jeu} other {# jeux}}",
+    "notEnoughRatings": "Pas assez de notes pour ce classement (minimum {count} jeux notés).",
+    "you": "(toi)"
   },
   "Follow": {
     "follow": "Suivre",

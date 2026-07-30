@@ -27,6 +27,7 @@
     "home": "Home",
     "search": "Search",
     "people": "Players",
+    "leaderboard": "Leaderboard",
     "notifications": "Notifications",
     "profile": "Profile",
     "account": "Account",
@@ -77,7 +78,8 @@
     "searching": "Searching…",
     "noResults": "No players found.",
     "suggestionsTitle": "Suggestions",
-    "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}"
+    "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}",
+    "viewLeaderboard": "View the leaderboard among your follows"
   },
   "GamePage": {
     "signInPrompt": "Sign in to track this game.",
@@ -152,6 +154,16 @@
     "noDescription": "No description.",
     "backToProfile": "Back to profile",
     "cloneList": "Clone this list"
+  },
+  "Leaderboard": {
+    "title": "Leaderboard",
+    "subtitle": "You and the people you follow, compared.",
+    "noFollows": "Follow other players to see the leaderboard.",
+    "completedTitle": "Games completed",
+    "averageRatingTitle": "Average rating given",
+    "gamesCompleted": "{count, plural, one {# game} other {# games}}",
+    "notEnoughRatings": "Not enough rated games for this leaderboard (minimum {count}).",
+    "you": "(you)"
   },
   "Follow": {
     "follow": "Follow",

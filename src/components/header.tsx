@@ -35,6 +35,9 @@ export async function Header() {
             </Link>
             {session?.user ? (
               <>
+                <Link href="/leaderboard" className="text-muted-foreground hover:text-foreground">
+                  {t("leaderboard")}
+                </Link>
                 {session.user.username ? (
                   <Link
                     href={`/u/${session.user.username}`}

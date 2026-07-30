@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc/client";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
 import { useSearchHistory } from "@/lib/use-search-history";
 import { PersonRow } from "@/components/person-row";
+import { Link } from "@/i18n/navigation";
 
 export function PeopleView() {
   const t = useTranslations("People");
@@ -65,6 +66,10 @@ export function PeopleView() {
           />
         ) : null}
       </div>
+
+      <Link href="/leaderboard" className="w-fit text-sm text-muted-foreground hover:text-foreground hover:underline">
+        {t("viewLeaderboard")} →
+      </Link>
 
       {isFetching ? <p className="text-sm text-muted-foreground">{t("searching")}</p> : null}
 
