@@ -4,6 +4,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure, withRateLimit } 
 import { standardRatelimit } from "@/lib/redis";
 import { sendEmail } from "@/lib/mailer";
 import { renderFollowEmail } from "@/lib/email-templates";
+import { sendPushToUser } from "@/lib/push";
 import { withFollowingFlag } from "@/server/api/routers/user";
 
 const USER_CARD_SELECT = { id: true, username: true, name: true, image: true, badges: true } as const;
@@ -40,6 +41,14 @@ export const followRouter = createTRPCRouter({
         sendEmail({ to: target.email, subject, html }).catch((err) =>
           console.error("Failed to send follow email:", err),
         );
+      }
+
+      if (ctx.session.user.username) {
+        sendPushToUser(target.id, {
+          title: "Quested",
+          body: `@${ctx.session.user.username} a commencé à te suivre`,
+          url: `/u/${ctx.session.user.username}`,
+        }).catch((err) => console.error("Failed to send follow push:", err));
       }
 
       return { following: true };

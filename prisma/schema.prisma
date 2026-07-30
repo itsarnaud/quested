@@ -79,6 +79,8 @@ model User {
 
   gameLists GameList[]
 
+  pushSubscriptions PushSubscription[]
+
   badges Badge[] @default([])
 
   // Off by default — transactional emails (welcome, account deletion)
@@ -166,6 +168,22 @@ enum NotificationType {
   FOLLOW
   LIKE
   RELEASE
+}
+
+// One row per subscribed browser/device, so a user can have push enabled on
+// several devices at once and each can be dropped independently (e.g. when
+// the browser reports the subscription as expired).
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@index([userId])
 }
 
 enum GameStatus {

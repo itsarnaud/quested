@@ -5,6 +5,7 @@ import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
+import { PushNotificationBanner } from "@/components/push-notification-banner";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -45,6 +46,8 @@ export default async function NotificationsPage({ params }: PageProps) {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
       <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+
+      <PushNotificationBanner />
 
       {notifications.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("empty")}</p>

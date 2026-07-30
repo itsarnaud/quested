@@ -187,7 +187,10 @@
     "gameReleased": "{game}, dans ta liste d'envies, est sorti !",
     "empty": "Aucune notification pour l'instant.",
     "noUnread": "Aucune nouvelle notification.",
-    "viewAll": "Voir tout"
+    "viewAll": "Voir tout",
+    "pushBanner": "Active les notifications push pour ne rien manquer, même quand tu n'es pas sur le site.",
+    "pushBannerDismiss": "Non merci",
+    "pushBannerEnable": "Activer"
   },
   "Changelog": {
     "title": "Mises à jour",
@@ -235,6 +238,11 @@
     "notifyOnFollow": "M'envoyer un email quand quelqu'un me suit",
     "notifyOnLike": "M'envoyer un email quand quelqu'un aime mon avis",
     "notifyOnRelease": "M'envoyer un email quand un jeu de ma liste d'envies sort",
+    "pushTitle": "Notifications push",
+    "pushDescription": "Reçois une notification directement sur cet appareil, en complément des emails et de la cloche.",
+    "pushUnsupported": "Les notifications push ne sont pas prises en charge par ce navigateur.",
+    "pushEnable": "Activer sur cet appareil",
+    "pushDisable": "Désactiver sur cet appareil",
     "exportTitle": "Exporter mes données",
     "exportDescription": "Télécharge un fichier JSON contenant ton profil et tous tes jeux enregistrés.",
     "exportButton": "Télécharger mes données",

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/mailer";
 import { renderGameReleasedEmail } from "@/lib/email-templates";
+import { sendPushToUser } from "@/lib/push";
 
 const LOOKBACK_DAYS = 2;
 
@@ -49,6 +50,12 @@ export async function notifyGameReleases() {
           console.error("Failed to send release email:", err),
         );
       }
+
+      sendPushToUser(log.user.id, {
+        title: "Quested",
+        body: `${game.title}, dans ta liste d'envies, est sorti !`,
+        url: `/games/${game.slug}`,
+      }).catch((err) => console.error("Failed to send release push:", err));
     }
   }
 

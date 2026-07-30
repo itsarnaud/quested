@@ -4,6 +4,7 @@ import { createTRPCRouter, protectedProcedure, withRateLimit } from "@/server/ap
 import { standardRatelimit } from "@/lib/redis";
 import { sendEmail } from "@/lib/mailer";
 import { renderLikeEmail } from "@/lib/email-templates";
+import { sendPushToUser } from "@/lib/push";
 
 export const likeRouter = createTRPCRouter({
   toggle: protectedProcedure
@@ -48,6 +49,14 @@ export const likeRouter = createTRPCRouter({
         sendEmail({ to: log.user.email, subject, html }).catch((err) =>
           console.error("Failed to send like email:", err),
         );
+      }
+
+      if (ctx.session.user.username) {
+        sendPushToUser(log.userId, {
+          title: "Quested",
+          body: `@${ctx.session.user.username} a aimé ton avis sur ${log.game.title}`,
+          url: `/games/${log.game.slug}`,
+        }).catch((err) => console.error("Failed to send like push:", err));
       }
 
       return { liked: true };
