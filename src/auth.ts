@@ -28,6 +28,10 @@ const discordProvider = Discord({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  // Vercel sits in front as a proxy — without this, Auth.js can mis-resolve
+  // the host/protocol on the OAuth callback, which is one known cause of
+  // "pkceCodeVerifier could not be parsed" errors.
+  trustHost: true,
   providers: [Google, discordProvider],
   session: { strategy: "database" },
   pages: {
