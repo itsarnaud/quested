@@ -18,10 +18,9 @@ export function NotificationBell() {
   });
   const { data: notifications } = trpc.notification.list.useQuery(undefined, { enabled: open });
   const markAllRead = trpc.notification.markAllRead.useMutation({
-    onSuccess: () => {
-      utils.notification.unreadCount.invalidate();
-      utils.notification.list.invalidate();
-    },
+    // Only refresh the unread dot — not the list itself, otherwise the
+    // unread-only dropdown would empty out right as the user opens it.
+    onSuccess: () => utils.notification.unreadCount.invalidate(),
   });
 
   return (
@@ -51,10 +50,10 @@ export function NotificationBell() {
             className="fixed inset-0 z-10 cursor-default"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-0 z-20 mt-2 w-72 rounded-md border border-border bg-card p-2 shadow-sm">
+          <div className="fixed inset-x-4 top-16 z-20 rounded-md border border-border bg-card p-2 shadow-sm">
             <span className="block px-1 py-1 text-xs font-medium text-muted-foreground">{t("title")}</span>
             {notifications && notifications.length > 0 ? (
-              <div className="flex flex-col">
+              <div className="flex max-h-96 flex-col overflow-y-auto">
                 {notifications.map((n) => (
                   <Link
                     key={n.id}
@@ -98,8 +97,15 @@ export function NotificationBell() {
                 ))}
               </div>
             ) : (
-              <p className="px-1 py-3 text-sm text-muted-foreground">{t("empty")}</p>
+              <p className="px-1 py-3 text-sm text-muted-foreground">{t("noUnread")}</p>
             )}
+            <Link
+              href="/notifications"
+              className="mt-1 block rounded px-1 py-2 text-center text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+              onClick={() => setOpen(false)}
+            >
+              {t("viewAll")}
+            </Link>
           </div>
         </>
       ) : null}

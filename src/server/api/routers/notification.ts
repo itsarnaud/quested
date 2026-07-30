@@ -1,9 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const notificationRouter = createTRPCRouter({
+  // Powers the mobile header's quick-glance dropdown — unread only, since the
+  // full history (read or not) already lives on the /notifications page.
   list: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.notification.findMany({
-      where: { userId: ctx.session.user.id },
+      where: { userId: ctx.session.user.id, read: false },
       include: {
         actor: { select: { username: true, name: true, image: true } },
         log: { select: { game: { select: { slug: true, title: true } } } },

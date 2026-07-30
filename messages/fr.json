@@ -185,7 +185,9 @@
     "startedFollowing": "a commencé à te suivre",
     "liked": "a aimé ta review sur {game}",
     "gameReleased": "{game}, dans ta liste d'envies, est sorti !",
-    "empty": "Aucune notification pour l'instant."
+    "empty": "Aucune notification pour l'instant.",
+    "noUnread": "Aucune nouvelle notification.",
+    "viewAll": "Voir tout"
   },
   "Changelog": {
     "title": "Mises à jour",
@@ -223,6 +225,11 @@
   "Account": {
     "title": "Mon compte",
     "signOut": "Se déconnecter",
+    "navProfile": "Profil",
+    "navNotifications": "Notifications",
+    "navLinkedAccounts": "Comptes liés",
+    "navData": "Données",
+    "navDanger": "Zone de danger",
     "notificationsTitle": "Notifications par email",
     "notificationsDescription": "Désactivées par défaut, active-les si tu veux être prévenu même quand tu n'es pas sur le site.",
     "notifyOnFollow": "M'envoyer un email quand quelqu'un me suit",
