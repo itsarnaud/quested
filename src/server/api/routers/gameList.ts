@@ -124,6 +124,37 @@ export const gameListRouter = createTRPCRouter({
       return { success: true };
     }),
 
+  clone: protectedProcedure
+    .use(withRateLimit(standardRatelimit))
+    .input(z.object({ listId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const source = await ctx.prisma.gameList.findUnique({
+        where: { id: input.listId },
+        include: { items: { orderBy: { position: "asc" } } },
+      });
+      if (!source) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const existingCount = await ctx.prisma.gameList.count({ where: { userId: ctx.session.user.id } });
+      if (existingCount >= MAX_LISTS_PER_USER) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "List limit reached." });
+      }
+
+      const clone = await ctx.prisma.gameList.create({
+        data: {
+          userId: ctx.session.user.id,
+          title: source.title,
+          description: source.description,
+          items: {
+            createMany: {
+              data: source.items.map((item) => ({ gameId: item.gameId, position: item.position })),
+            },
+          },
+        },
+      });
+
+      return { listId: clone.id, username: ctx.session.user.username };
+    }),
+
   removeGame: protectedProcedure
     .input(z.object({ listId: z.string(), gameId: z.string() }))
     .mutation(async ({ ctx, input }) => {

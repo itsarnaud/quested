@@ -16,6 +16,7 @@ export function ListDetail({
   initialDescription,
   initialItems,
   canEdit,
+  canClone,
 }: {
   username: string;
   listId: string;
@@ -23,6 +24,7 @@ export function ListDetail({
   initialDescription: string | null;
   initialItems: Game[];
   canEdit: boolean;
+  canClone: boolean;
 }) {
   const t = useTranslations("Lists");
   const router = useRouter();
@@ -72,6 +74,11 @@ export function ListDetail({
   });
   const removeGame = trpc.gameList.removeGame.useMutation({
     onSuccess: () => utils.gameList.get.invalidate({ listId }),
+  });
+  const clone = trpc.gameList.clone.useMutation({
+    onSuccess: (result) => {
+      if (result.username) router.push(`/u/${result.username}/lists/${result.listId}`);
+    },
   });
 
   return (
@@ -141,6 +148,16 @@ export function ListDetail({
                 </Button>
               )}
             </div>
+          ) : canClone ? (
+            <Button
+              type="button"
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => clone.mutate({ listId })}
+              disabled={clone.isPending}
+            >
+              {t("cloneList")}
+            </Button>
           ) : null}
         </div>
       )}

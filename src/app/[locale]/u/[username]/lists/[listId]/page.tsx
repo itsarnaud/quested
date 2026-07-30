@@ -35,6 +35,7 @@ export default async function ListDetailPage({ params }: PageProps) {
   if (!list || list.user.username !== username) notFound();
 
   const canEdit = session?.user?.id === list.userId;
+  const canClone = Boolean(session?.user) && !canEdit;
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-6 py-10">
@@ -49,6 +50,7 @@ export default async function ListDetailPage({ params }: PageProps) {
         initialDescription={list.description}
         initialItems={list.items.map((item) => item.game)}
         canEdit={canEdit}
+        canClone={canClone}
       />
     </div>
   );

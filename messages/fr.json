@@ -150,7 +150,8 @@
     "deleteConfirm": "Supprimer cette liste ? Cette action est irréversible.",
     "deleteConfirmButton": "Oui, supprimer",
     "noDescription": "Aucune description.",
-    "backToProfile": "Retour au profil"
+    "backToProfile": "Retour au profil",
+    "cloneList": "Cloner cette liste"
   },
   "Follow": {
     "follow": "Suivre",

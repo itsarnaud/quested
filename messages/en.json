@@ -150,7 +150,8 @@
     "deleteConfirm": "Delete this list? This action cannot be undone.",
     "deleteConfirmButton": "Yes, delete",
     "noDescription": "No description.",
-    "backToProfile": "Back to profile"
+    "backToProfile": "Back to profile",
+    "cloneList": "Clone this list"
   },
   "Follow": {
     "follow": "Follow",
