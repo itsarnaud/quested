@@ -93,7 +93,8 @@
     "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}",
     "viewLeaderboard": "View leaderboard",
     "heading": "Players",
-    "stats": "{completed, plural, one {# completed} other {# completed}} · {reviews, plural, one {# review} other {# reviews}}"
+    "stats": "{completed, plural, one {# completed} other {# completed}} · {reviews, plural, one {# review} other {# reviews}}",
+    "discoveryHint": "Search for a player by name or username to follow them."
   },
   "GamePage": {
     "signInPrompt": "Sign in to track this game.",

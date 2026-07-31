@@ -93,7 +93,8 @@
     "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}",
     "viewLeaderboard": "Voir le classement",
     "heading": "Joueurs",
-    "stats": "{completed, plural, one {# terminé} other {# terminés}} · {reviews, plural, one {# avis} other {# avis}}"
+    "stats": "{completed, plural, one {# terminé} other {# terminés}} · {reviews, plural, one {# avis} other {# avis}}",
+    "discoveryHint": "Recherche un joueur par son nom ou son pseudo pour le suivre."
   },
   "GamePage": {
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",

@@ -112,7 +112,9 @@ export function PeopleView() {
             ))}
           </div>
         </div>
-      ) : null}
+      ) : (
+        <p className="text-sm text-muted-foreground">{t("discoveryHint")}</p>
+      )}
     </div>
   );
 }
