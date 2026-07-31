@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc/client";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
 import { useSearchHistory } from "@/lib/use-search-history";
 import { PersonRow } from "@/components/person-row";
+import { SearchIcon } from "@/components/icons/search-icon";
 import { Link } from "@/i18n/navigation";
 
 export function PeopleView() {
@@ -37,8 +38,16 @@ export function PeopleView() {
   const discovery = suggestions && suggestions.length > 0 ? suggestions : null;
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-10">
+      <div className="flex items-baseline justify-between gap-4">
+        <h1 className="text-3xl font-bold tracking-tight">{t("heading")}</h1>
+        <Link href="/leaderboard" className="shrink-0 text-sm font-semibold text-accent hover:underline">
+          {t("viewLeaderboard")} ›
+        </Link>
+      </div>
+
       <div className="relative">
+        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -51,7 +60,7 @@ export function PeopleView() {
             }
           }}
           placeholder={t("placeholder")}
-          className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
+          className="h-11 w-full rounded-full border border-border bg-card pl-11 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
         />
         {history.open && query.trim().length === 0 ? (
           <SearchHistoryDropdown
@@ -67,10 +76,6 @@ export function PeopleView() {
         ) : null}
       </div>
 
-      <Link href="/leaderboard" className="w-fit text-sm text-muted-foreground hover:text-foreground hover:underline">
-        {t("viewLeaderboard")} →
-      </Link>
-
       {isFetching ? <p className="text-sm text-muted-foreground">{t("searching")}</p> : null}
 
       {isSearching && !isFetching && users && users.length === 0 ? (
@@ -78,7 +83,7 @@ export function PeopleView() {
       ) : null}
 
       {isSearching ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col divide-y divide-border">
           {users?.map((user) => (
             <PersonRow
               key={user.id}
@@ -91,9 +96,11 @@ export function PeopleView() {
           ))}
         </div>
       ) : discovery ? (
-        <div className="flex flex-col gap-3">
-          <h2 className="text-sm font-medium text-muted-foreground">{t("suggestionsTitle")}</h2>
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("suggestionsTitle")}
+          </h2>
+          <div className="flex flex-col divide-y divide-border">
             {discovery.map((user) => (
               <PersonRow
                 key={user.id}

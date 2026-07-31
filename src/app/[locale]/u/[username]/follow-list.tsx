@@ -17,7 +17,7 @@ export function FollowList({ username, type }: { username: string; type: "follow
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col divide-y divide-border">
       {users?.map((user) => (
         <PersonRow
           key={user.id}

@@ -15,6 +15,9 @@ export type Person = {
   badges: Badge[];
   isFollowing: boolean;
   isViewer: boolean;
+  bio?: string | null;
+  completedCount?: number;
+  reviewCount?: number;
 };
 
 export function PersonRow({
@@ -25,17 +28,18 @@ export function PersonRow({
   isTogglePending,
 }: {
   user: Person;
-  subtitle: string;
+  subtitle?: string;
   onNavigate?: () => void;
   onToggleFollow: () => void;
   isTogglePending: boolean;
 }) {
+  const t = useTranslations("People");
   const tFollow = useTranslations("Follow");
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
-      <Link href={`/u/${user.username}`} prefetch={false} className="flex min-w-0 items-center gap-3" onClick={onNavigate}>
-        <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+    <div className="flex items-center justify-between gap-4 py-4">
+      <Link href={`/u/${user.username}`} prefetch={false} className="flex min-w-0 items-center gap-4" onClick={onNavigate}>
+        <div className="relative size-12 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
           {user.image ? (
             <Image
               src={user.image}
@@ -46,17 +50,31 @@ export function PersonRow({
             />
           ) : null}
         </div>
-        <div className="min-w-0 flex flex-col">
-          <span className="flex min-w-0 items-center gap-1 text-sm font-medium">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="flex min-w-0 items-center gap-1 font-semibold">
             <span className="truncate">{user.name ?? user.username}</span>
             <UserBadgesClient badges={user.badges} />
           </span>
-          <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
+          {user.bio ? (
+            <span className="truncate text-sm text-muted-foreground">{user.bio}</span>
+          ) : subtitle ? (
+            <span className="truncate text-sm text-muted-foreground">{subtitle}</span>
+          ) : null}
+          {user.completedCount != null && user.reviewCount != null ? (
+            <span className="truncate text-xs text-muted-foreground">
+              {t("stats", { completed: user.completedCount, reviews: user.reviewCount })}
+            </span>
+          ) : null}
         </div>
       </Link>
       {user.isViewer ? null : (
-        <Button variant={user.isFollowing ? "secondary" : "primary"} onClick={onToggleFollow} disabled={isTogglePending}>
-          {user.isFollowing ? tFollow("unfollow") : tFollow("follow")}
+        <Button
+          variant={user.isFollowing ? "secondary" : "primary"}
+          className="shrink-0 rounded-full"
+          onClick={onToggleFollow}
+          disabled={isTogglePending}
+        >
+          {user.isFollowing ? tFollow("followingLabel") : tFollow("follow")}
         </Button>
       )}
     </div>

@@ -91,20 +91,22 @@
     "noResults": "No players found.",
     "suggestionsTitle": "Suggestions",
     "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}",
-    "viewLeaderboard": "View the leaderboard among your follows"
+    "viewLeaderboard": "View leaderboard",
+    "heading": "Players",
+    "stats": "{completed, plural, one {# completed} other {# completed}} · {reviews, plural, one {# review} other {# reviews}}"
   },
   "GamePage": {
     "signInPrompt": "Sign in to track this game.",
     "signIn": "Sign in",
-    "topReviewsTitle": "Top reviews",
-    "byDevelopers": "by",
+    "topReviewsTitle": "Community reviews",
     "releasedBadge": "Released",
     "unreleasedBadge": "Upcoming",
-    "genresLabel": "Genres:",
-    "platformsLabel": "Platforms:",
     "avgRating": "Average rating",
     "reviewsCount": "Reviews",
-    "listsCount": "In lists"
+    "listsCount": "In lists",
+    "communityAvg": "community average",
+    "ratingsCount": "{count, plural, one {# rating} other {# ratings}}",
+    "yourTracking": "Your tracking"
   },
   "GameStatus": {
     "BACKLOG": "Backlog",
@@ -185,9 +187,12 @@
     "noFollows": "Follow other players to see the leaderboard.",
     "completedTitle": "Games completed",
     "averageRatingTitle": "Average rating given",
-    "gamesCompleted": "{count, plural, one {# game} other {# games}}",
+    "gamesCompleted": "{count, plural, one {# completed} other {# completed}}",
     "notEnoughRatings": "Not enough rated games for this leaderboard (minimum {count}).",
-    "you": "(you)"
+    "you": "(you)",
+    "findMember": "Find a member",
+    "reviewsTitle": "Reviews posted",
+    "reviewsPublished": "{count, plural, one {# review} other {# reviews}}"
   },
   "Follow": {
     "follow": "Follow",
@@ -198,7 +203,8 @@
     "backToProfile": "Back to profile",
     "noFollowers": "No followers yet.",
     "noFollowing": "Not following anyone yet.",
-    "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}"
+    "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}",
+    "followingLabel": "Following"
   },
   "Notifications": {
     "title": "Notifications",
@@ -335,5 +341,8 @@
         "body": "You can export or delete all your data at any time from the Account page. For any other request (rectification, question), contact contact@arnaudroyer.fr. You can also file a complaint with your local data protection authority."
       }
     ]
+  },
+  "Common": {
+    "back": "Back"
   }
 }

@@ -91,20 +91,22 @@
     "noResults": "Aucun joueur trouvé.",
     "suggestionsTitle": "Suggestions",
     "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}",
-    "viewLeaderboard": "Voir le classement entre tes abonnements"
+    "viewLeaderboard": "Voir le classement",
+    "heading": "Joueurs",
+    "stats": "{completed, plural, one {# terminé} other {# terminés}} · {reviews, plural, one {# avis} other {# avis}}"
   },
   "GamePage": {
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",
     "signIn": "Se connecter",
-    "topReviewsTitle": "Avis les mieux notés",
-    "byDevelopers": "par",
+    "topReviewsTitle": "Avis de la communauté",
     "releasedBadge": "Sorti",
     "unreleasedBadge": "À venir",
-    "genresLabel": "Genres :",
-    "platformsLabel": "Plateformes :",
     "avgRating": "Note moyenne",
     "reviewsCount": "Avis",
-    "listsCount": "Dans des listes"
+    "listsCount": "Dans des listes",
+    "communityAvg": "moyenne communautaire",
+    "ratingsCount": "{count, plural, one {# note} other {# notes}}",
+    "yourTracking": "Ton suivi"
   },
   "GameStatus": {
     "BACKLOG": "Backlog",
@@ -185,9 +187,12 @@
     "noFollows": "Suis d'autres joueurs pour voir le classement.",
     "completedTitle": "Jeux terminés",
     "averageRatingTitle": "Note moyenne donnée",
-    "gamesCompleted": "{count, plural, one {# jeu} other {# jeux}}",
+    "gamesCompleted": "{count, plural, one {# terminé} other {# terminés}}",
     "notEnoughRatings": "Pas assez de notes pour ce classement (minimum {count} jeux notés).",
-    "you": "(toi)"
+    "you": "(toi)",
+    "findMember": "Chercher un membre",
+    "reviewsTitle": "Avis publiés",
+    "reviewsPublished": "{count, plural, one {# avis} other {# avis}}"
   },
   "Follow": {
     "follow": "Suivre",
@@ -198,7 +203,8 @@
     "backToProfile": "Retour au profil",
     "noFollowers": "Aucun abonné pour l'instant.",
     "noFollowing": "Ne suit personne pour l'instant.",
-    "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}"
+    "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}",
+    "followingLabel": "Suivi"
   },
   "Notifications": {
     "title": "Notifications",
@@ -335,5 +341,8 @@
         "body": "Tu peux à tout moment exporter ou supprimer toutes tes données depuis la page Compte. Pour toute autre demande (rectification, question), contacte contact@arnaudroyer.fr. Tu peux aussi introduire une réclamation auprès de la CNIL (cnil.fr)."
       }
     ]
+  },
+  "Common": {
+    "back": "Retour"
   }
 }

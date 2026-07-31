@@ -28,6 +28,31 @@ export async function withFollowingFlag<T extends { id: string }>(
   }));
 }
 
+async function withLogStats<T extends { id: string }>(users: T[]) {
+  const ids = users.map((u) => u.id);
+  const [completed, reviews] = await Promise.all([
+    prisma.log.groupBy({
+      by: ["userId"],
+      where: { userId: { in: ids }, status: "COMPLETED" },
+      _count: { userId: true },
+    }),
+    prisma.log.groupBy({
+      by: ["userId"],
+      where: { userId: { in: ids }, notes: { not: null } },
+      _count: { userId: true },
+    }),
+  ]);
+
+  const completedById = new Map(completed.map((c) => [c.userId, c._count.userId]));
+  const reviewsById = new Map(reviews.map((r) => [r.userId, r._count.userId]));
+
+  return users.map((u) => ({
+    ...u,
+    completedCount: completedById.get(u.id) ?? 0,
+    reviewCount: reviewsById.get(u.id) ?? 0,
+  }));
+}
+
 export const userRouter = createTRPCRouter({
   search: publicProcedure
     .use(withRateLimit(standardRatelimit))
@@ -46,7 +71,7 @@ export const userRouter = createTRPCRouter({
         take: 20,
       });
 
-      return withFollowingFlag(ctx.session?.user?.id, users);
+      return withLogStats(await withFollowingFlag(ctx.session?.user?.id, users));
     }),
 
   // Players followed by the people you follow, ranked by how many of your
@@ -83,12 +108,14 @@ export const userRouter = createTRPCRouter({
       (a, b) => (mutualCountById.get(b.id) ?? 0) - (mutualCountById.get(a.id) ?? 0),
     );
 
-    return users.map((u) => ({
-      ...u,
-      isFollowing: false,
-      isViewer: false,
-      mutualCount: mutualCountById.get(u.id) ?? 0,
-    }));
+    return withLogStats(
+      users.map((u) => ({
+        ...u,
+        isFollowing: false,
+        isViewer: false,
+        mutualCount: mutualCountById.get(u.id) ?? 0,
+      })),
+    );
   }),
 
   compareTaste: protectedProcedure
