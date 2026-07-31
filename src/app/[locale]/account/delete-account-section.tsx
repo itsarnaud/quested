@@ -8,43 +8,36 @@ import { Button } from "@/components/ui/button";
 
 export function DeleteAccountSection() {
   const t = useTranslations("Account");
-  const [confirming, setConfirming] = useState(false);
+  const [understood, setUnderstood] = useState(false);
 
   const deleteAccount = trpc.user.deleteAccount.useMutation({
     onSuccess: () => signOut({ callbackUrl: "/" }),
   });
 
   return (
-    <div className="flex flex-col gap-2">
-      <h2 className="text-sm font-medium">{t("deleteTitle")}</h2>
-      <p className="text-sm text-muted-foreground">{t("deleteDescription")}</p>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1 rounded-lg border border-red-500/40 bg-red-500/5 p-4">
+        <h2 className="text-sm font-semibold text-red-400">{t("dangerZoneTitle")}</h2>
+        <p className="text-sm text-muted-foreground">{t("deleteDescription")}</p>
+      </div>
 
-      {confirming ? (
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-red-600">{t("deleteConfirm")}</p>
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="w-fit border-red-600 text-red-600 hover:bg-red-50"
-              onClick={() => deleteAccount.mutate()}
-              disabled={deleteAccount.isPending}
-            >
-              {t("deleteConfirmButton")}
-            </Button>
-            <Button variant="secondary" className="w-fit" onClick={() => setConfirming(false)}>
-              {t("cancel")}
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <Button
-          variant="secondary"
-          className="w-fit border-red-600 text-red-600 hover:bg-red-50"
-          onClick={() => setConfirming(true)}
-        >
-          {t("deleteButton")}
-        </Button>
-      )}
+      <label className="flex w-fit cursor-pointer items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={understood}
+          onChange={(e) => setUnderstood(e.target.checked)}
+          className="size-4 rounded border-border accent-accent transition-transform active:scale-90"
+        />
+        {t("deleteUnderstand")}
+      </label>
+
+      <Button
+        className="w-fit rounded-full bg-red-600 text-white hover:opacity-90"
+        onClick={() => deleteAccount.mutate()}
+        disabled={!understood || deleteAccount.isPending}
+      >
+        {t("deleteButton")}
+      </Button>
     </div>
   );
 }

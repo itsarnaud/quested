@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { GameCard } from "@/components/game-card";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
+import { SearchIcon } from "@/components/icons/search-icon";
 import { useSearchHistory } from "@/lib/use-search-history";
 
 export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
@@ -42,6 +43,7 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
       <div className="relative">
+        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -54,7 +56,7 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
             }
           }}
           placeholder={t("placeholder")}
-          className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
+          className="h-11 w-full rounded-full border border-border bg-card pl-11 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
         />
         {history.open && query.trim().length === 0 ? (
           <SearchHistoryDropdown

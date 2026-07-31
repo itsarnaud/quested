@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { PushNotificationBanner } from "@/components/push-notification-banner";
+import { formatRelativeTime } from "@/lib/format-relative-time";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -44,8 +45,8 @@ export default async function NotificationsPage({ params }: PageProps) {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
-      <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-10">
+      <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
 
       <PushNotificationBanner />
 
@@ -63,11 +64,11 @@ export default async function NotificationsPage({ params }: PageProps) {
                     ? `/games/${n.log.game.slug}`
                     : `/u/${n.actor?.username}`
               }
-              className="flex items-center gap-3 py-3 hover:bg-muted"
+              className="flex items-center gap-4 py-4 transition-colors hover:bg-muted/50"
             >
-              <div className="relative size-9 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+              <div className="relative size-11 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
                 {n.type === "RELEASE" && n.game?.coverUrl ? (
-                  <Image src={n.game.coverUrl} alt={n.game.title} fill sizes="36px" className="object-cover" />
+                  <Image src={n.game.coverUrl} alt={n.game.title} fill sizes="44px" className="object-cover" />
                 ) : n.actor?.image ? (
                   <Image
                     src={n.actor.image}
@@ -78,16 +79,20 @@ export default async function NotificationsPage({ params }: PageProps) {
                   />
                 ) : null}
               </div>
-              <span className="text-sm">
-                {n.type === "RELEASE" && n.game ? (
-                  t("gameReleased", { game: n.game.title })
-                ) : (
-                  <>
-                    <span className="font-medium">@{n.actor?.username}</span>{" "}
-                    {n.type === "LIKE" && n.log ? t("liked", { game: n.log.game.title }) : t("startedFollowing")}
-                  </>
-                )}
-              </span>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="text-sm">
+                  {n.type === "RELEASE" && n.game ? (
+                    t("gameReleased", { game: n.game.title })
+                  ) : (
+                    <>
+                      <span className="font-semibold">{n.actor?.name ?? `@${n.actor?.username}`}</span>{" "}
+                      {n.type === "LIKE" && n.log ? t("liked", { game: n.log.game.title }) : t("startedFollowing")}
+                    </>
+                  )}
+                </span>
+                <span className="text-xs text-muted-foreground">{formatRelativeTime(n.createdAt, locale)}</span>
+              </div>
+              {!n.read ? <span className="size-2 shrink-0 rounded-full bg-accent" /> : null}
             </Link>
           ))}
         </div>

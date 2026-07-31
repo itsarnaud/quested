@@ -38,43 +38,45 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-sm font-medium">{t("linkedAccountsTitle")}</h2>
       <p className="text-sm text-muted-foreground">{t("linkedAccountsDescription")}</p>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col divide-y divide-border">
         {PROVIDERS.map(({ id, name, labelKey, Icon }) => {
           const providerLabel = accountsByProvider.get(id);
           const isLinked = accountsByProvider.has(id);
 
           return (
-            <div
-              key={id}
-              className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex items-center gap-2 text-sm">
-                <Icon />
-                {isLinked ? (providerLabel ?? name) : name}
+            <div key={id} className="flex items-center justify-between gap-4 py-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
+                  <Icon />
+                </div>
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate text-sm font-semibold">
+                    {isLinked ? (providerLabel ?? name) : name}
+                  </span>
+                  <span className={isLinked ? "text-xs text-green-400" : "text-xs text-muted-foreground"}>
+                    {isLinked ? t("linked") : t("notLinked")}
+                  </span>
+                </div>
               </div>
 
               {isLinked ? (
                 accountsByProvider.size > 1 ? (
-                  <form action={unlink.bind(null, id)} className="w-full sm:w-auto">
-                    <Button type="submit" variant="secondary" className="w-full sm:w-auto">
+                  <form action={unlink.bind(null, id)}>
+                    <Button type="submit" variant="secondary" className="rounded-full">
                       {t("unlink")}
                     </Button>
                   </form>
-                ) : (
-                  <span className="text-sm text-muted-foreground">{t("linked")}</span>
-                )
+                ) : null
               ) : (
                 <form
                   action={async () => {
                     "use server";
                     await signIn(id, { redirectTo: "/account" });
                   }}
-                  className="w-full sm:w-auto"
                 >
-                  <Button type="submit" variant="secondary" className="w-full sm:w-auto">
+                  <Button type="submit" className="rounded-full">
                     {t(labelKey)}
                   </Button>
                 </form>

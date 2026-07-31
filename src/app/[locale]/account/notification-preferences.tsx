@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
+import { Switch } from "@/components/ui/switch";
 
 export function NotificationPreferences() {
   const t = useTranslations("Account");
@@ -14,40 +15,32 @@ export function NotificationPreferences() {
 
   if (!prefs) return null;
 
+  const rows = [
+    { key: "emailOnFollow", label: t("notifyOnFollow") },
+    { key: "emailOnLike", label: t("notifyOnLike") },
+    { key: "emailOnRelease", label: t("notifyOnRelease") },
+  ] as const;
+
   return (
-    <div className="flex flex-col gap-3">
-      <h2 className="text-sm font-medium">{t("notificationsTitle")}</h2>
-      <p className="text-sm text-muted-foreground">{t("notificationsDescription")}</p>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
+        <h2 className="font-semibold">{t("notificationsTitle")}</h2>
+        <p className="text-sm text-muted-foreground">{t("notificationsDescription")}</p>
+      </div>
 
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={prefs.emailOnFollow}
-          onChange={(e) => update.mutate({ ...prefs, emailOnFollow: e.target.checked })}
-          className="size-4 rounded border-border accent-accent transition-transform active:scale-90"
-        />
-        {t("notifyOnFollow")}
-      </label>
-
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={prefs.emailOnLike}
-          onChange={(e) => update.mutate({ ...prefs, emailOnLike: e.target.checked })}
-          className="size-4 rounded border-border accent-accent transition-transform active:scale-90"
-        />
-        {t("notifyOnLike")}
-      </label>
-
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={prefs.emailOnRelease}
-          onChange={(e) => update.mutate({ ...prefs, emailOnRelease: e.target.checked })}
-          className="size-4 rounded border-border accent-accent transition-transform active:scale-90"
-        />
-        {t("notifyOnRelease")}
-      </label>
+      <div className="flex flex-col divide-y divide-border">
+        {rows.map(({ key, label }) => (
+          <div key={key} className="flex items-center justify-between gap-4 py-4">
+            <span className="text-sm font-medium">{label}</span>
+            <Switch
+              checked={prefs[key]}
+              onToggle={() => update.mutate({ ...prefs, [key]: !prefs[key] })}
+              disabled={update.isPending}
+              aria-label={label}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

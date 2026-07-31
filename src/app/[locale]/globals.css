@@ -41,3 +41,11 @@ body {
 button:not(:disabled) {
   cursor: pointer;
 }
+
+/* Scrollable rows (tabs, horizontal game lists) scroll without showing a bar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

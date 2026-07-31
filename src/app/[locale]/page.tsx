@@ -4,11 +4,12 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { GameCard } from "@/components/game-card";
+import { GameGrid } from "@/components/game-grid";
+import { FeaturedHero } from "@/components/featured-hero";
 import { LikeButton } from "@/components/like-button";
 import { UserBadges } from "@/components/user-badges";
 import { Tabs, TabPanel } from "@/components/tabs";
-import { HomeWidgets, getWeeklyPopularGames } from "@/components/home-widgets";
+import { HomeWidgets } from "@/components/home-widgets";
 import type { Game } from "@/generated/prisma/client";
 
 const DISCOVERY_GAMES_LIMIT = 24;
@@ -187,72 +188,6 @@ export default async function Home() {
   return <Feed userId={session.user.id} />;
 }
 
-// On mobile the grid becomes a horizontal scroll row — one swipe instead of
-// a long vertical wall of covers.
-function GameGrid({ games }: { games: Game[] }) {
-  return (
-    <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0 md:grid-cols-5 lg:grid-cols-6">
-      {games.map((game) => (
-        <div key={game.id} className="w-32 shrink-0 sm:w-auto">
-          <GameCard slug={game.slug} title={game.title} releaseYear={game.releaseYear} coverUrl={game.coverUrl} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// Hero of the Activity tab: the game most played this week, taken from the
-// same query as the "popular this week" widget (deduped via cache()).
-async function FeaturedHero() {
-  const t = await getTranslations("Home");
-  const weekly = await getWeeklyPopularGames();
-  const featured = weekly[0];
-  if (!featured) return null;
-
-  const ratingStats = await prisma.log.aggregate({
-    where: { gameId: featured.game.id, rating: { not: null } },
-    _avg: { rating: true },
-    _count: { rating: true },
-  });
-
-  return (
-    <Link
-      href={`/games/${featured.game.slug}`}
-      prefetch={false}
-      className="group relative block overflow-hidden rounded-xl border border-border bg-card"
-    >
-      <div className="relative h-72 w-full sm:h-[26rem]">
-        {featured.game.coverUrl ? (
-          <Image
-            src={featured.game.coverUrl}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 100vw, 900px"
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          />
-        ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-      </div>
-      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 sm:p-6">
-        <div className="flex items-center gap-3">
-          <span className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
-            {t("featuredBadge")}
-          </span>
-          {ratingStats._count.rating > 0 ? (
-            <span className="text-sm font-semibold text-green-400">
-              {(ratingStats._avg.rating ?? 0).toFixed(1)} / 10
-            </span>
-          ) : null}
-        </div>
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{featured.game.title}</h2>
-        {featured.game.summary ? (
-          <p className="line-clamp-2 max-w-2xl text-sm text-muted-foreground">{featured.game.summary}</p>
-        ) : null}
-      </div>
-    </Link>
-  );
-}
-
 async function MarketingHome() {
   const [t, popularGames] = await Promise.all([getTranslations("Home"), getPopularGames()]);
 
@@ -271,6 +206,8 @@ async function MarketingHome() {
             </Link>
           </div>
         </div>
+
+        <FeaturedHero />
 
         {popularGames.length > 0 ? (
           <div className="flex flex-col gap-3">

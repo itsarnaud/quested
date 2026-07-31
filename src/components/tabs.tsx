@@ -26,7 +26,7 @@ export function Tabs({ defaultTab, children }: { defaultTab: string; children: R
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex gap-1 overflow-x-auto border-b border-border">
+      <div className="no-scrollbar flex gap-1 overflow-x-auto border-b border-border">
         {panels.map((panel) => (
           <button
             key={panel.props.tabKey}

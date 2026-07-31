@@ -50,7 +50,7 @@ export function NotificationBell() {
             className="fixed inset-0 z-10 cursor-default"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed inset-x-4 top-16 z-20 rounded-md border border-border bg-card p-2 shadow-sm">
+          <div className="fixed inset-x-4 top-16 z-20 rounded-md border border-border bg-card p-2 shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-11 sm:w-96">
             <span className="block px-1 py-1 text-xs font-medium text-muted-foreground">{t("title")}</span>
             {notifications && notifications.length > 0 ? (
               <div className="flex max-h-96 flex-col overflow-y-auto">
