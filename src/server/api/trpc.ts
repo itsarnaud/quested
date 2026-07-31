@@ -1,10 +1,13 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import type { Ratelimit } from "@upstash/ratelimit";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 export const createTRPCContext = async ({ req }: { req: Request }) => {
+  // Lazy-imported so that merely importing the router tree (e.g. from
+  // tests, which build their own context) doesn't drag in the whole
+  // next-auth/Next.js stack just for this one call site.
+  const { auth } = await import("@/auth");
   const session = await auth();
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   return { session, prisma, ip };

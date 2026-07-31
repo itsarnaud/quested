@@ -7,6 +7,7 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run --config vitest.config.ts",
     "postinstall": "prisma generate",
     "backfill:taxonomy": "tsx --env-file=.env -r tsconfig-paths/register scripts/backfill-game-taxonomy.ts",
     "grant-badge": "tsx --env-file=.env -r tsconfig-paths/register scripts/grant-badge.ts"
@@ -44,11 +45,13 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "playwright": "^1.62.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
