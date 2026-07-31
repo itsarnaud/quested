@@ -28,14 +28,14 @@ export function ReviewRow({
   return (
     <div className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
       <div className="flex items-center justify-between gap-3">
-        <Link href={`/games/${log.gameSlug}`} prefetch={false} className="flex gap-3 hover:opacity-90">
+        <Link href={`/games/${log.gameSlug}`} prefetch={false} className="flex min-w-0 gap-3 hover:opacity-90">
           <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
             {log.coverUrl ? (
               <Image src={log.coverUrl} alt={log.gameTitle} fill sizes="72px" className="object-cover" />
             ) : null}
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="font-medium">{log.gameTitle}</span>
+          <div className="flex min-w-0 flex-col justify-center">
+            <span className="truncate font-medium">{log.gameTitle}</span>
             <span className="text-sm text-muted-foreground">
               {statusLabel}
               {log.rating != null ? ` · ${log.rating.toFixed(1)}/10` : ""}

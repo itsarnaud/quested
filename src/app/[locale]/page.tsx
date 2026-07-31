@@ -263,7 +263,7 @@ async function Feed({ userId }: { userId: string }) {
         ) : (
           <div className="grid items-start gap-x-8 gap-y-7 lg:grid-cols-2">
             {activity.map((log) => (
-              <div key={log.id} className="flex gap-4">
+              <div key={log.id} className="flex min-w-0 gap-4">
                 <Link
                   href={`/games/${log.game.slug}`}
                   prefetch={false}
