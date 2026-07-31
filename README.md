@@ -1,20 +1,58 @@
+<div align="center">
+
+<img src="public/icons/icon-192.png" alt="Quested logo" width="80" height="80" />
+
 # Quested
 
-A Letterboxd-style tracker for video games. Search for a game, log it (backlog, playing, completed, dropped or wishlist), rate it out of 10, follow other players and see their activity on your home feed.
+**A Letterboxd-style tracker for video games.**
 
-Personal, non-commercial project. Live at [quested.cc](https://quested.cc).
+Search for a game, log it (backlog, playing, completed, dropped or wishlist), rate it out of 10, follow other players and see their activity on your home feed.
+
+[![Live site](https://img.shields.io/website?url=https%3A%2F%2Fquested.cc&label=quested.cc&up_message=online&down_message=down)](https://quested.cc)
+[![Release](https://img.shields.io/github/v/release/itsarnaud/quested?label=release)](https://github.com/itsarnaud/quested/releases)
+[![Last commit](https://img.shields.io/github/last-commit/itsarnaud/quested/dev)](https://github.com/itsarnaud/quested/commits/dev)
+
+[![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io)
+[![tRPC](https://img.shields.io/badge/tRPC-2596BE?logo=trpc&logoColor=white)](https://trpc.io)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+
+Personal, non-commercial project. Free, no ads, open source. Live at [quested.cc](https://quested.cc).
+
+</div>
+
+---
 
 ## Features
 
-- **Search**: look up a game and it gets imported automatically from IGDB and RAWG. If it's already in the database (even approximately, matched by title and year), no duplicate is created, just a link to the extra source. Recent searches are kept locally and suggested again on focus, popular games are shown by default before you type anything, and results can be filtered by genre, platform and release year.
-- **Logging**: status, a rating out of 10 to the decimal (e.g. 7.4), and a personal review on a dedicated game page. Ratings are locked until a game has actually released. Every game page shows the community's average rating and vote count, plus the most-liked reviews.
-- **Public profiles**: every account has a `/u/username` page with tabs for logged games (grouped by status), a chronological diary (with a year filter), reviews, liked reviews, and custom lists (e.g. "Top 10 horror games", clonable to your own profile from anyone else's list page). Each of these has its own dedicated page with real server-side pagination once there's more than a screenful. Up to 4 favorite games (picked from your rated games) are pinned at the top, alongside a bio, avatar and earned badges (e.g. Founder).
-- **Social**: follow other players and browse their followers/followings, with mutual-follow counts shown on profiles you don't own yet. The home feed is split into tabs — activity from your follows, personalized recommendations, popular games, top-rated games, recent catalog additions, and most-anticipated upcoming releases — so each stays short and none of them is buried under the others. Recommendations are grouped by the genres you rate highly (e.g. "Because you like RPG"), falling back to what your follows liked when there isn't enough taste data yet. Like other people's reviews. The player search page suggests people through mutual follows, a taste-compatibility score shows up on profiles you share rated games with, and `/leaderboard` ranks you and the people you follow by games completed and average rating given.
-- **Notifications**: a bell in the header shows unread notifications for new followers, likes on your reviews, and wishlisted games that just released, with optional (opt-in) email and Web Push notifications for the same events, plus a welcome email and an account-deletion confirmation.
-- **Mobile**: a native-app-style bottom tab bar instead of a burger menu, and the site is installable as a PWA (with a dismissible install prompt on supported browsers).
-- **Account**: sign in with Google or Discord, link both to the same account, manage email notification preferences, export your data, or delete your account.
-- **Languages**: French by default, English available at `/en`.
-- **Changelog**: `/changelog` lists what's shipped, pulled live from the project's GitHub Releases.
+- **Search any game** — imported automatically from IGDB and RAWG the first time someone looks it up, no manual catalog entry. Filters by genre, platform and release year.
+- **Log it** — backlog, playing, completed, dropped or wishlist, with a rating out of 10 (decimals allowed, e.g. 7.4) and a written review.
+- **Community ratings** — every game page shows the average rating, a rating histogram and the most-liked reviews.
+- **Public profiles** — your games by status, a chronological diary, your reviews and likes, custom lists (clonable by others), 4 pinned favorite games, bio and badges.
+- **Social** — follow players, see their activity in your home feed, get game recommendations based on your tastes, like reviews, compare yourself on a leaderboard (games completed, average rating, reviews published) and see a taste-compatibility score on other profiles.
+- **Notifications** — in-app bell, plus optional email and Web Push, for new followers, likes on your reviews and wishlisted games that just released.
+- **Works like an app** — installable as a PWA, with a mobile bottom tab bar instead of a burger menu.
+- **Your account, your data** — sign in with Google or Discord, export everything, or delete the account entirely.
+- **French and English** — French by default, English at `/en`.
+- **Changelog** — `/changelog` shows what shipped, pulled live from GitHub Releases.
+
+## How game data flows
+
+No manual catalog entry: the first person to search for a game imports it for everyone.
+
+```mermaid
+flowchart LR
+    U([You search a game]) --> S[Search]
+    S -->|already known| DB[(Postgres)]
+    S -->|not found| IGDB[IGDB API]
+    S -->|not found| RAWG[RAWG API]
+    IGDB --> D{Dedupe by title + year}
+    RAWG --> D
+    D --> DB
+    DB --> T[tRPC] --> N[Next.js pages]
+```
 
 ## Tech stack
 
@@ -30,57 +68,50 @@ Personal, non-commercial project. Live at [quested.cc](https://quested.cc).
 
 ## Running locally
 
-### Requirements
-
-- Node.js 20+
-- Docker (for a local Postgres instance)
-
-### Install dependencies
+You need **Node.js 20+** and **Docker** installed. Then:
 
 ```bash
+# 1. Clone and install
+git clone https://github.com/itsarnaud/quested.git
+cd quested
 npm install
-```
 
-### Database
-
-Start a local Postgres instance with Docker:
-
-```bash
+# 2. Start a local Postgres database
 docker run -d --name quested-db \
   -e POSTGRES_USER=quested \
   -e POSTGRES_PASSWORD=quested \
   -e POSTGRES_DB=quested \
   -p 5433:5432 \
   postgres:16-alpine
-```
 
-### Environment variables
-
-Copy `.env.example` to `.env` and fill in the values:
-
-```bash
+# 3. Configure the environment (see the table below)
 cp .env.example .env
-```
 
-- `DATABASE_URL`: `postgresql://quested:quested@localhost:5433/quested` if you used the Docker command above
-- `AUTH_SECRET`: any random value, generate one with `openssl rand -base64 33`
-- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`: create these on [Google Cloud Console](https://console.cloud.google.com), redirect URI `http://localhost:3000/api/auth/callback/google`
-- `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET`: create these on the [Discord Developer Portal](https://discord.com/developers/applications), redirect URI `http://localhost:3000/api/auth/callback/discord`
-- `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET`: requires a Twitch developer account, create one at [dev.twitch.tv/console](https://dev.twitch.tv/console)
-- `RAWG_API_KEY`: get one at [rawg.io/apidocs](https://rawg.io/apidocs)
-- `BLOB_STORE_ID` / `BLOB_READ_WRITE_TOKEN`: create a Vercel Blob store **in Public mode** (Storage → Create Database → Blob), otherwise avatar uploads will fail
-- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`: create a free database at [upstash.com](https://upstash.com), used for rate limiting
-- `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `ALERT_EMAIL_TO`: optional, only needed to receive an email when a server error happens in production (see `src/instrumentation.ts`). Leave empty to disable
-- `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT`: Web Push notifications, generate a pair with `npx web-push generate-vapid-keys`. Leave empty to disable push (email/bell notifications still work)
-
-### Migrations and startup
-
-```bash
+# 4. Create the database tables and start
 npx prisma migrate dev
 npm run dev
 ```
 
 The site runs at [http://localhost:3000](http://localhost:3000).
+
+### Environment variables
+
+To get a working site you only need the first four rows — the rest can stay empty and the matching feature is simply disabled.
+
+| Variable | What it's for | Where to get it |
+| --- | --- | --- |
+| `DATABASE_URL` | Postgres connection | `postgresql://quested:quested@localhost:5433/quested` if you used the Docker command above |
+| `AUTH_SECRET` | Session encryption | Any random value: `openssl rand -base64 33` |
+| `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET` | Game data | Twitch developer account at [dev.twitch.tv/console](https://dev.twitch.tv/console) |
+| `RAWG_API_KEY` | Game data (2nd source) | Free key at [rawg.io/apidocs](https://rawg.io/apidocs) |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google sign-in | [Google Cloud Console](https://console.cloud.google.com), redirect URI `http://localhost:3000/api/auth/callback/google` |
+| `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET` | Discord sign-in | [Discord Developer Portal](https://discord.com/developers/applications), redirect URI `http://localhost:3000/api/auth/callback/discord` |
+| `BLOB_STORE_ID` / `BLOB_READ_WRITE_TOKEN` | Avatar uploads | Vercel Blob store **in Public mode** (Storage → Create Database → Blob) |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Rate limiting | Free database at [upstash.com](https://upstash.com) |
+| `SMTP_*` / `ALERT_EMAIL_TO` | Error alert emails in production | Any SMTP provider (see `src/instrumentation.ts`) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` | Web Push notifications | Generate a pair with `npx web-push generate-vapid-keys` |
+
+You need at least one of the two sign-in providers (Google or Discord) to be able to log in.
 
 ## Deployment
 
