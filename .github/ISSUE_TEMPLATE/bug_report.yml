@@ -34,7 +34,7 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: Browser, OS, device (mobile/desktop) — whatever seems relevant.
+      description: Browser, OS, device (mobile/desktop), whatever seems relevant.
       placeholder: e.g. Chrome 128 on macOS, iPhone 15 Safari
     validations:
       required: false
