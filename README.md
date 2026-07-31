@@ -68,7 +68,7 @@ flowchart LR
 
 ## Running locally
 
-You need **Node.js 20+** and **Docker** installed. Then:
+You need **Node.js 24+** and **Docker** installed. Then:
 
 ```bash
 # 1. Clone and install
