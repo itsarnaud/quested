@@ -5,7 +5,7 @@ export function LegalSections({ sections }: { sections: LegalSection[] }) {
     <div className="flex flex-col gap-6">
       {sections.map((section) => (
         <div key={section.heading} className="flex flex-col gap-1">
-          <h2 className="text-sm font-medium">{section.heading}</h2>
+          <h2 className="font-semibold">{section.heading}</h2>
           {section.body.split("\n").map((line, i) => (
             <p key={i} className="text-sm text-muted-foreground">
               {line}

@@ -42,6 +42,7 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
+      <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
       <div className="relative">
         <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input

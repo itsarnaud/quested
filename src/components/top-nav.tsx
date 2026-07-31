@@ -43,7 +43,7 @@ export function TopNav({
       </Link>
 
       <form
-        className="relative mx-auto w-full max-w-md"
+        className="relative w-full max-w-md"
         onSubmit={(e) => {
           e.preventDefault();
           const q = query.trim();
@@ -59,7 +59,7 @@ export function TopNav({
         />
       </form>
 
-      <nav className="flex shrink-0 items-center gap-1">
+      <nav className="ml-auto flex shrink-0 items-center gap-1">
         {links.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
           return (
