@@ -17,6 +17,12 @@ function entry(path: string, rest: Omit<MetadataRoute.Sitemap[number], "url" | "
   return { url: localizedUrls(path)[routing.defaultLocale], alternates: { languages: localizedUrls(path) }, ...rest };
 }
 
+// Regenerate at most once an hour instead of hitting Postgres on every
+// crawler request — cheaper, and removes a possible source of intermittent
+// failures (e.g. a cold start or connection-limit hiccup on the DB) right
+// when a crawler happens to fetch it.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [games, users] = await Promise.all([
     // Only list games at least one person has actually logged — keeps
