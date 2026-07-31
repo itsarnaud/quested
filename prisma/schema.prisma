@@ -94,6 +94,9 @@ enum Badge {
   FOUNDER
   EARLY_ADOPTER
   BETA_TESTER
+  BUG_HUNTER
+  CONTRIBUTOR
+  SUPPORTER
 }
 
 model GameList {

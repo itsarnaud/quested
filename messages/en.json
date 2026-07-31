@@ -160,7 +160,10 @@
   "Badges": {
     "FOUNDER": "Founder",
     "EARLY_ADOPTER": "Early adopter",
-    "BETA_TESTER": "Beta tester"
+    "BETA_TESTER": "Beta tester",
+    "BUG_HUNTER": "Bug hunter",
+    "CONTRIBUTOR": "Contributor",
+    "SUPPORTER": "Supporter"
   },
   "Lists": {
     "createButton": "New list",
