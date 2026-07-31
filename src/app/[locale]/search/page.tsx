@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { SearchView } from "@/app/[locale]/search/search-view";
+import { pageAlternates } from "@/lib/alternates";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -13,6 +14,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: t("title"),
     description: t("description"),
+    alternates: pageAlternates(locale, "/search"),
   };
 }
 

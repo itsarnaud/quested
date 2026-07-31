@@ -108,7 +108,8 @@
     "listsCount": "In lists",
     "communityAvg": "community average",
     "ratingsCount": "{count, plural, one {# rating} other {# ratings}}",
-    "yourTracking": "Your tracking"
+    "yourTracking": "Your tracking",
+    "metaDescriptionFallback": "{title} on Quested: track your progress, rate it and read what the community thinks."
   },
   "GameStatus": {
     "BACKLOG": "Backlog",
@@ -155,7 +156,8 @@
     "statsLists": "Lists",
     "recentlyPlayedTitle": "Recently played",
     "statsCompleted": "Completed",
-    "statsPlaying": "Playing"
+    "statsPlaying": "Playing",
+    "metaDescription": "{name}'s game library on Quested."
   },
   "Badges": {
     "FOUNDER": "Founder",
@@ -226,7 +228,8 @@
   "Changelog": {
     "title": "Changelog",
     "subtitle": "What's changed on Quested, release by release.",
-    "empty": "No releases published yet."
+    "empty": "No releases published yet.",
+    "description": "Every feature and fix shipped on Quested, version by version."
   },
   "About": {
     "title": "About",
@@ -247,7 +250,8 @@
         "heading": "Contact",
         "body": "Question, bug, idea? Reach me at contact@arnaudroyer.fr."
       }
-    ]
+    ],
+    "description": "Why Quested exists, who made it, and how to reach out."
   },
   "Footer": {
     "about": "About",
@@ -342,7 +346,9 @@
         "heading": "Your rights",
         "body": "You can export or delete all your data at any time from the Account page. For any other request (rectification, question), contact contact@arnaudroyer.fr. You can also file a complaint with your local data protection authority."
       }
-    ]
+    ],
+    "mentionsDescription": "Publisher, hosting and legal information for Quested.",
+    "privacyDescription": "How Quested handles your personal data."
   },
   "Common": {
     "back": "Back"

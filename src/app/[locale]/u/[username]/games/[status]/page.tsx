@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { GameTile } from "@/components/game-tile";
 import { Pagination } from "@/components/pagination";
 import { statusFromSlug } from "@/lib/game-status";
+import { pageAlternates } from "@/lib/alternates";
 
 const PAGE_SIZE = 24;
 
@@ -18,8 +19,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { username, status: statusSlug } = await params;
   const status = statusFromSlug(statusSlug);
   if (!status) return {};
-  const tStatus = await getTranslations("GameStatus");
-  return { title: `${tStatus(status)} — @${username}` };
+  const [tStatus, locale] = await Promise.all([getTranslations("GameStatus"), getLocale()]);
+  return {
+    title: `${tStatus(status)} — @${username}`,
+    alternates: pageAlternates(locale, `/u/${username}/games/${statusSlug}`),
+  };
 }
 
 export default async function GamesByStatusPage({ params, searchParams }: PageProps) {

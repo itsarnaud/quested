@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { FollowList } from "@/app/[locale]/u/[username]/follow-list";
+import { pageAlternates } from "@/lib/alternates";
 
 type PageProps = {
   params: Promise<{ username: string }>;
@@ -11,7 +12,8 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { username } = await params;
-  return { title: `Following — @${username}` };
+  const locale = await getLocale();
+  return { title: `Following — @${username}`, alternates: pageAlternates(locale, `/u/${username}/following`) };
 }
 
 export default async function FollowingPage({ params }: PageProps) {

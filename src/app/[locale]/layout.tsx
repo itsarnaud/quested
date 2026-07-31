@@ -10,6 +10,7 @@ import { TopNav } from "@/components/top-nav";
 import { Footer } from "@/components/footer";
 import { InstallPrompt } from "@/components/install-prompt";
 import { getLatestVersion } from "@/lib/github-releases";
+import { pageAlternates } from "@/lib/alternates";
 import { siteUrl, siteName } from "@/lib/site";
 import { routing } from "@/i18n/routing";
 import "./globals.css";
@@ -49,6 +50,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
       template: `%s · ${siteName}`,
     },
     description,
+    alternates: pageAlternates(locale, ""),
     manifest: "/manifest.webmanifest",
     icons: {
       apple: "/icons/apple-touch-icon.png",

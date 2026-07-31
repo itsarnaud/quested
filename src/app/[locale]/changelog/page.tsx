@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { fetchReleases } from "@/lib/github-releases";
 import { renderReleaseNotesHtml } from "@/lib/render-release-notes";
+import { pageAlternates } from "@/lib/alternates";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -10,7 +11,7 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Changelog" });
-  return { title: t("title") };
+  return { title: t("title"), description: t("description"), alternates: pageAlternates(locale, "/changelog") };
 }
 
 export default async function ChangelogPage() {

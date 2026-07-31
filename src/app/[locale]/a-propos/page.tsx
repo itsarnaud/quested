@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { LegalSections } from "@/components/legal-sections";
+import { pageAlternates } from "@/lib/alternates";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -9,7 +10,7 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "About" });
-  return { title: t("title") };
+  return { title: t("title"), description: t("description"), alternates: pageAlternates(locale, "/a-propos") };
 }
 
 export default async function AboutPage() {

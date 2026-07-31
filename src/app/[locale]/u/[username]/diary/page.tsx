@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Pagination } from "@/components/pagination";
 import { DiaryEntries, type DiaryLogEntry } from "@/components/diary-entries";
+import { pageAlternates } from "@/lib/alternates";
 
 const PAGE_SIZE = 20;
 
@@ -67,8 +68,11 @@ async function getDiaryPage(userId: string, page: number, year: number | null) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { username } = await params;
-  const t = await getTranslations("Profile");
-  return { title: `${t("diaryTab")} — @${username}` };
+  const [t, locale] = await Promise.all([getTranslations("Profile"), getLocale()]);
+  return {
+    title: `${t("diaryTab")} — @${username}`,
+    alternates: pageAlternates(locale, `/u/${username}/diary`),
+  };
 }
 
 export default async function DiaryPage({ params, searchParams }: PageProps) {

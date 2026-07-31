@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { RatingHistogram } from "@/components/rating-histogram";
 import { formatRelativeTime } from "@/lib/format-relative-time";
+import { pageAlternates } from "@/lib/alternates";
+import { siteUrl } from "@/lib/site";
 
 const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
 
@@ -27,16 +29,23 @@ function formatReleaseDate(date: Date, locale: string) {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const game = await getGame(slug);
+  const { slug, locale } = await params;
+  const [game, t] = await Promise.all([getGame(slug), getTranslations({ locale, namespace: "GamePage" })]);
   if (!game) return {};
 
   const title = game.releaseYear ? `${game.title} (${game.releaseYear})` : game.title;
+  // Next doesn't fall back to the parent layout's description when a page
+  // explicitly returns `undefined` for it — it just omits the tag — so a
+  // game-specific fallback is needed here instead of relying on inheritance.
+  const description = game.summary ?? t("metaDescriptionFallback", { title: game.title });
+  const images = game.coverUrl ? [{ url: game.coverUrl }] : undefined;
 
   return {
     title,
-    description: game.summary ?? undefined,
-    openGraph: game.coverUrl ? { images: [{ url: game.coverUrl }] } : undefined,
+    description,
+    alternates: pageAlternates(locale, `/games/${slug}`),
+    openGraph: { title, description, images, type: "website" },
+    twitter: { title, description, images, card: images ? "summary_large_image" : "summary" },
   };
 }
 
@@ -95,8 +104,33 @@ export default async function GamePage({ params }: PageProps) {
     .filter(Boolean)
     .join(" · ");
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    name: game.title,
+    url: `${siteUrl}/games/${game.slug}`,
+    ...(game.summary ? { description: game.summary } : {}),
+    ...(game.coverUrl ? { image: game.coverUrl } : {}),
+    ...(game.developers.length > 0 ? { author: game.developers.map((name) => ({ "@type": "Organization", name })) } : {}),
+    ...(game.genres.length > 0 ? { genre: game.genres } : {}),
+    ...(game.platforms.length > 0 ? { gamePlatform: game.platforms } : {}),
+    ...(game.releaseDate ? { datePublished: game.releaseDate.toISOString().slice(0, 10) } : {}),
+    ...(ratingStats._count.rating > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: (ratingStats._avg.rating ?? 0).toFixed(1),
+            bestRating: "10",
+            worstRating: "0",
+            ratingCount: ratingStats._count.rating,
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-10 px-6 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <BackLink label={tCommon("back")} />
 
       <div className="flex flex-col gap-8 sm:flex-row sm:gap-10">

@@ -108,7 +108,8 @@
     "listsCount": "Dans des listes",
     "communityAvg": "moyenne communautaire",
     "ratingsCount": "{count, plural, one {# note} other {# notes}}",
-    "yourTracking": "Ton suivi"
+    "yourTracking": "Ton suivi",
+    "metaDescriptionFallback": "{title} sur Quested : suis ta progression, note-le et découvre les avis de la communauté."
   },
   "GameStatus": {
     "BACKLOG": "Backlog",
@@ -155,7 +156,8 @@
     "statsLists": "Listes",
     "recentlyPlayedTitle": "Joués récemment",
     "statsCompleted": "Terminés",
-    "statsPlaying": "En cours"
+    "statsPlaying": "En cours",
+    "metaDescription": "La bibliothèque de jeux de {name} sur Quested."
   },
   "Badges": {
     "FOUNDER": "Fondateur",
@@ -226,7 +228,8 @@
   "Changelog": {
     "title": "Mises à jour",
     "subtitle": "Ce qui a changé sur Quested, au fil des versions.",
-    "empty": "Aucune mise à jour publiée pour l'instant."
+    "empty": "Aucune mise à jour publiée pour l'instant.",
+    "description": "Les fonctionnalités et fixes livrés sur Quested, version par version."
   },
   "About": {
     "title": "À propos",
@@ -247,7 +250,8 @@
         "heading": "Contact",
         "body": "Une question, un bug, une idée ? Écris-moi à contact@arnaudroyer.fr."
       }
-    ]
+    ],
+    "description": "Pourquoi Quested existe, qui l'a créé et comment nous contacter."
   },
   "Footer": {
     "about": "À propos",
@@ -342,7 +346,9 @@
         "heading": "Tes droits",
         "body": "Tu peux à tout moment exporter ou supprimer toutes tes données depuis la page Compte. Pour toute autre demande (rectification, question), contacte contact@arnaudroyer.fr. Tu peux aussi introduire une réclamation auprès de la CNIL (cnil.fr)."
       }
-    ]
+    ],
+    "mentionsDescription": "Éditeur, hébergeur et informations légales de Quested.",
+    "privacyDescription": "Comment Quested traite tes données personnelles."
   },
   "Common": {
     "back": "Retour"

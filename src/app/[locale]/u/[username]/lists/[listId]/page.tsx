@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ListDetail } from "@/app/[locale]/u/[username]/lists/[listId]/list-detail";
+import { pageAlternates } from "@/lib/alternates";
 
 type PageProps = {
   params: Promise<{ username: string; listId: string }>;
@@ -21,10 +22,14 @@ async function getList(listId: string) {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { listId } = await params;
-  const list = await getList(listId);
+  const { username, listId } = await params;
+  const [list, locale] = await Promise.all([getList(listId), getLocale()]);
   if (!list) return {};
-  return { title: `${list.title} — ${list.user.name ?? list.user.username}` };
+  return {
+    title: `${list.title} — ${list.user.name ?? list.user.username}`,
+    description: list.description ?? undefined,
+    alternates: pageAlternates(locale, `/u/${username}/lists/${listId}`),
+  };
 }
 
 export default async function ListDetailPage({ params }: PageProps) {

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { Pagination } from "@/components/pagination";
 import { ReviewRow } from "@/components/review-row";
+import { pageAlternates } from "@/lib/alternates";
 
 const PAGE_SIZE = 20;
 
@@ -16,8 +17,11 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { username } = await params;
-  const t = await getTranslations("Profile");
-  return { title: `${t("reviewsTab")} — @${username}` };
+  const [t, locale] = await Promise.all([getTranslations("Profile"), getLocale()]);
+  return {
+    title: `${t("reviewsTab")} — @${username}`,
+    alternates: pageAlternates(locale, `/u/${username}/reviews`),
+  };
 }
 
 export default async function ReviewsPage({ params, searchParams }: PageProps) {

@@ -18,6 +18,7 @@ import { ProfileGameGrid } from "@/app/[locale]/u/[username]/profile-game-grid";
 import { UserBadges } from "@/components/user-badges";
 import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
 import { STATUS_SLUGS } from "@/lib/game-status";
+import { pageAlternates } from "@/lib/alternates";
 import { RatingHistogram } from "@/components/rating-histogram";
 import { GameTile } from "@/components/game-tile";
 
@@ -45,12 +46,23 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { username } = await params;
-  const user = await getUserProfile(username);
+  const [user, locale, t] = await Promise.all([
+    getUserProfile(username),
+    getLocale(),
+    getTranslations("Profile"),
+  ]);
   if (!user) return {};
 
+  const title = `${user.name ?? username} (@${username})`;
+  const description = user.bio ?? t("metaDescription", { name: user.name ?? username });
+  const images = user.image ? [{ url: user.image }] : undefined;
+
   return {
-    title: `${user.name ?? username} (@${username})`,
-    description: user.bio ?? `${user.name ?? username}'s game library on Quested.`,
+    title,
+    description,
+    alternates: pageAlternates(locale, `/u/${username}`),
+    openGraph: { title, description, images, type: "profile" },
+    twitter: { title, description, images, card: images ? "summary" : "summary" },
   };
 }
 
