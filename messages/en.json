@@ -58,7 +58,8 @@
     "widgetPlayersWeek": "{count, plural, one {# player} other {# players}}",
     "widgetLeaderboard": "Follows leaderboard",
     "widgetLeaderboardAll": "Compare all",
-    "widgetSuggestions": "Members to follow"
+    "widgetSuggestions": "Members to follow",
+    "justReleasedBadge": "Just released"
   },
   "Login": {
     "title": "Sign in",

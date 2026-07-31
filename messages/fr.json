@@ -58,7 +58,8 @@
     "widgetPlayersWeek": "{count, plural, one {# joueur} other {# joueurs}}",
     "widgetLeaderboard": "Classement abonnements",
     "widgetLeaderboardAll": "Comparer tout",
-    "widgetSuggestions": "Membres à suivre"
+    "widgetSuggestions": "Membres à suivre",
+    "justReleasedBadge": "Vient de sortir"
   },
   "Login": {
     "title": "Se connecter",

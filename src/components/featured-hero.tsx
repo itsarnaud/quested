@@ -4,30 +4,50 @@ import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { getWeeklyPopularGames } from "@/components/home-widgets";
 
-// The game most played this week, taken from the same query as the
-// "popular this week" widget (deduped via cache()).
+const RECENT_RELEASE_DAYS = 14;
+const MIN_WISHLISTS_FOR_FEATURE = 2;
+
+// An awaited game that just came out: the most-wishlisted title released in
+// the last two weeks, with a floor so an unanticipated release never wins.
+async function getJustReleasedGame() {
+  const since = new Date(Date.now() - RECENT_RELEASE_DAYS * 86_400_000);
+  const grouped = await prisma.log.groupBy({
+    by: ["gameId"],
+    where: { status: "WISHLIST", game: { releaseDate: { gte: since, lte: new Date() } } },
+    _count: { gameId: true },
+    orderBy: { _count: { gameId: "desc" } },
+    take: 1,
+  });
+  const top = grouped[0];
+  if (!top || top._count.gameId < MIN_WISHLISTS_FOR_FEATURE) return null;
+  return prisma.game.findUnique({ where: { id: top.gameId } });
+}
+
+// Featured game, by priority: a big awaited release from the last two weeks,
+// otherwise the game most played this week (same query as the "popular this
+// week" widget, deduped via cache()).
 export async function FeaturedHero() {
   const t = await getTranslations("Home");
-  const weekly = await getWeeklyPopularGames();
-  const featured = weekly[0];
-  if (!featured) return null;
+  const justReleased = await getJustReleasedGame();
+  const game = justReleased ?? (await getWeeklyPopularGames())[0]?.game;
+  if (!game) return null;
 
   const ratingStats = await prisma.log.aggregate({
-    where: { gameId: featured.game.id, rating: { not: null } },
+    where: { gameId: game.id, rating: { not: null } },
     _avg: { rating: true },
     _count: { rating: true },
   });
 
   return (
     <Link
-      href={`/games/${featured.game.slug}`}
+      href={`/games/${game.slug}`}
       prefetch={false}
       className="group relative block overflow-hidden rounded-xl border border-border bg-card"
     >
       <div className="relative h-72 w-full sm:h-[26rem]">
-        {featured.game.coverUrl ? (
+        {game.coverUrl ? (
           <Image
-            src={featured.game.coverUrl}
+            src={game.coverUrl}
             alt=""
             fill
             sizes="(max-width: 640px) 100vw, 900px"
@@ -39,7 +59,7 @@ export async function FeaturedHero() {
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 sm:p-6">
         <div className="flex items-center gap-3">
           <span className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
-            {t("featuredBadge")}
+            {justReleased ? t("justReleasedBadge") : t("featuredBadge")}
           </span>
           {ratingStats._count.rating > 0 ? (
             <span className="text-sm font-semibold text-green-400">
@@ -47,9 +67,9 @@ export async function FeaturedHero() {
             </span>
           ) : null}
         </div>
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{featured.game.title}</h2>
-        {featured.game.summary ? (
-          <p className="line-clamp-2 max-w-2xl text-sm text-muted-foreground">{featured.game.summary}</p>
+        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{game.title}</h2>
+        {game.summary ? (
+          <p className="line-clamp-2 max-w-2xl text-sm text-muted-foreground">{game.summary}</p>
         ) : null}
       </div>
     </Link>
