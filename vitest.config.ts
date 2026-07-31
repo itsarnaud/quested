@@ -4,6 +4,7 @@ import path from "node:path";
 export default defineConfig({
   test: {
     environment: "node",
+    setupFiles: ["./vitest.setup.ts"],
     // Integration tests hit the real local Postgres — run them one at a
     // time so seeding/cleanup in one file can't race another.
     fileParallelism: false,
