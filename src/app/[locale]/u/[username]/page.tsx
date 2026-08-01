@@ -20,9 +20,10 @@ import { UserBadges } from "@/components/user-badges";
 import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
 import { STATUS_SLUGS } from "@/lib/game-status";
 import { pageAlternates } from "@/lib/alternates";
-import { RatingHistogram } from "@/components/rating-histogram";
 import { GameTile } from "@/components/game-tile";
-import { formatPlaytime } from "@/lib/format-playtime";
+import { getPlatinumGameIds } from "@/server/games/platinum";
+import { PublicAccountLinks } from "@/app/[locale]/u/[username]/public-account-links";
+import { ProfileStats } from "@/app/[locale]/u/[username]/profile-stats";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 const PREVIEW_SIZE = 12;
@@ -37,6 +38,10 @@ const getUserProfile = cache((username: string) =>
       },
       favoriteGames: {
         orderBy: { position: "asc" },
+      },
+      accounts: {
+        where: { provider: { in: ["steam", "discord"] } },
+        select: { provider: true, providerAccountId: true, providerLabel: true },
       },
     },
   }),
@@ -112,6 +117,9 @@ export default async function ProfilePage({ params }: PageProps) {
   const likedCount = await prisma.like.count({ where: { userId: user.id } });
   const ownedListsCount = await prisma.gameList.count({ where: { userId: user.id } });
   const unlockedAchievementsCount = await prisma.userAchievement.count({ where: { userId: user.id } });
+  const totalAchievementsForTrackedGames = await prisma.achievement.count({
+    where: { gameId: { in: user.logs.map((log) => log.gameId) } },
+  });
   const pinnedAchievementRows = await prisma.pinnedAchievement.findMany({
     where: { userId: user.id },
     include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
@@ -145,7 +153,55 @@ export default async function ProfilePage({ params }: PageProps) {
   const backlogCount = user.logs.filter((log) => log.status === "BACKLOG").length;
   const completedCount = user.logs.filter((log) => log.status === "COMPLETED").length;
   const playingCount = user.logs.filter((log) => log.status === "PLAYING").length;
+  const wishlistCount = user.logs.filter((log) => log.status === "WISHLIST").length;
+  const droppedCount = user.logs.filter((log) => log.status === "DROPPED").length;
   const totalMinutesPlayed = user.logs.reduce((sum, log) => sum + (log.minutesPlayed ?? 0), 0);
+
+  const mostPlayedLog = user.logs.reduce<(typeof user.logs)[number] | null>((max, log) => {
+    if (!log.minutesPlayed) return max;
+    if (!max || log.minutesPlayed > (max.minutesPlayed ?? 0)) return log;
+    return max;
+  }, null);
+  const mostPlayedGame = mostPlayedLog
+    ? {
+        slug: mostPlayedLog.game.slug,
+        title: mostPlayedLog.game.title,
+        coverUrl: mostPlayedLog.game.coverUrl,
+        minutesPlayed: mostPlayedLog.minutesPlayed!,
+      }
+    : null;
+
+  const genreCounts = new Map<string, number>();
+  for (const log of user.logs) {
+    for (const genre of log.game.genres) {
+      genreCounts.set(genre, (genreCounts.get(genre) ?? 0) + 1);
+    }
+  }
+  const topGenreEntry = [...genreCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  const topGenre = topGenreEntry ? { name: topGenreEntry[0], count: topGenreEntry[1] } : null;
+
+  const latestUserAchievement = await prisma.userAchievement.findFirst({
+    where: { userId: user.id, unlockedAt: { not: null } },
+    orderBy: { unlockedAt: "desc" },
+    include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
+  });
+  const latestAchievement = latestUserAchievement
+    ? {
+        displayName: latestUserAchievement.achievement.displayName,
+        iconUrl: latestUserAchievement.achievement.iconUrl,
+        gameSlug: latestUserAchievement.achievement.game.slug,
+        gameTitle: latestUserAchievement.achievement.game.title,
+      }
+    : null;
+
+  const steamAccount = user.accounts.find((a) => a.provider === "steam");
+  const discordAccount = user.accounts.find((a) => a.provider === "discord");
+  const publicSteamId = user.showSteamOnProfile ? steamAccount?.providerAccountId : undefined;
+  const publicDiscordUsername = user.showDiscordOnProfile ? (discordAccount?.providerLabel ?? undefined) : undefined;
+  const platinumGameIds = await getPlatinumGameIds(
+    user.id,
+    user.logs.map((log) => log.gameId),
+  );
 
   const recentlyPlayed = [...user.logs]
     .filter((log) => log.status === "COMPLETED")
@@ -158,6 +214,7 @@ export default async function ProfilePage({ params }: PageProps) {
       coverUrl: log.game.coverUrl,
       rating: log.rating,
       notes: log.notes,
+      isPlatinum: platinumGameIds.has(log.gameId),
     }));
 
   const gamesContent =
@@ -178,6 +235,7 @@ export default async function ProfilePage({ params }: PageProps) {
                 coverUrl: log.game.coverUrl,
                 rating: log.rating,
                 notes: log.notes,
+                isPlatinum: platinumGameIds.has(log.gameId),
               }))}
               moreHref={`/u/${username}/games/${STATUS_SLUGS[group.status]}`}
               moreLabel={t("showMore")}
@@ -325,27 +383,21 @@ export default async function ProfilePage({ params }: PageProps) {
                 </Link>
               ) : null}
             </div>
-            <p className="text-sm text-muted-foreground">@{username}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">@{username}</p>
+              <PublicAccountLinks
+                steamId={publicSteamId}
+                discordUsername={publicDiscordUsername}
+                website={user.website}
+                twitterUrl={user.twitterUrl}
+                twitchUrl={user.twitchUrl}
+                youtubeUrl={user.youtubeUrl}
+              />
+            </div>
             {user.bio ? <p className="text-sm text-muted-foreground">{user.bio}</p> : null}
           </div>
         </div>
 
-        {user.logs.length > 0 ? (
-          <div className="flex shrink-0 gap-8 lg:pt-2">
-            {[
-              { label: t("statsCompleted"), count: completedCount },
-              { label: t("statsPlaying"), count: playingCount },
-              { label: t("statsReviews"), count: reviews.length },
-            ].map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-0.5 text-center">
-                <span className="text-2xl font-bold tracking-tight">{stat.count}</span>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
 
       <FollowSection
@@ -364,34 +416,26 @@ export default async function ProfilePage({ params }: PageProps) {
       <PinnedAchievementsSection initialPinned={pinnedAchievements} canEdit={isOwnProfile} />
 
       {user.logs.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
-          <RatingHistogram
-            averageRating={personalAverageRating}
-            ratingCount={personalRatings.length}
-            ratings={personalRatings}
-            ratingLabel={t("statsAvgRating")}
-          />
-          <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))] gap-2">
-            {[
-              { label: t("statsTotalGames"), count: user.logs.length },
-              { label: t("statsPlayedThisYear"), count: completedThisYear },
-              { label: t("statsBacklog"), count: backlogCount },
-              { label: t("statsReviews"), count: reviews.length },
-              { label: t("statsLists"), count: ownedListsCount },
-              ...(totalMinutesPlayed > 0
-                ? [{ label: t("statsPlaytime"), count: formatPlaytime(totalMinutesPlayed) }]
-                : []),
-              ...(unlockedAchievementsCount > 0
-                ? [{ label: t("statsAchievements"), count: unlockedAchievementsCount }]
-                : []),
-            ].map((tile) => (
-              <div key={tile.label} className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-md border border-border p-3 text-center">
-                <span className="text-lg font-semibold tracking-tight">{tile.count}</span>
-                <span className="text-xs text-muted-foreground">{tile.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProfileStats
+          totalGames={user.logs.length}
+          totalMinutesPlayed={totalMinutesPlayed}
+          averageRating={personalAverageRating}
+          unlockedAchievementsCount={unlockedAchievementsCount}
+          totalAchievementsForTrackedGames={totalAchievementsForTrackedGames}
+          statusCounts={{
+            COMPLETED: completedCount,
+            PLAYING: playingCount,
+            BACKLOG: backlogCount,
+            WISHLIST: wishlistCount,
+            DROPPED: droppedCount,
+          }}
+          completedThisYear={completedThisYear}
+          mostPlayedGame={mostPlayedGame}
+          topGenre={topGenre}
+          latestAchievement={latestAchievement}
+          reviewsCount={reviews.length}
+          listsCount={ownedListsCount}
+        />
       ) : null}
 
       {recentlyPlayed.length > 0 ? (
