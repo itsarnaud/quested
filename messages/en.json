@@ -101,6 +101,7 @@
     "signInPrompt": "Sign in to track this game.",
     "signIn": "Sign in",
     "topReviewsTitle": "Community reviews",
+    "achievementsTitle": "Achievements",
     "releasedBadge": "Released",
     "unreleasedBadge": "Upcoming",
     "avgRating": "Average rating",
@@ -156,6 +157,7 @@
     "statsReviews": "Reviews",
     "statsLists": "Lists",
     "statsPlaytime": "Playtime",
+    "statsAchievements": "Unlocked achievements",
     "recentlyPlayedTitle": "Recently played",
     "statsCompleted": "Completed",
     "statsPlaying": "Playing",
@@ -311,7 +313,9 @@
     "syncLibrary": "Sync my library",
     "syncing": "Syncing… {done}/{total}",
     "syncComplete": "{total} games synced.",
-    "steamProfilePrivate": "Your Steam profile is private. Make it public to import your library."
+    "steamProfilePrivate": "Your Steam profile is private. Make it public to import your library.",
+    "syncAchievements": "Sync my achievements",
+    "syncAchievementsComplete": "{unlocked} unlocked achievements found."
   },
   "Legal": {
     "mentionsTitle": "Legal notice",

@@ -86,6 +86,91 @@ export async function getSteamOwnedGames(steamId: string): Promise<SteamOwnedGam
   }));
 }
 
+export type SteamAchievementSchema = {
+  apiName: string;
+  displayName: string;
+  description: string | null;
+  iconUrl: string;
+  iconGrayUrl: string;
+};
+
+// Most Steam apps have no achievements/stats at all — that's the normal
+// case, not an error, so this returns [] instead of throwing whenever the
+// response doesn't have the shape of a real achievement schema.
+export async function getSteamGameSchema(appid: number): Promise<SteamAchievementSchema[]> {
+  const url = new URL("https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2");
+  url.searchParams.set("key", process.env.AUTH_STEAM_SECRET!);
+  url.searchParams.set("appid", String(appid));
+
+  const response = await fetch(url);
+  if (!response.ok) return [];
+
+  const data = (await response.json()) as {
+    game?: {
+      availableGameStats?: {
+        achievements?: {
+          name: string;
+          displayName: string;
+          description?: string;
+          icon: string;
+          icongray: string;
+        }[];
+      };
+    };
+  };
+
+  const achievements = data.game?.availableGameStats?.achievements ?? [];
+  return achievements.map((a) => ({
+    apiName: a.name,
+    displayName: a.displayName,
+    description: a.description ?? null,
+    iconUrl: a.icon,
+    iconGrayUrl: a.icongray,
+  }));
+}
+
+export async function getSteamGlobalAchievementPercentages(appid: number): Promise<Map<string, number>> {
+  const url = new URL("https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2");
+  url.searchParams.set("gameid", String(appid));
+
+  const response = await fetch(url);
+  if (!response.ok) return new Map();
+
+  const data = (await response.json()) as {
+    achievementpercentages?: { achievements?: { name: string; percent: number | string }[] };
+  };
+  const rows = data.achievementpercentages?.achievements ?? [];
+  // Steam's own API is inconsistent about whether `percent` comes back as a
+  // JSON number or a numeric string — coerce explicitly rather than trust it.
+  return new Map(rows.map((r) => [r.name, Number(r.percent)]));
+}
+
+export type SteamPlayerAchievement = { apiName: string; achieved: boolean; unlockedAt: Date | null };
+
+// Returns [] both for games with no stats and for a private profile — the
+// caller already knows which games it's asking about (from a prior owned
+// games fetch), so there's nothing actionable to distinguish here.
+export async function getSteamPlayerAchievements(steamId: string, appid: number): Promise<SteamPlayerAchievement[]> {
+  const url = new URL("https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1");
+  url.searchParams.set("key", process.env.AUTH_STEAM_SECRET!);
+  url.searchParams.set("steamid", steamId);
+  url.searchParams.set("appid", String(appid));
+
+  const response = await fetch(url);
+  if (!response.ok) return [];
+
+  const data = (await response.json()) as {
+    playerstats?: { success?: boolean; achievements?: { apiname: string; achieved: number; unlocktime: number }[] };
+  };
+  if (!data.playerstats?.success) return [];
+
+  return (data.playerstats.achievements ?? []).map((a) => ({
+    apiName: a.apiname,
+    achieved: a.achieved === 1,
+    unlockedAt: a.unlocktime > 0 ? new Date(a.unlocktime * 1000) : null,
+  }));
+}
+
 export async function getSteamPlayerSummary(steamId: string): Promise<{ personaName: string; avatarUrl: string }> {
   const url = new URL("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002");
   url.searchParams.set("key", process.env.AUTH_STEAM_SECRET!);

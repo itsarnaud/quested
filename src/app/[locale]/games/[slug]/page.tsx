@@ -15,6 +15,7 @@ import { RatingHistogram } from "@/components/rating-histogram";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 import { pageAlternates } from "@/lib/alternates";
 import { siteUrl } from "@/lib/site";
+import { AchievementsSection } from "@/app/[locale]/games/[slug]/achievements-section";
 
 const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
 
@@ -219,6 +220,8 @@ export default async function GamePage({ params }: PageProps) {
           ))}
         </div>
       </div>
+
+      <AchievementsSection gameId={game.id} userId={session?.user?.id} />
 
       {topReviews.length > 0 ? (
         <div className="flex flex-col gap-2">

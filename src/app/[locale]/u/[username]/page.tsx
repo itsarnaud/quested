@@ -110,6 +110,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
   const likedCount = await prisma.like.count({ where: { userId: user.id } });
   const ownedListsCount = await prisma.gameList.count({ where: { userId: user.id } });
+  const unlockedAchievementsCount = await prisma.userAchievement.count({ where: { userId: user.id } });
 
   const isOwnProfile = session?.user?.username === username;
   const canLike = Boolean(session?.user) && !isOwnProfile;
@@ -364,6 +365,9 @@ export default async function ProfilePage({ params }: PageProps) {
               { label: t("statsLists"), count: ownedListsCount },
               ...(totalMinutesPlayed > 0
                 ? [{ label: t("statsPlaytime"), count: formatPlaytime(totalMinutesPlayed) }]
+                : []),
+              ...(unlockedAchievementsCount > 0
+                ? [{ label: t("statsAchievements"), count: unlockedAchievementsCount }]
                 : []),
             ].map((tile) => (
               <div key={tile.label} className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-md border border-border p-3 text-center">

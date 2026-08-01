@@ -4,6 +4,7 @@ import { createTRPCRouter, protectedProcedure, withRateLimit } from "@/server/ap
 import { prisma } from "@/lib/prisma";
 import { getSteamOwnedGames } from "@/lib/steam-auth";
 import { syncSteamLibraryPage } from "@/server/steam/sync";
+import { syncAchievementsPage } from "@/server/steam/achievements";
 import { steamSyncRatelimit } from "@/lib/redis";
 
 async function getLinkedSteamId(userId: string) {
@@ -36,5 +37,19 @@ export const steamRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Steam profile is private." });
       }
       return syncSteamLibraryPage(userId, games, input.offset, input.limit);
+    }),
+
+  getTrackedGameCount: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.log.count({
+      where: { userId: ctx.session.user.id, game: { externalIds: { some: { source: "STEAM" } } } },
+    });
+  }),
+
+  syncAchievementsPage: protectedProcedure
+    .use(withRateLimit(steamSyncRatelimit))
+    .input(z.object({ offset: z.number().int().min(0), limit: z.number().int().min(1).max(100).default(5) }))
+    .mutation(async ({ ctx, input }) => {
+      await getLinkedSteamId(ctx.session.user.id);
+      return syncAchievementsPage(ctx.session.user.id, input.offset, input.limit);
     }),
 });

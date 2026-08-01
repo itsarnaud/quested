@@ -81,6 +81,8 @@ model User {
 
   pushSubscriptions PushSubscription[]
 
+  achievements UserAchievement[]
+
   badges Badge[] @default([])
 
   // Off by default — transactional emails (welcome, account deletion)
@@ -218,6 +220,7 @@ model Game {
   favoritedBy   FavoriteGame[]
   listItems     GameListItem[]
   notifications Notification[]
+  achievements  Achievement[]
 
   @@index([title])
 }
@@ -280,6 +283,44 @@ model Log {
   @@unique([userId, gameId])
   @@index([userId])
   @@index([gameId])
+}
+
+// One row per (canonical Game, Steam achievement) — shared across all
+// users, fetched once per game from GetSchemaForGame and reused forever.
+model Achievement {
+  id                    String  @id @default(cuid())
+  apiName               String
+  displayName           String
+  description           String? @db.Text
+  iconUrl               String
+  iconGrayUrl           String
+  globalUnlockedPercent Float?
+
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId String
+
+  unlockedBy UserAchievement[]
+
+  @@unique([gameId, apiName])
+  @@index([gameId])
+}
+
+// Only unlocked achievements get a row — "locked" is just "no row exists"
+// for that (user, achievement) pair, so this table only grows with actual
+// progress instead of being pre-populated for every possible achievement.
+model UserAchievement {
+  id         String    @id @default(cuid())
+  unlockedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  achievementId String
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
 }
 
 model Like {

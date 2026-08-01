@@ -7,7 +7,7 @@ import { GoogleIcon } from "@/components/icons/google-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { UnlinkButton } from "@/app/[locale]/account/unlink-button";
-import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
+import { SteamSyncButton, SteamAchievementsSyncButton } from "@/app/[locale]/account/steam-sync-button";
 
 const PROVIDERS = [
   { id: "google", name: "Google", labelKey: "linkGoogle", Icon: GoogleIcon } as const,
@@ -73,7 +73,12 @@ export async function LinkedAccounts({ userId, error }: { userId: string; error?
 
               {isLinked ? (
                 <div className="flex items-center gap-2">
-                  {id === "steam" ? <SteamSyncButton /> : null}
+                  {id === "steam" ? (
+                    <>
+                      <SteamSyncButton />
+                      <SteamAchievementsSyncButton />
+                    </>
+                  ) : null}
                   {accountsByProvider.size > 1 ? (
                     <form action={unlink.bind(null, id)}>
                       <UnlinkButton label={t("unlink")} confirmLabel={t("unlinkConfirm")} />

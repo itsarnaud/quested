@@ -1,21 +1,32 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { callerAs } from "@/server/api/routers/__tests__/test-helpers";
-import type { SteamOwnedGame } from "@/lib/steam-auth";
+import type { SteamOwnedGame, SteamAchievementSchema, SteamPlayerAchievement } from "@/lib/steam-auth";
 
-const { getSteamOwnedGames } = vi.hoisted(() => ({
-  getSteamOwnedGames: vi.fn(async (): Promise<SteamOwnedGame[] | null> => []),
-}));
+const { getSteamOwnedGames, getSteamGameSchema, getSteamGlobalAchievementPercentages, getSteamPlayerAchievements } =
+  vi.hoisted(() => ({
+    getSteamOwnedGames: vi.fn(async (): Promise<SteamOwnedGame[] | null> => []),
+    getSteamGameSchema: vi.fn(async (): Promise<SteamAchievementSchema[]> => []),
+    getSteamGlobalAchievementPercentages: vi.fn(async () => new Map<string, number>()),
+    getSteamPlayerAchievements: vi.fn(async (): Promise<SteamPlayerAchievement[]> => []),
+  }));
 
 vi.mock("@/lib/steam-auth", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/steam-auth")>();
-  return { ...actual, getSteamOwnedGames };
+  return {
+    ...actual,
+    getSteamOwnedGames,
+    getSteamGameSchema,
+    getSteamGlobalAchievementPercentages,
+    getSteamPlayerAchievements,
+  };
 });
 
 const PREFIX = "vitest-steam-router-";
 
 async function cleanup() {
   const users = await prisma.user.findMany({ where: { username: { startsWith: PREFIX } }, select: { id: true } });
+  await prisma.userAchievement.deleteMany({ where: { userId: { in: users.map((u) => u.id) } } });
   await prisma.log.deleteMany({ where: { userId: { in: users.map((u) => u.id) } } });
   await prisma.account.deleteMany({ where: { userId: { in: users.map((u) => u.id) } } });
   await prisma.user.deleteMany({ where: { username: { startsWith: PREFIX } } });
@@ -26,6 +37,9 @@ describe("steam router", () => {
   beforeEach(async () => {
     await cleanup();
     getSteamOwnedGames.mockReset().mockResolvedValue([]);
+    getSteamGameSchema.mockReset().mockResolvedValue([]);
+    getSteamGlobalAchievementPercentages.mockReset().mockResolvedValue(new Map());
+    getSteamPlayerAchievements.mockReset().mockResolvedValue([]);
   });
 
   afterAll(cleanup);
@@ -89,5 +103,58 @@ describe("steam router", () => {
     getSteamOwnedGames.mockResolvedValue(null);
 
     await expect(callerAs(user).steam.syncPage({ offset: 0, limit: 40 })).rejects.toThrow();
+  });
+
+  it("getTrackedGameCount only counts logs on Steam-linked games", async () => {
+    const user = await prisma.user.create({ data: { username: `${PREFIX}u6`, email: `${PREFIX}u6@test.local` } });
+    const steamGame = await prisma.game.create({
+      data: {
+        slug: `${PREFIX}tracked-steam`,
+        title: "Vitest Steam Tracked Game",
+        genres: [],
+        platforms: [],
+        developers: [],
+        externalIds: { create: { source: "STEAM", sourceId: "5001" } },
+      },
+    });
+    const otherGame = await prisma.game.create({
+      data: { slug: `${PREFIX}tracked-other`, title: "Vitest Steam Other Game", genres: [], platforms: [], developers: [] },
+    });
+    await prisma.log.create({ data: { userId: user.id, gameId: steamGame.id, status: "PLAYING" } });
+    await prisma.log.create({ data: { userId: user.id, gameId: otherGame.id, status: "PLAYING" } });
+
+    const count = await callerAs(user).steam.getTrackedGameCount();
+    expect(count).toBe(1);
+  });
+
+  it("syncAchievementsPage requires a linked Steam account", async () => {
+    const user = await prisma.user.create({ data: { username: `${PREFIX}u7`, email: `${PREFIX}u7@test.local` } });
+    await expect(callerAs(user).steam.syncAchievementsPage({ offset: 0, limit: 5 })).rejects.toThrow();
+  });
+
+  it("syncAchievementsPage syncs unlocked achievements for Steam-linked games", async () => {
+    const user = await prisma.user.create({ data: { username: `${PREFIX}u8`, email: `${PREFIX}u8@test.local` } });
+    await prisma.account.create({
+      data: { userId: user.id, type: "oauth", provider: "steam", providerAccountId: "6001" },
+    });
+    const game = await prisma.game.create({
+      data: {
+        slug: `${PREFIX}ach-game`,
+        title: "Vitest Steam Achievement Game",
+        genres: [],
+        platforms: [],
+        developers: [],
+        externalIds: { create: { source: "STEAM", sourceId: "7001" } },
+      },
+    });
+    await prisma.log.create({ data: { userId: user.id, gameId: game.id, status: "PLAYING" } });
+
+    getSteamGameSchema.mockResolvedValue([
+      { apiName: "WIN", displayName: "Winner", description: null, iconUrl: "u", iconGrayUrl: "g" },
+    ]);
+    getSteamPlayerAchievements.mockResolvedValue([{ apiName: "WIN", achieved: true, unlockedAt: null }]);
+
+    const result = await callerAs(user).steam.syncAchievementsPage({ offset: 0, limit: 5 });
+    expect(result).toEqual({ gamesProcessed: 1, achievementsUnlocked: 1, done: true });
   });
 });

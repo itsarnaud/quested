@@ -101,6 +101,7 @@
     "signInPrompt": "Connecte-toi pour suivre ce jeu.",
     "signIn": "Se connecter",
     "topReviewsTitle": "Avis de la communauté",
+    "achievementsTitle": "Succès",
     "releasedBadge": "Sorti",
     "unreleasedBadge": "À venir",
     "avgRating": "Note moyenne",
@@ -156,6 +157,7 @@
     "statsReviews": "Avis",
     "statsLists": "Listes",
     "statsPlaytime": "Temps joué",
+    "statsAchievements": "Succès débloqués",
     "recentlyPlayedTitle": "Joués récemment",
     "statsCompleted": "Terminés",
     "statsPlaying": "En cours",
@@ -311,7 +313,9 @@
     "syncLibrary": "Synchroniser ma bibliothèque",
     "syncing": "Synchronisation… {done}/{total}",
     "syncComplete": "{total} jeux synchronisés.",
-    "steamProfilePrivate": "Ton profil Steam est privé. Rends-le public pour importer ta bibliothèque."
+    "steamProfilePrivate": "Ton profil Steam est privé. Rends-le public pour importer ta bibliothèque.",
+    "syncAchievements": "Synchroniser mes succès",
+    "syncAchievementsComplete": "{unlocked} succès débloqués trouvés."
   },
   "Legal": {
     "mentionsTitle": "Mentions légales",
