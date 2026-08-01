@@ -2,6 +2,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { callerAs } from "@/server/api/routers/__tests__/test-helpers";
 import type { SteamOwnedGame, SteamAchievementSchema, SteamPlayerAchievement } from "@/lib/steam-auth";
+import type { IgdbGame } from "@/server/igdb/client";
 
 const { getSteamOwnedGames, getSteamGameSchema, getSteamGlobalAchievementPercentages, getSteamPlayerAchievements } =
   vi.hoisted(() => ({
@@ -10,6 +11,11 @@ const { getSteamOwnedGames, getSteamGameSchema, getSteamGlobalAchievementPercent
     getSteamGlobalAchievementPercentages: vi.fn(async () => new Map<string, number>()),
     getSteamPlayerAchievements: vi.fn(async (): Promise<SteamPlayerAchievement[]> => []),
   }));
+
+const { resolveIgdbIdsBySteamAppIds, getIgdbGamesByIds } = vi.hoisted(() => ({
+  resolveIgdbIdsBySteamAppIds: vi.fn(async () => new Map<string, number>()),
+  getIgdbGamesByIds: vi.fn(async () => [] as IgdbGame[]),
+}));
 
 vi.mock("@/lib/steam-auth", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/steam-auth")>();
@@ -20,6 +26,14 @@ vi.mock("@/lib/steam-auth", async (importOriginal) => {
     getSteamGlobalAchievementPercentages,
     getSteamPlayerAchievements,
   };
+});
+
+// syncPage's library sync tries to resolve each unmatched appid against
+// IGDB — mock it out so this file never depends on real IGDB credentials
+// (CI has none), matching the pattern already used in sync.test.ts.
+vi.mock("@/server/igdb/client", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/server/igdb/client")>();
+  return { ...actual, resolveIgdbIdsBySteamAppIds, getIgdbGamesByIds };
 });
 
 const PREFIX = "vitest-steam-router-";
@@ -40,6 +54,8 @@ describe("steam router", () => {
     getSteamGameSchema.mockReset().mockResolvedValue([]);
     getSteamGlobalAchievementPercentages.mockReset().mockResolvedValue(new Map());
     getSteamPlayerAchievements.mockReset().mockResolvedValue([]);
+    resolveIgdbIdsBySteamAppIds.mockReset().mockResolvedValue(new Map());
+    getIgdbGamesByIds.mockReset().mockResolvedValue([]);
   });
 
   afterAll(cleanup);
