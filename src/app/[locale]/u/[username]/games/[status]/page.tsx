@@ -7,6 +7,7 @@ import { GameTile } from "@/components/game-tile";
 import { Pagination } from "@/components/pagination";
 import { statusFromSlug } from "@/lib/game-status";
 import { pageAlternates } from "@/lib/alternates";
+import { getPlatinumGameIds } from "@/server/games/platinum";
 
 const PAGE_SIZE = 24;
 
@@ -51,6 +52,10 @@ export default async function GamesByStatusPage({ params, searchParams }: PagePr
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const platinumGameIds = await getPlatinumGameIds(
+    user.id,
+    logs.map((log) => log.gameId),
+  );
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
@@ -75,6 +80,7 @@ export default async function GamesByStatusPage({ params, searchParams }: PagePr
                 coverUrl: log.game.coverUrl,
                 rating: log.rating,
                 notes: log.notes,
+                isPlatinum: platinumGameIds.has(log.gameId),
               }}
             />
           ))}

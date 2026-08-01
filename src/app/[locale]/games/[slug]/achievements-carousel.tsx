@@ -12,6 +12,7 @@ type CarouselAchievement = {
   description: string | null;
   iconUrl: string;
   unlocked: boolean;
+  globalUnlockedPercent: number | null;
 };
 
 function chunk<T>(items: T[], size: number): T[][] {
@@ -54,6 +55,11 @@ export function AchievementsCarousel({ achievements }: { achievements: CarouselA
                     <span className="truncate text-sm font-medium">{achievement.displayName}</span>
                     {achievement.description ? (
                       <span className="truncate text-xs text-muted-foreground">{achievement.description}</span>
+                    ) : null}
+                    {achievement.globalUnlockedPercent != null ? (
+                      <span className="text-[11px] text-muted-foreground">
+                        {achievement.globalUnlockedPercent.toFixed(1)}%
+                      </span>
                     ) : null}
                   </div>
                 </div>

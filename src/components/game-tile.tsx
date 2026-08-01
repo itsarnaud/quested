@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { PlatinumIcon } from "@/components/icons/platinum-icon";
 
 export type GameTileData = {
   id: string;
@@ -8,6 +9,7 @@ export type GameTileData = {
   coverUrl: string | null;
   rating: number | null;
   notes: string | null;
+  isPlatinum?: boolean;
 };
 
 export function GameTile({ game }: { game: GameTileData }) {
@@ -27,6 +29,14 @@ export function GameTile({ game }: { game: GameTileData }) {
             sizes="(max-width: 768px) 45vw, 160px"
             className="object-cover"
           />
+        ) : null}
+        {game.isPlatinum ? (
+          <div
+            title="Platine"
+            className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-background/80 text-slate-300"
+          >
+            <PlatinumIcon width={14} height={14} />
+          </div>
         ) : null}
       </div>
       <div className="flex flex-col">
