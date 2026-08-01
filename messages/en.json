@@ -332,13 +332,12 @@
     "linkSteam": "Link my Steam account",
     "steamAlreadyLinked": "This Steam account is already linked to another Quested account.",
     "steamLinkFailed": "Steam sign-in failed, please try again.",
-    "syncLibrary": "Sync my library",
-    "syncing": "Syncing… {done}/{total}",
-    "syncComplete": "{total} games synced.",
+    "syncSteam": "Sync Steam",
+    "syncingLibrary": "Library",
+    "syncingAchievements": "Achievements",
+    "syncSteamComplete": "{games} games and {achievements} achievements synced.",
     "steamProfilePrivate": "Your Steam profile is private. Make it public to import your library.",
-    "showOnProfile": "Public",
-    "syncAchievements": "Sync my achievements",
-    "syncAchievementsComplete": "{unlocked} unlocked achievements found."
+    "showOnProfile": "Public"
   },
   "Legal": {
     "mentionsTitle": "Legal notice",

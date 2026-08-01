@@ -5,13 +5,14 @@ import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 
-const PAGE_SIZE = 40;
+const LIBRARY_PAGE_SIZE = 40;
+const ACHIEVEMENTS_PAGE_SIZE = 5;
 
 type SyncState =
   | { status: "idle" }
   | { status: "private" }
-  | { status: "syncing"; done: number; total: number }
-  | { status: "complete"; total: number }
+  | { status: "syncing"; phase: "library" | "achievements"; done: number; total: number }
+  | { status: "complete"; games: number; achievements: number }
   | { status: "error" };
 
 export function SteamSyncButton() {
@@ -20,9 +21,10 @@ export function SteamSyncButton() {
 
   const utils = trpc.useUtils();
   const syncPage = trpc.steam.syncPage.useMutation();
+  const syncAchievementsPage = trpc.steam.syncAchievementsPage.useMutation();
 
   async function runSync() {
-    setState({ status: "syncing", done: 0, total: 0 });
+    setState({ status: "syncing", phase: "library", done: 0, total: 0 });
 
     const size = await utils.steam.getLibrarySize.fetch().catch(() => null);
     if (!size) {
@@ -34,104 +36,57 @@ export function SteamSyncButton() {
       return;
     }
 
-    const total = size.total;
-    let offset = 0;
-    setState({ status: "syncing", done: 0, total });
-
     try {
-      while (offset < total) {
-        await syncPage.mutateAsync({ offset, limit: PAGE_SIZE });
-        offset += PAGE_SIZE;
-        setState({ status: "syncing", done: Math.min(offset, total), total });
+      let offset = 0;
+      setState({ status: "syncing", phase: "library", done: 0, total: size.total });
+      while (offset < size.total) {
+        await syncPage.mutateAsync({ offset, limit: LIBRARY_PAGE_SIZE });
+        offset += LIBRARY_PAGE_SIZE;
+        setState({ status: "syncing", phase: "library", done: Math.min(offset, size.total), total: size.total });
       }
-      setState({ status: "complete", total });
+
+      const gameCount = await utils.steam.getTrackedGameCount.fetch();
+      let achOffset = 0;
+      let achievementsUnlocked = 0;
+      setState({ status: "syncing", phase: "achievements", done: 0, total: gameCount });
+      while (achOffset < gameCount) {
+        const result = await syncAchievementsPage.mutateAsync({ offset: achOffset, limit: ACHIEVEMENTS_PAGE_SIZE });
+        achievementsUnlocked += result.achievementsUnlocked;
+        achOffset += ACHIEVEMENTS_PAGE_SIZE;
+        setState({
+          status: "syncing",
+          phase: "achievements",
+          done: Math.min(achOffset, gameCount),
+          total: gameCount,
+        });
+      }
+
+      setState({ status: "complete", games: size.total, achievements: achievementsUnlocked });
     } catch {
       setState({ status: "error" });
     }
   }
 
   if (state.status === "syncing") {
+    const label = state.phase === "library" ? t("syncingLibrary") : t("syncingAchievements");
     return (
-      <div className="flex flex-col gap-1">
-        <Button type="button" variant="secondary" className="rounded-full" disabled>
-          {t("syncing", { done: state.done, total: state.total })}
-        </Button>
-      </div>
+      <Button type="button" variant="secondary" className="rounded-full" disabled>
+        {label} · {state.done}/{state.total}
+      </Button>
     );
   }
 
   return (
     <div className="flex flex-col items-end gap-1">
       <Button type="button" variant="secondary" className="rounded-full" onClick={runSync}>
-        {t("syncLibrary")}
+        {t("syncSteam")}
       </Button>
       {state.status === "private" ? (
         <p className="text-xs text-red-400">{t("steamProfilePrivate")}</p>
       ) : state.status === "complete" ? (
-        <p className="text-xs text-muted-foreground">{t("syncComplete", { total: state.total })}</p>
-      ) : state.status === "error" ? (
-        <p className="text-xs text-red-400">{t("genericError")}</p>
-      ) : null}
-    </div>
-  );
-}
-
-const ACHIEVEMENTS_PAGE_SIZE = 5;
-
-type AchievementsSyncState =
-  | { status: "idle" }
-  | { status: "syncing"; done: number; total: number }
-  | { status: "complete"; unlocked: number }
-  | { status: "error" };
-
-export function SteamAchievementsSyncButton() {
-  const t = useTranslations("Account");
-  const [state, setState] = useState<AchievementsSyncState>({ status: "idle" });
-
-  const utils = trpc.useUtils();
-  const syncAchievementsPage = trpc.steam.syncAchievementsPage.useMutation();
-
-  async function runSync() {
-    setState({ status: "syncing", done: 0, total: 0 });
-
-    const total = await utils.steam.getTrackedGameCount.fetch().catch(() => null);
-    if (total === null) {
-      setState({ status: "error" });
-      return;
-    }
-
-    let offset = 0;
-    let unlocked = 0;
-    setState({ status: "syncing", done: 0, total });
-
-    try {
-      while (offset < total) {
-        const result = await syncAchievementsPage.mutateAsync({ offset, limit: ACHIEVEMENTS_PAGE_SIZE });
-        unlocked += result.achievementsUnlocked;
-        offset += ACHIEVEMENTS_PAGE_SIZE;
-        setState({ status: "syncing", done: Math.min(offset, total), total });
-      }
-      setState({ status: "complete", unlocked });
-    } catch {
-      setState({ status: "error" });
-    }
-  }
-
-  if (state.status === "syncing") {
-    return (
-      <Button type="button" variant="secondary" className="rounded-full" disabled>
-        {t("syncing", { done: state.done, total: state.total })}
-      </Button>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-end gap-1">
-      <Button type="button" variant="secondary" className="rounded-full" onClick={runSync}>
-        {t("syncAchievements")}
-      </Button>
-      {state.status === "complete" ? (
-        <p className="text-xs text-muted-foreground">{t("syncAchievementsComplete", { unlocked: state.unlocked })}</p>
+        <p className="text-xs text-muted-foreground">
+          {t("syncSteamComplete", { games: state.games, achievements: state.achievements })}
+        </p>
       ) : state.status === "error" ? (
         <p className="text-xs text-red-400">{t("genericError")}</p>
       ) : null}
