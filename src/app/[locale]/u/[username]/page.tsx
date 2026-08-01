@@ -21,6 +21,7 @@ import { STATUS_SLUGS } from "@/lib/game-status";
 import { pageAlternates } from "@/lib/alternates";
 import { RatingHistogram } from "@/components/rating-histogram";
 import { GameTile } from "@/components/game-tile";
+import { formatPlaytime } from "@/lib/format-playtime";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
 const PREVIEW_SIZE = 12;
@@ -130,6 +131,7 @@ export default async function ProfilePage({ params }: PageProps) {
   const backlogCount = user.logs.filter((log) => log.status === "BACKLOG").length;
   const completedCount = user.logs.filter((log) => log.status === "COMPLETED").length;
   const playingCount = user.logs.filter((log) => log.status === "PLAYING").length;
+  const totalMinutesPlayed = user.logs.reduce((sum, log) => sum + (log.minutesPlayed ?? 0), 0);
 
   const recentlyPlayed = [...user.logs]
     .filter((log) => log.status === "COMPLETED")
@@ -360,6 +362,9 @@ export default async function ProfilePage({ params }: PageProps) {
               { label: t("statsBacklog"), count: backlogCount },
               { label: t("statsReviews"), count: reviews.length },
               { label: t("statsLists"), count: ownedListsCount },
+              ...(totalMinutesPlayed > 0
+                ? [{ label: t("statsPlaytime"), count: formatPlaytime(totalMinutesPlayed) }]
+                : []),
             ].map((tile) => (
               <div key={tile.label} className="flex min-w-0 flex-col items-center justify-center gap-1 rounded-md border border-border p-3 text-center">
                 <span className="text-lg font-semibold tracking-tight">{tile.count}</span>

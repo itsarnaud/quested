@@ -21,3 +21,12 @@ export const standardRatelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(30, "1 m"),
   prefix: "ratelimit:standard",
 });
+
+// Each Steam library sync page can trigger a batch of IGDB round trips —
+// tighter than standard, but loose enough for the client's own chunked
+// sync loop (one call per page) to run without self-throttling.
+export const steamSyncRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  prefix: "ratelimit:steam-sync",
+});

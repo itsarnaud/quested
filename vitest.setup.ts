@@ -7,4 +7,5 @@ vi.mock("@/lib/redis", () => ({
   redis: {},
   searchRatelimit: { limit: async () => ({ success: true }) },
   standardRatelimit: { limit: async () => ({ success: true }) },
+  steamSyncRatelimit: { limit: async () => ({ success: true }) },
 }));

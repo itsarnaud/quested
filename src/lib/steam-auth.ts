@@ -59,6 +59,33 @@ export async function verifySteamAssertion(params: URLSearchParams, returnTo: st
   return match ? match[1] : null;
 }
 
+export type SteamOwnedGame = { appid: number; name: string; playtimeMinutes: number };
+
+// Steam's response omits the `games` key entirely for a private profile
+// (no error, no clue otherwise) — returning `null` here specifically lets
+// callers tell "private profile" apart from "public but owns 0 games".
+export async function getSteamOwnedGames(steamId: string): Promise<SteamOwnedGame[] | null> {
+  const url = new URL("https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001");
+  url.searchParams.set("key", process.env.AUTH_STEAM_SECRET!);
+  url.searchParams.set("steamid", steamId);
+  url.searchParams.set("include_appinfo", "1");
+  url.searchParams.set("include_played_free_games", "1");
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Steam API error: ${response.status}`);
+
+  const data = (await response.json()) as {
+    response?: { game_count?: number; games?: { appid: number; name: string; playtime_forever: number }[] };
+  };
+  if (!data.response?.games) return null;
+
+  return data.response.games.map((g) => ({
+    appid: g.appid,
+    name: g.name,
+    playtimeMinutes: g.playtime_forever,
+  }));
+}
+
 export async function getSteamPlayerSummary(steamId: string): Promise<{ personaName: string; avatarUrl: string }> {
   const url = new URL("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002");
   url.searchParams.set("key", process.env.AUTH_STEAM_SECRET!);

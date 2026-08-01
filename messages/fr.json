@@ -122,6 +122,7 @@
     "rating": "Note",
     "clearRating": "Retirer",
     "notes": "Avis",
+    "playtime": "Temps joué : {time}",
     "notesPlaceholder": "Qu'as-tu pensé de ce jeu ?",
     "save": "Enregistrer",
     "notYetReleased": "Tu pourras noter ce jeu une fois sorti."
@@ -154,6 +155,7 @@
     "statsBacklog": "Backlog",
     "statsReviews": "Avis",
     "statsLists": "Listes",
+    "statsPlaytime": "Temps joué",
     "recentlyPlayedTitle": "Joués récemment",
     "statsCompleted": "Terminés",
     "statsPlaying": "En cours",
@@ -305,7 +307,11 @@
     "notLinked": "Non connecté",
     "linkSteam": "Lier mon compte Steam",
     "steamAlreadyLinked": "Ce compte Steam est déjà lié à un autre compte Quested.",
-    "steamLinkFailed": "La connexion à Steam a échoué, réessaie."
+    "steamLinkFailed": "La connexion à Steam a échoué, réessaie.",
+    "syncLibrary": "Synchroniser ma bibliothèque",
+    "syncing": "Synchronisation… {done}/{total}",
+    "syncComplete": "{total} jeux synchronisés.",
+    "steamProfilePrivate": "Ton profil Steam est privé. Rends-le public pour importer ta bibliothèque."
   },
   "Legal": {
     "mentionsTitle": "Mentions légales",

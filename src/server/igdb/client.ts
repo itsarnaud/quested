@@ -78,3 +78,41 @@ export function toCoverUrl(cover?: { url: string }): string | null {
   // IGDB returns protocol-relative thumb URLs; upgrade to a larger size for display.
   return `https:${cover.url.replace("t_thumb", "t_cover_big")}`;
 }
+
+const EXTERNAL_GAMES_BATCH_SIZE = 50;
+
+// IGDB's external_games table cross-references its own game ids against
+// storefront ids — external_game_source id 1 is Steam (the old numeric
+// `category` field was deprecated by IGDB and no longer filters anything),
+// and `uid` there is the Steam appid. Used to match a user's Steam library
+// against IGDB without any fuzzy title matching (Steam's own API gives us
+// no release year to match on).
+export async function resolveIgdbIdsBySteamAppIds(appIds: string[]): Promise<Map<string, number>> {
+  const token = await getAppAccessToken();
+  const result = new Map<string, number>();
+
+  for (let i = 0; i < appIds.length; i += EXTERNAL_GAMES_BATCH_SIZE) {
+    const batch = appIds.slice(i, i + EXTERNAL_GAMES_BATCH_SIZE);
+    const uids = batch.map((id) => `"${id}"`).join(",");
+    const res = await fetch(`${API_URL}/external_games`, {
+      method: "POST",
+      headers: {
+        "Client-ID": process.env.IGDB_CLIENT_ID!,
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "text/plain",
+      },
+      body: `fields uid,game.id; where uid = (${uids}) & external_game_source = 1; limit ${batch.length};`,
+    });
+
+    if (!res.ok) {
+      throw new Error(`IGDB external_games query failed: ${res.status} ${await res.text()}`);
+    }
+
+    const rows = (await res.json()) as { uid: string; game?: { id: number } }[];
+    for (const row of rows) {
+      if (row.game) result.set(row.uid, row.game.id);
+    }
+  }
+
+  return result;
+}

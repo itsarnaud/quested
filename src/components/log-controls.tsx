@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
+import { formatPlaytime } from "@/lib/format-playtime";
 import { Button } from "@/components/ui/button";
 
 const STATUSES = ["BACKLOG", "PLAYING", "COMPLETED", "DROPPED", "WISHLIST"] as const;
@@ -12,6 +13,7 @@ type Log = {
   status: (typeof STATUSES)[number];
   rating: number | null;
   notes: string | null;
+  minutesPlayed: number | null;
 } | null | undefined;
 
 export function LogControls({ gameId, isUnreleased = false }: { gameId: string; isUnreleased?: boolean }) {
@@ -46,6 +48,12 @@ export function LogControls({ gameId, isUnreleased = false }: { gameId: string; 
           </button>
         ))}
       </div>
+
+      {log?.minutesPlayed != null ? (
+        <p className="text-sm text-muted-foreground">
+          {tRating("playtime", { time: formatPlaytime(log.minutesPlayed) })}
+        </p>
+      ) : null}
 
       {log?.status && !isUnreleased ? (
         <RatingAndNotes

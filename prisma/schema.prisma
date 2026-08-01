@@ -240,6 +240,7 @@ model FavoriteGame {
 enum GameSource {
   IGDB
   RAWG
+  STEAM
 }
 
 // Maps a canonical Game to its id in each external source, so the
@@ -257,14 +258,15 @@ model GameExternalId {
 }
 
 model Log {
-  id         String     @id @default(cuid())
-  status     GameStatus @default(BACKLOG)
-  rating     Float? // 0-10, one decimal place, null if not rated yet
-  notes      String?    @db.Text
-  startedAt  DateTime?
-  finishedAt DateTime?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id            String     @id @default(cuid())
+  status        GameStatus @default(BACKLOG)
+  rating        Float? // 0-10, one decimal place, null if not rated yet
+  notes         String?    @db.Text
+  minutesPlayed Int? // total playtime, currently only populated by Steam sync
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String

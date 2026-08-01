@@ -7,6 +7,7 @@ import { GoogleIcon } from "@/components/icons/google-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { UnlinkButton } from "@/app/[locale]/account/unlink-button";
+import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
 
 const PROVIDERS = [
   { id: "google", name: "Google", labelKey: "linkGoogle", Icon: GoogleIcon } as const,
@@ -71,11 +72,14 @@ export async function LinkedAccounts({ userId, error }: { userId: string; error?
               </div>
 
               {isLinked ? (
-                accountsByProvider.size > 1 ? (
-                  <form action={unlink.bind(null, id)}>
-                    <UnlinkButton label={t("unlink")} confirmLabel={t("unlinkConfirm")} />
-                  </form>
-                ) : null
+                <div className="flex items-center gap-2">
+                  {id === "steam" ? <SteamSyncButton /> : null}
+                  {accountsByProvider.size > 1 ? (
+                    <form action={unlink.bind(null, id)}>
+                      <UnlinkButton label={t("unlink")} confirmLabel={t("unlinkConfirm")} />
+                    </form>
+                  ) : null}
+                </div>
               ) : id === "steam" ? (
                 // A plain <a>, not Next's <Link> — this target is a redirect
                 // to a different origin (Steam), not a Next.js page, so

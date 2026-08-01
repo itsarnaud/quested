@@ -7,6 +7,7 @@ import { notificationRouter } from "@/server/api/routers/notification";
 import { likeRouter } from "@/server/api/routers/like";
 import { gameListRouter } from "@/server/api/routers/gameList";
 import { pushSubscriptionRouter } from "@/server/api/routers/pushSubscription";
+import { steamRouter } from "@/server/api/routers/steam";
 
 export const appRouter = createTRPCRouter({
   game: gameRouter,
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   like: likeRouter,
   gameList: gameListRouter,
   pushSubscription: pushSubscriptionRouter,
+  steam: steamRouter,
 });
 
 export type AppRouter = typeof appRouter;
