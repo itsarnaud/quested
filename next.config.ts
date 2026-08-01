@@ -48,6 +48,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "steamcdn-a.akamaihd.net",
+      },
+      {
+        protocol: "https",
         hostname: "*.public.blob.vercel-storage.com",
       },
     ],

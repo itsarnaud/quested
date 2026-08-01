@@ -13,6 +13,7 @@ import { DiaryEntries, type DiaryLogEntry } from "@/components/diary-entries";
 import { FollowSection } from "@/app/[locale]/u/[username]/follow-section";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { FavoriteGamesSection } from "@/app/[locale]/u/[username]/favorite-games-section";
+import { PinnedAchievementsSection } from "@/app/[locale]/u/[username]/pinned-achievements-section";
 import { TasteComparison } from "@/app/[locale]/u/[username]/taste-comparison";
 import { ProfileGameGrid } from "@/app/[locale]/u/[username]/profile-game-grid";
 import { UserBadges } from "@/components/user-badges";
@@ -111,6 +112,18 @@ export default async function ProfilePage({ params }: PageProps) {
   const likedCount = await prisma.like.count({ where: { userId: user.id } });
   const ownedListsCount = await prisma.gameList.count({ where: { userId: user.id } });
   const unlockedAchievementsCount = await prisma.userAchievement.count({ where: { userId: user.id } });
+  const pinnedAchievementRows = await prisma.pinnedAchievement.findMany({
+    where: { userId: user.id },
+    include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
+    orderBy: { position: "asc" },
+  });
+  const pinnedAchievements = pinnedAchievementRows.map((p) => ({
+    id: p.achievement.id,
+    displayName: p.achievement.displayName,
+    iconUrl: p.achievement.iconUrl,
+    gameSlug: p.achievement.game.slug,
+    gameTitle: p.achievement.game.title,
+  }));
 
   const isOwnProfile = session?.user?.username === username;
   const canLike = Boolean(session?.user) && !isOwnProfile;
@@ -347,6 +360,8 @@ export default async function ProfilePage({ params }: PageProps) {
         initialFavorites={favoriteGames}
         canEdit={isOwnProfile}
       />
+
+      <PinnedAchievementsSection initialPinned={pinnedAchievements} canEdit={isOwnProfile} />
 
       {user.logs.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-[auto_1fr]">

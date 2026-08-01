@@ -81,7 +81,8 @@ model User {
 
   pushSubscriptions PushSubscription[]
 
-  achievements UserAchievement[]
+  achievements       UserAchievement[]
+  pinnedAchievements PinnedAchievement[]
 
   badges Badge[] @default([])
 
@@ -300,6 +301,7 @@ model Achievement {
   gameId String
 
   unlockedBy UserAchievement[]
+  pinnedBy   PinnedAchievement[]
 
   @@unique([gameId, apiName])
   @@index([gameId])
@@ -321,6 +323,23 @@ model UserAchievement {
   @@unique([userId, achievementId])
   @@index([userId])
   @@index([achievementId])
+}
+
+// A user's chosen highlight reel of unlocked achievements to show on their
+// profile — same shape as FavoriteGame (position-ordered, capped client-side).
+model PinnedAchievement {
+  id       String @id @default(cuid())
+  position Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  achievementId String
+
+  @@unique([userId, achievementId])
+  @@unique([userId, position])
+  @@index([userId])
 }
 
 model Like {

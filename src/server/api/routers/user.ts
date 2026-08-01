@@ -220,6 +220,60 @@ export const userRouter = createTRPCRouter({
       return { success: true };
     }),
 
+  getUnlockedAchievements: protectedProcedure.query(async ({ ctx }) => {
+    const unlocked = await ctx.prisma.userAchievement.findMany({
+      where: { userId: ctx.session.user.id },
+      include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
+      orderBy: { unlockedAt: "desc" },
+    });
+    return unlocked.map((u) => ({
+      id: u.achievement.id,
+      displayName: u.achievement.displayName,
+      iconUrl: u.achievement.iconUrl,
+      gameSlug: u.achievement.game.slug,
+      gameTitle: u.achievement.game.title,
+    }));
+  }),
+
+  getPinnedAchievements: protectedProcedure.query(async ({ ctx }) => {
+    const pinned = await ctx.prisma.pinnedAchievement.findMany({
+      where: { userId: ctx.session.user.id },
+      include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
+      orderBy: { position: "asc" },
+    });
+    return pinned.map((p) => ({
+      id: p.achievement.id,
+      displayName: p.achievement.displayName,
+      iconUrl: p.achievement.iconUrl,
+      gameSlug: p.achievement.game.slug,
+      gameTitle: p.achievement.game.title,
+    }));
+  }),
+
+  // Only achievements the user has actually unlocked can be pinned.
+  setPinnedAchievements: protectedProcedure
+    .input(z.object({ achievementIds: z.array(z.string()).max(4) }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      if (input.achievementIds.length > 0) {
+        const unlockedCount = await ctx.prisma.userAchievement.count({
+          where: { userId, achievementId: { in: input.achievementIds } },
+        });
+        if (unlockedCount !== input.achievementIds.length) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
+      }
+
+      await ctx.prisma.$transaction([
+        ctx.prisma.pinnedAchievement.deleteMany({ where: { userId } }),
+        ctx.prisma.pinnedAchievement.createMany({
+          data: input.achievementIds.map((achievementId, position) => ({ userId, achievementId, position })),
+        }),
+      ]);
+      return { success: true };
+    }),
+
   updateProfile: protectedProcedure
     .input(
       z.object({
