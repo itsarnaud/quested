@@ -287,6 +287,7 @@
     "linkGoogle": "Link my Google account",
     "linkDiscord": "Link my Discord account",
     "unlink": "Unlink",
+    "unlinkConfirm": "Confirm?",
     "unlinkLastAccountWarning": "You can't unlink your only sign-in method.",
     "profileTitle": "Public profile",
     "avatarButton": "Change photo",
@@ -301,7 +302,10 @@
     "genericError": "Something went wrong, try again.",
     "dangerZoneTitle": "Danger zone",
     "deleteUnderstand": "I understand this action is irreversible.",
-    "notLinked": "Not connected"
+    "notLinked": "Not connected",
+    "linkSteam": "Link my Steam account",
+    "steamAlreadyLinked": "This Steam account is already linked to another Quested account.",
+    "steamLinkFailed": "Steam sign-in failed, please try again."
   },
   "Legal": {
     "mentionsTitle": "Legal notice",

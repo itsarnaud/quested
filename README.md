@@ -106,12 +106,13 @@ To get a working site you only need the first four rows — the rest can stay em
 | `RAWG_API_KEY` | Game data (2nd source) | Free key at [rawg.io/apidocs](https://rawg.io/apidocs) |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google sign-in | [Google Cloud Console](https://console.cloud.google.com), redirect URI `http://localhost:3000/api/auth/callback/google` |
 | `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET` | Discord sign-in | [Discord Developer Portal](https://discord.com/developers/applications), redirect URI `http://localhost:3000/api/auth/callback/discord` |
+| `AUTH_STEAM_SECRET` | Linking a Steam account | Steam Web API key at [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey) — not OAuth, Steam uses OpenID |
 | `BLOB_STORE_ID` / `BLOB_READ_WRITE_TOKEN` | Avatar uploads | Vercel Blob store **in Public mode** (Storage → Create Database → Blob) |
 | `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Rate limiting | Free database at [upstash.com](https://upstash.com) |
 | `SMTP_*` / `ALERT_EMAIL_TO` | Error alert emails in production | Any SMTP provider (see `src/instrumentation.ts`) |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` | Web Push notifications | Generate a pair with `npx web-push generate-vapid-keys` |
 
-You need at least one of the two sign-in providers (Google or Discord) to be able to log in.
+You need at least one of the two sign-in providers (Google or Discord) to be able to log in. Steam can be linked afterwards from account settings, to import your library later on — it's not a sign-in method itself.
 
 ## Deployment
 

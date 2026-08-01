@@ -287,6 +287,7 @@
     "linkGoogle": "Lier mon compte Google",
     "linkDiscord": "Lier mon compte Discord",
     "unlink": "Délier",
+    "unlinkConfirm": "Confirmer ?",
     "unlinkLastAccountWarning": "Impossible de délier ton seul moyen de connexion.",
     "profileTitle": "Profil public",
     "avatarButton": "Changer la photo",
@@ -301,7 +302,10 @@
     "genericError": "Une erreur est survenue, réessaie.",
     "dangerZoneTitle": "Zone de danger",
     "deleteUnderstand": "Je comprends que cette action est irréversible.",
-    "notLinked": "Non connecté"
+    "notLinked": "Non connecté",
+    "linkSteam": "Lier mon compte Steam",
+    "steamAlreadyLinked": "Ce compte Steam est déjà lié à un autre compte Quested.",
+    "steamLinkFailed": "La connexion à Steam a échoué, réessaie."
   },
   "Legal": {
     "mentionsTitle": "Mentions légales",
