@@ -61,7 +61,7 @@ export async function LinkedAccounts({ userId, error }: { userId: string; error?
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
                   <Icon />
                 </div>
-                <div className="flex min-w-0 flex-col">
+                <div className="flex min-w-0 flex-col gap-1">
                   <span className="truncate text-sm font-semibold">
                     {isLinked ? (providerLabel ?? name) : name}
                   </span>

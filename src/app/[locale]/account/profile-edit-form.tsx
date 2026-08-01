@@ -7,21 +7,40 @@ import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { uploadAvatar } from "@/app/[locale]/account/actions";
+import { PublicVisibilityToggle } from "@/app/[locale]/account/public-visibility-toggle";
+import { SteamIcon } from "@/components/icons/steam-icon";
+import { DiscordIcon } from "@/components/icons/discord-icon";
 
 type Profile = {
   name: string | null;
   username: string | null;
   bio: string | null;
   image: string | null;
+  website: string | null;
+  twitterUrl: string | null;
+  twitchUrl: string | null;
+  youtubeUrl: string | null;
 };
 
-export function ProfileEditForm({ initialProfile }: { initialProfile: Profile }) {
+export function ProfileEditForm({
+  initialProfile,
+  hasSteamLinked,
+  hasDiscordLinked,
+}: {
+  initialProfile: Profile;
+  hasSteamLinked: boolean;
+  hasDiscordLinked: boolean;
+}) {
   const t = useTranslations("Account");
   const router = useRouter();
 
   const [name, setName] = useState(initialProfile.name ?? "");
   const [username, setUsername] = useState(initialProfile.username ?? "");
   const [bio, setBio] = useState(initialProfile.bio ?? "");
+  const [website, setWebsite] = useState(initialProfile.website ?? "");
+  const [twitterUrl, setTwitterUrl] = useState(initialProfile.twitterUrl ?? "");
+  const [twitchUrl, setTwitchUrl] = useState(initialProfile.twitchUrl ?? "");
+  const [youtubeUrl, setYoutubeUrl] = useState(initialProfile.youtubeUrl ?? "");
   const [avatarUrl, setAvatarUrl] = useState(initialProfile.image);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +105,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
         className="flex flex-col gap-3"
         onSubmit={(e) => {
           e.preventDefault();
-          updateProfile.mutate({ name, username, bio });
+          updateProfile.mutate({ name, username, bio, website, twitterUrl, twitchUrl, youtubeUrl });
         }}
       >
         <div className="flex flex-col gap-1">
@@ -129,6 +148,66 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
           />
         </div>
 
+        <div className="mt-2 flex flex-col gap-3 border-t border-border pt-4">
+          <h3 className="text-sm font-medium">{t("linksTitle")}</h3>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="website" className="text-sm text-muted-foreground">
+              {t("websiteLabel")}
+            </label>
+            <input
+              id="website"
+              type="url"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="https://…"
+              className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="twitterUrl" className="text-sm text-muted-foreground">
+              {t("twitterLabel")}
+            </label>
+            <input
+              id="twitterUrl"
+              type="url"
+              value={twitterUrl}
+              onChange={(e) => setTwitterUrl(e.target.value)}
+              placeholder="https://x.com/…"
+              className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="twitchUrl" className="text-sm text-muted-foreground">
+              {t("twitchLabel")}
+            </label>
+            <input
+              id="twitchUrl"
+              type="url"
+              value={twitchUrl}
+              onChange={(e) => setTwitchUrl(e.target.value)}
+              placeholder="https://twitch.tv/…"
+              className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="youtubeUrl" className="text-sm text-muted-foreground">
+              {t("youtubeLabel")}
+            </label>
+            <input
+              id="youtubeUrl"
+              type="url"
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+              placeholder="https://youtube.com/@…"
+              className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
+            />
+          </div>
+        </div>
+
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
         {saved && !error ? <p className="text-sm text-muted-foreground">{t("saved")}</p> : null}
 
@@ -136,6 +215,32 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
           {t("saveButton")}
         </Button>
       </form>
+
+      {hasSteamLinked || hasDiscordLinked ? (
+        <div className="flex flex-col gap-3 border-t border-border pt-4">
+          <h3 className="text-sm font-medium">{t("publicAccountsTitle")}</h3>
+
+          {hasSteamLinked ? (
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <SteamIcon />
+                Steam
+              </div>
+              <PublicVisibilityToggle provider="steam" />
+            </div>
+          ) : null}
+
+          {hasDiscordLinked ? (
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <DiscordIcon />
+                Discord
+              </div>
+              <PublicVisibilityToggle provider="discord" />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

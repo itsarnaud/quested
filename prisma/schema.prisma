@@ -60,6 +60,10 @@ model User {
   emailVerified DateTime?
   image         String?
   bio           String?   @db.Text
+  website       String?
+  twitterUrl    String?
+  twitchUrl     String?
+  youtubeUrl    String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -91,6 +95,11 @@ model User {
   emailOnFollow  Boolean @default(false)
   emailOnLike    Boolean @default(false)
   emailOnRelease Boolean @default(false)
+
+  // Off by default — showing a linked account publicly is an explicit
+  // opt-in, not the default just because it's linked.
+  showSteamOnProfile   Boolean @default(false)
+  showDiscordOnProfile Boolean @default(false)
 }
 
 enum Badge {

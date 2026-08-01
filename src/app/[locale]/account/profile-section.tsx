@@ -6,10 +6,35 @@ export async function ProfileSection() {
   const session = await auth();
   if (!session?.user) return null;
 
-  const profile = await prisma.user.findUniqueOrThrow({
-    where: { id: session.user.id },
-    select: { name: true, username: true, bio: true, image: true },
-  });
+  const [profile, accounts] = await Promise.all([
+    prisma.user.findUniqueOrThrow({
+      where: { id: session.user.id },
+      select: {
+        name: true,
+        username: true,
+        bio: true,
+        image: true,
+        website: true,
+        twitterUrl: true,
+        twitchUrl: true,
+        youtubeUrl: true,
+        showSteamOnProfile: true,
+        showDiscordOnProfile: true,
+      },
+    }),
+    prisma.account.findMany({
+      where: { userId: session.user.id, provider: { in: ["steam", "discord"] } },
+      select: { provider: true },
+    }),
+  ]);
 
-  return <ProfileEditForm initialProfile={profile} />;
+  const linkedProviders = new Set(accounts.map((a) => a.provider));
+
+  return (
+    <ProfileEditForm
+      initialProfile={profile}
+      hasSteamLinked={linkedProviders.has("steam")}
+      hasDiscordLinked={linkedProviders.has("discord")}
+    />
+  );
 }

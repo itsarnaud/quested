@@ -177,6 +177,23 @@ export const userRouter = createTRPCRouter({
       });
     }),
 
+  getPrivacyPreferences: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.user.findUniqueOrThrow({
+      where: { id: ctx.session.user.id },
+      select: { showSteamOnProfile: true, showDiscordOnProfile: true },
+    });
+  }),
+
+  updatePrivacyPreferences: protectedProcedure
+    .input(z.object({ showSteamOnProfile: z.boolean(), showDiscordOnProfile: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: input,
+        select: { showSteamOnProfile: true, showDiscordOnProfile: true },
+      });
+    }),
+
   getFavorites: protectedProcedure.query(async ({ ctx }) => {
     const favorites = await ctx.prisma.favoriteGame.findMany({
       where: { userId: ctx.session.user.id },
@@ -286,6 +303,10 @@ export const userRouter = createTRPCRouter({
           .max(20)
           .regex(/^[a-z0-9-]+$/),
         bio: z.string().trim().max(280).optional(),
+        website: z.string().trim().url().max(300).optional().or(z.literal("")),
+        twitterUrl: z.string().trim().url().max(300).optional().or(z.literal("")),
+        twitchUrl: z.string().trim().url().max(300).optional().or(z.literal("")),
+        youtubeUrl: z.string().trim().url().max(300).optional().or(z.literal("")),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -302,6 +323,10 @@ export const userRouter = createTRPCRouter({
           name: input.name,
           username: input.username,
           bio: input.bio || null,
+          website: input.website || null,
+          twitterUrl: input.twitterUrl || null,
+          twitchUrl: input.twitchUrl || null,
+          youtubeUrl: input.youtubeUrl || null,
         },
       });
     }),
