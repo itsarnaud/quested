@@ -23,6 +23,8 @@ import { pageAlternates } from "@/lib/alternates";
 import { GameTile } from "@/components/game-tile";
 import { getPlatinumGameIds } from "@/server/games/platinum";
 import { PublicAccountLinks } from "@/app/[locale]/u/[username]/public-account-links";
+import { SteamLinkBanner } from "@/app/[locale]/u/[username]/steam-link-banner";
+import { SteamLinkedBanner } from "@/app/[locale]/u/[username]/steam-linked-banner";
 import { ProfileStats } from "@/app/[locale]/u/[username]/profile-stats";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
@@ -49,6 +51,7 @@ const getUserProfile = cache((username: string) =>
 
 type PageProps = {
   params: Promise<{ username: string }>;
+  searchParams: Promise<{ steamLinked?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -73,8 +76,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ProfilePage({ params }: PageProps) {
+export default async function ProfilePage({ params, searchParams }: PageProps) {
   const { username } = await params;
+  const { steamLinked } = await searchParams;
 
   const [user, session, t, tStatus, locale] = await Promise.all([
     getUserProfile(username),
@@ -405,6 +409,12 @@ export default async function ProfilePage({ params }: PageProps) {
         isLoggedIn={Boolean(session?.user)}
         isOwnProfile={isOwnProfile}
       />
+
+      {isOwnProfile && steamLinked === "1" ? (
+        <SteamLinkedBanner />
+      ) : isOwnProfile && !steamAccount ? (
+        <SteamLinkBanner redirectTo={`/u/${username}`} />
+      ) : null}
 
       {!isOwnProfile && session?.user ? <TasteComparison username={username} /> : null}
 

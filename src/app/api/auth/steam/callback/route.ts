@@ -54,5 +54,9 @@ export async function GET(req: Request) {
     });
   }
 
-  return NextResponse.redirect(new URL(redirectTo, siteUrl));
+  // Linking alone imports nothing — flag success so the landing page can
+  // prompt the user to actually run the sync, instead of leaving them
+  // wondering why their library didn't show up.
+  const separator = redirectTo.includes("?") ? "&" : "?";
+  return NextResponse.redirect(new URL(`${redirectTo}${separator}steamLinked=1`, siteUrl));
 }
