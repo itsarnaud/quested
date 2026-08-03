@@ -57,7 +57,7 @@ export function LikedLogRow({
       <Link href={`/games/${log.gameSlug}`} prefetch={false} className="flex min-w-0 gap-3 hover:opacity-90">
         <div className="relative h-24 w-[72px] shrink-0 overflow-hidden rounded border border-border bg-muted">
           {log.coverUrl ? (
-            <Image src={log.coverUrl} alt={log.gameTitle} fill sizes="72px" className="object-cover" />
+            <Image src={log.coverUrl} alt={log.gameTitle} fill unoptimized className="object-cover" />
           ) : null}
         </div>
         <div className="flex min-w-0 flex-col justify-center">

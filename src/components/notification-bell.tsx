@@ -75,7 +75,7 @@ export function NotificationBell() {
                   >
                     <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
                       {n.type === "RELEASE" && n.game?.coverUrl ? (
-                        <Image src={n.game.coverUrl} alt={n.game.title} fill sizes="28px" className="object-cover" />
+                        <Image src={n.game.coverUrl} alt={n.game.title} fill unoptimized className="object-cover" />
                       ) : n.actor?.image ? (
                         <Image
                           src={n.actor.image}

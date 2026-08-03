@@ -205,7 +205,7 @@ const NavSearchForm = ({ placeholder, router }: { placeholder: string; router: R
                 >
                   <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
                     {game.coverUrl ? (
-                      <Image src={game.coverUrl} alt="" fill sizes="32px" className="object-cover" />
+                      <Image src={game.coverUrl} alt="" fill unoptimized className="object-cover" />
                     ) : null}
                   </div>
                   <span className="min-w-0 flex-1 truncate">{game.title}</span>
@@ -232,7 +232,7 @@ const NavSearchForm = ({ placeholder, router }: { placeholder: string; router: R
                   >
                     <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
                       {game.coverUrl ? (
-                        <Image src={game.coverUrl} alt="" fill sizes="32px" className="object-cover" />
+                        <Image src={game.coverUrl} alt="" fill unoptimized className="object-cover" />
                       ) : null}
                     </div>
                     <span className="min-w-0 flex-1 truncate">{game.title}</span>

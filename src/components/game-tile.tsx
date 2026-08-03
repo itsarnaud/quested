@@ -22,13 +22,7 @@ export function GameTile({ game }: { game: GameTileData }) {
     >
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-md">
         {game.coverUrl ? (
-          <Image
-            src={game.coverUrl}
-            alt={game.title}
-            fill
-            sizes="(max-width: 768px) 45vw, 160px"
-            className="object-cover"
-          />
+          <Image src={game.coverUrl} alt={game.title} fill unoptimized className="object-cover" />
         ) : null}
         {game.isPlatinum ? (
           <div

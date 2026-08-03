@@ -15,13 +15,7 @@ export function GameCard({ slug, title, releaseYear, coverUrl, subtitle, onClick
     <Link href={`/games/${slug}`} prefetch={false} className="group flex flex-col gap-2" onClick={onClick}>
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-md">
         {coverUrl ? (
-          <Image
-            src={coverUrl}
-            alt={title}
-            fill
-            sizes="(max-width: 768px) 45vw, 160px"
-            className="object-cover"
-          />
+          <Image src={coverUrl} alt={title} fill unoptimized className="object-cover" />
         ) : null}
       </div>
       <div className="flex flex-col">

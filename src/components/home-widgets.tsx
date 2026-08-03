@@ -93,7 +93,7 @@ export async function HomeWidgets({ userId }: { userId: string | null }) {
               >
                 <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded border border-border bg-muted">
                   {game.coverUrl ? (
-                    <Image src={game.coverUrl} alt="" fill sizes="40px" className="object-cover" />
+                    <Image src={game.coverUrl} alt="" fill unoptimized className="object-cover" />
                   ) : null}
                 </div>
                 <div className="flex min-w-0 flex-col">

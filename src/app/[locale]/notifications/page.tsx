@@ -68,7 +68,7 @@ export default async function NotificationsPage({ params }: PageProps) {
             >
               <div className="relative size-11 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
                 {n.type === "RELEASE" && n.game?.coverUrl ? (
-                  <Image src={n.game.coverUrl} alt={n.game.title} fill sizes="44px" className="object-cover" />
+                  <Image src={n.game.coverUrl} alt={n.game.title} fill unoptimized className="object-cover" />
                 ) : n.actor?.image ? (
                   <Image
                     src={n.actor.image}

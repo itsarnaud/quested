@@ -270,7 +270,7 @@ async function Feed({ userId }: { userId: string }) {
                   className="relative h-28 w-20 shrink-0 overflow-hidden rounded-md border border-border bg-muted transition-opacity hover:opacity-90"
                 >
                   {log.game.coverUrl ? (
-                    <Image src={log.game.coverUrl} alt={log.game.title} fill sizes="80px" className="object-cover" />
+                    <Image src={log.game.coverUrl} alt={log.game.title} fill unoptimized className="object-cover" />
                   ) : null}
                 </Link>
 

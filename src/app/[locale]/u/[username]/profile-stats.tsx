@@ -233,7 +233,7 @@ export async function ProfileStats({
               icon={
                 <div className="relative size-10 shrink-0 overflow-hidden rounded-full bg-muted">
                   {mostPlayedGame.coverUrl ? (
-                    <Image src={mostPlayedGame.coverUrl} alt="" fill sizes="40px" className="object-cover" />
+                    <Image src={mostPlayedGame.coverUrl} alt="" fill unoptimized className="object-cover" />
                   ) : null}
                 </div>
               }
@@ -261,7 +261,7 @@ export async function ProfileStats({
               subtitle={latestAchievement.gameTitle}
               icon={
                 <div className="relative size-10 shrink-0 overflow-hidden rounded-full bg-muted">
-                  <Image src={latestAchievement.iconUrl} alt="" fill sizes="40px" className="object-cover" />
+                  <Image src={latestAchievement.iconUrl} alt="" fill unoptimized className="object-cover" />
                 </div>
               }
             />

@@ -185,13 +185,7 @@ export function ListDetail({
           <div key={game.id} className="flex flex-col gap-2">
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-muted">
               {game.coverUrl ? (
-                <Image
-                  src={game.coverUrl}
-                  alt={game.title}
-                  fill
-                  sizes="(max-width: 768px) 45vw, 160px"
-                  className="object-cover"
-                />
+                <Image src={game.coverUrl} alt={game.title} fill unoptimized className="object-cover" />
               ) : null}
               {canEdit ? (
                 <button
@@ -256,7 +250,7 @@ export function ListDetail({
                   >
                     <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
                       {game.coverUrl ? (
-                        <Image src={game.coverUrl} alt={game.title} fill sizes="32px" className="object-cover" />
+                        <Image src={game.coverUrl} alt={game.title} fill unoptimized className="object-cover" />
                       ) : null}
                     </div>
                     {game.title}

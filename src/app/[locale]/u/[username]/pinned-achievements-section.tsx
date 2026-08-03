@@ -72,7 +72,7 @@ export function PinnedAchievementsSection({
                 src={achievement.iconUrl}
                 alt={achievement.displayName}
                 fill
-                sizes="64px"
+                unoptimized
                 className="object-cover"
               />
               {canEdit ? (
@@ -142,7 +142,7 @@ export function PinnedAchievementsSection({
                   className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
                 >
                   <div className="relative size-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
-                    <Image src={achievement.iconUrl} alt="" fill sizes="32px" className="object-cover" />
+                    <Image src={achievement.iconUrl} alt="" fill unoptimized className="object-cover" />
                   </div>
                   <span className="min-w-0 flex-1 truncate">{achievement.displayName}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">{achievement.gameTitle}</span>

@@ -51,7 +51,7 @@ export function DiaryEntries({
         <Link href={`/games/${log.gameSlug}`} prefetch={false} className="flex min-w-0 flex-1 gap-3 hover:opacity-90">
           <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded border border-border bg-muted">
             {log.coverUrl ? (
-              <Image src={log.coverUrl} alt={log.gameTitle} fill sizes="48px" className="object-cover" />
+              <Image src={log.coverUrl} alt={log.gameTitle} fill unoptimized className="object-cover" />
             ) : null}
           </div>
           <div className="flex min-w-0 flex-col justify-center">

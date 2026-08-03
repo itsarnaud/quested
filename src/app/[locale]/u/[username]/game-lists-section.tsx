@@ -104,7 +104,7 @@ export function GameListsSection({ username, canEdit }: { username: string; canE
                       className="relative h-20 w-[60px] shrink-0 overflow-hidden rounded border border-border bg-muted"
                     >
                       {game.coverUrl ? (
-                        <Image src={game.coverUrl} alt={game.title} fill sizes="60px" className="object-cover" />
+                        <Image src={game.coverUrl} alt={game.title} fill unoptimized className="object-cover" />
                       ) : null}
                     </div>
                   ))}
