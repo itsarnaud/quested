@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { Button } from "@/components/ui/button";
+import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
 
 const COOKIE_NAME = "quested-steam-banner-answered";
 
@@ -44,15 +45,12 @@ export function SteamLinkBanner({ redirectTo }: { redirectTo: string }) {
         <Button variant="secondary" className="flex-1 sm:flex-none" onClick={dismiss}>
           {t("steamBannerDismiss")}
         </Button>
-        {/* A plain <a>, not Next's <Link> — this target redirects
-            cross-origin to Steam, not a Next.js page. */}
-        <a
+        <SteamLinkButton
           href={`/api/auth/steam/login?redirectTo=${encodeURIComponent(redirectTo)}`}
-          onClick={setAnsweredCookie}
+          label={t("steamBannerLink")}
           className="flex-1 sm:flex-none"
-        >
-          <Button className="w-full">{t("steamBannerLink")}</Button>
-        </a>
+          onNavigate={setAnsweredCookie}
+        />
       </div>
     </div>
   );

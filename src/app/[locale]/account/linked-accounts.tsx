@@ -8,6 +8,7 @@ import { DiscordIcon } from "@/components/icons/discord-icon";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { UnlinkButton } from "@/app/[locale]/account/unlink-button";
 import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
+import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
 
 const PROVIDERS = [
   { id: "google", name: "Google", labelKey: "linkGoogle", Icon: GoogleIcon } as const,
@@ -81,16 +82,11 @@ export async function LinkedAccounts({ userId, error }: { userId: string; error?
                   ) : null}
                 </div>
               ) : id === "steam" ? (
-                // A plain <a>, not Next's <Link> — this target is a redirect
-                // to a different origin (Steam), not a Next.js page, so
-                // Link's RSC-payload prefetch would always fail on it (caught
-                // and handled by Next.js, but noisy in the dev console).
-                // eslint-disable-next-line @next/next/no-html-link-for-pages
-                <a href="/api/auth/steam/login?redirectTo=/account/comptes-lies">
-                  <Button type="button" className="rounded-full">
-                    {t(labelKey)}
-                  </Button>
-                </a>
+                <SteamLinkButton
+                  href="/api/auth/steam/login?redirectTo=/account/comptes-lies"
+                  label={t(labelKey)}
+                  rounded
+                />
               ) : (
                 <form
                   action={async () => {

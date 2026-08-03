@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
+import { SteamIcon } from "@/components/icons/steam-icon";
 
 const LIBRARY_PAGE_SIZE = 40;
 const ACHIEVEMENTS_PAGE_SIZE = 5;
@@ -15,9 +16,25 @@ type SyncState =
   | { status: "complete"; games: number; achievements: number }
   | { status: "error" };
 
+// Leaving mid-sync aborts the in-flight request and stops the loop for
+// good — the native "are you sure" prompt is the only real way to warn
+// against that (browsers ignore any custom message here).
+function useBeforeUnloadWarning(active: boolean) {
+  useEffect(() => {
+    if (!active) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [active]);
+}
+
 export function SteamSyncButton() {
   const t = useTranslations("Account");
   const [state, setState] = useState<SyncState>({ status: "idle" });
+
+  useBeforeUnloadWarning(state.status === "syncing");
 
   const utils = trpc.useUtils();
   const syncPage = trpc.steam.syncPage.useMutation();
@@ -69,10 +86,30 @@ export function SteamSyncButton() {
 
   if (state.status === "syncing") {
     const label = state.phase === "library" ? t("syncingLibrary") : t("syncingAchievements");
+    const percent = state.total > 0 ? Math.round((state.done / state.total) * 100) : 0;
+
     return (
-      <Button type="button" variant="secondary" className="rounded-full" disabled>
-        {label} · {state.done}/{state.total}
-      </Button>
+      <>
+        <Button type="button" variant="secondary" className="rounded-full" disabled>
+          {label} · {state.done}/{state.total}
+        </Button>
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+          <div className="flex w-full max-w-xs flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center">
+            <SteamIcon width={28} height={28} />
+            <p className="text-sm font-medium">
+              {label} · {state.done}/{state.total}
+            </p>
+            <p className="text-xs text-muted-foreground">{t("steamSyncWarning")}</p>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
+              <div
+                className="h-full rounded-full bg-accent transition-[width]"
+                style={{ width: `${Math.max(4, percent)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 

@@ -341,6 +341,9 @@
     "steamBanner": "Link your Steam account to automatically import your library, playtime and achievements.",
     "steamBannerLink": "Link Steam",
     "steamBannerDismiss": "No thanks",
+    "steamRedirecting": "Redirecting to Steam…",
+    "steamRedirectingWarning": "Don't close or leave this page, or the connection might get interrupted.",
+    "steamSyncWarning": "Don't close or leave this page while syncing, or it will stop partway through.",
     "steamLinkedBanner": "Steam account linked! Sync your library and achievements to see them show up here."
   },
   "Legal": {

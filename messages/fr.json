@@ -341,6 +341,9 @@
     "steamBanner": "Lie ton compte Steam pour importer automatiquement ta bibliothèque, ton temps de jeu et tes succès.",
     "steamBannerLink": "Lier Steam",
     "steamBannerDismiss": "Non merci",
+    "steamRedirecting": "Redirection vers Steam…",
+    "steamRedirectingWarning": "Ne ferme pas ou ne quitte pas cette page, sinon la connexion risque d'être interrompue.",
+    "steamSyncWarning": "Ne ferme pas et ne quitte pas cette page pendant la synchronisation, sinon elle s'arrêtera en cours de route.",
     "steamLinkedBanner": "Compte Steam lié ! Synchronise ta bibliothèque et tes succès pour les voir apparaître ici."
   },
   "Legal": {
