@@ -78,7 +78,9 @@
     "filterGenre": "Genre",
     "filterPlatform": "Platform",
     "filterYear": "Year",
-    "filterClear": "Reset"
+    "filterClear": "Reset",
+    "suggestionsBasedOn": "Because you're searching \"{game}\":",
+    "viewAllResults": "View all results"
   },
   "SearchHistory": {
     "recent": "Recent searches",

@@ -69,6 +69,36 @@ export const gameRouter = createTRPCRouter({
       );
     }),
 
+  // "Because you're searching X" discovery row: other popular games sharing
+  // a genre with the best local match for the query, e.g. searching
+  // "Valorant" surfaces CS2/Overwatch alongside the direct title matches.
+  relatedSuggestions: publicProcedure
+    .input(z.object({ query: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (input.query.trim().length < 2) return null;
+
+      const match = await ctx.prisma.game.findFirst({
+        where: { title: { contains: input.query, mode: "insensitive" } },
+        orderBy: { logs: { _count: "desc" } },
+      });
+      if (!match || match.genres.length === 0) return null;
+
+      const games = await ctx.prisma.game.findMany({
+        where: {
+          id: { not: match.id },
+          genres: { hasSome: match.genres },
+          // Exclude anything that would already show up in the direct
+          // title-match results, so this surfaces genuinely different games.
+          NOT: { title: { contains: input.query, mode: "insensitive" } },
+        },
+        orderBy: { logs: { _count: "desc" } },
+        take: 6,
+      });
+      if (games.length === 0) return null;
+
+      return { basedOnTitle: match.title, games };
+    }),
+
   filterOptions: publicProcedure.query(async ({ ctx }) => {
     const [genres, platforms, years] = await Promise.all([
       ctx.prisma.$queryRaw<{ value: string }[]>`

@@ -37,6 +37,10 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
     { enabled: isSearching },
   );
   const { data: popularGames } = trpc.game.popular.useQuery(undefined, { enabled: !isSearching });
+  const { data: suggestions } = trpc.game.relatedSuggestions.useQuery(
+    { query: debouncedQuery },
+    { enabled: isSearching && !hasFilters },
+  );
 
   const displayedGames = isSearching ? games : popularGames;
 
@@ -150,6 +154,25 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
           />
         ))}
       </div>
+
+      {suggestions ? (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">
+            {t("suggestionsBasedOn", { game: suggestions.basedOnTitle })}
+          </h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+            {suggestions.games.map((game) => (
+              <GameCard
+                key={game.id}
+                slug={game.slug}
+                title={game.title}
+                releaseYear={game.releaseYear}
+                coverUrl={game.coverUrl}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

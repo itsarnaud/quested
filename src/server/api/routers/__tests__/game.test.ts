@@ -22,6 +22,13 @@ describe("game router", () => {
         releaseYear: i === 0 ? 2021 : null,
       })),
     });
+    await prisma.game.createMany({
+      data: [
+        { slug: `${PREFIX}suggest-base`, title: "Vitest Suggest Base", genres: ["VitestSuggestGenre"] },
+        { slug: `${PREFIX}suggest-related`, title: "Vitest Suggest Related", genres: ["VitestSuggestGenre"] },
+        { slug: `${PREFIX}suggest-unrelated`, title: "Vitest Suggest Unrelated", genres: ["VitestOtherGenre"] },
+      ],
+    });
   });
 
   afterAll(cleanup);
@@ -57,5 +64,22 @@ describe("game router", () => {
     expect(options.genres).toContain("VitestOnlyGenre");
     expect(options.platforms).toContain("VitestOnlyPlatform");
     expect(options.years).toContain(2021);
+  });
+
+  it("relatedSuggestions surfaces other games sharing a genre with the best match", async () => {
+    const result = await callerAs(null).game.relatedSuggestions({ query: "Vitest Suggest Base" });
+    expect(result?.basedOnTitle).toBe("Vitest Suggest Base");
+    expect(result?.games.some((g) => g.slug === `${PREFIX}suggest-related`)).toBe(true);
+    expect(result?.games.some((g) => g.slug === `${PREFIX}suggest-unrelated`)).toBe(false);
+  });
+
+  it("relatedSuggestions returns null for a query shorter than 2 characters", async () => {
+    const result = await callerAs(null).game.relatedSuggestions({ query: "V" });
+    expect(result).toBeNull();
+  });
+
+  it("relatedSuggestions returns null when there's no local match", async () => {
+    const result = await callerAs(null).game.relatedSuggestions({ query: "NoSuchGameAtAllXYZ123" });
+    expect(result).toBeNull();
   });
 });

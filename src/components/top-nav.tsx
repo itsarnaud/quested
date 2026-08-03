@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { signOut } from "next-auth/react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { trpc } from "@/lib/trpc/client";
 import { Logo } from "@/components/icons/logo";
 import { SearchIcon } from "@/components/icons/search-icon";
 import { NotificationBell } from "@/components/notification-bell";
@@ -139,24 +140,117 @@ export function TopNav({
 }
 
 const NavSearchForm = ({ placeholder, router }: { placeholder: string; router: ReturnType<typeof useRouter> }) => {
+  const tSearch = useTranslations("Search");
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(query), 350);
+    return () => clearTimeout(id);
+  }, [query]);
+
+  const isSearching = debouncedQuery.trim().length > 1;
+
+  const { data: results } = trpc.game.search.useQuery({ query: debouncedQuery }, { enabled: isSearching });
+  const { data: suggestions } = trpc.game.relatedSuggestions.useQuery(
+    { query: debouncedQuery },
+    { enabled: isSearching },
+  );
+
+  const goToFullResults = () => {
+    const q = query.trim();
+    setOpen(false);
+    router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+  };
 
   return (
-    <form
-      className="relative w-full max-w-md"
-      onSubmit={(e) => {
-        e.preventDefault();
-        const q = query.trim();
-        router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
-      }}
-    >
-      <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={placeholder}
-        className="h-10 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
-      />
-    </form>
+    <div className="relative w-full max-w-md">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          goToFullResults();
+        }}
+      >
+        <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          placeholder={placeholder}
+          className="h-10 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
+        />
+      </form>
+
+      {open && isSearching ? (
+        <>
+          <button
+            type="button"
+            aria-hidden="true"
+            tabIndex={-1}
+            className="fixed inset-0 z-10 cursor-default"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute inset-x-0 top-12 z-20 flex max-h-[28rem] flex-col gap-1 overflow-y-auto rounded-md border border-border bg-card p-2 shadow-lg">
+            {results && results.length > 0 ? (
+              results.slice(0, 6).map((game) => (
+                <Link
+                  key={game.id}
+                  href={`/games/${game.slug}`}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted"
+                >
+                  <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
+                    {game.coverUrl ? (
+                      <Image src={game.coverUrl} alt="" fill sizes="32px" className="object-cover" />
+                    ) : null}
+                  </div>
+                  <span className="min-w-0 flex-1 truncate">{game.title}</span>
+                  {game.releaseYear ? (
+                    <span className="shrink-0 text-xs text-muted-foreground">{game.releaseYear}</span>
+                  ) : null}
+                </Link>
+              ))
+            ) : (
+              <p className="px-2 py-3 text-sm text-muted-foreground">{tSearch("noResults")}</p>
+            )}
+
+            {suggestions ? (
+              <div className="mt-1 flex flex-col gap-1 border-t border-border pt-2">
+                <span className="px-2 text-xs text-muted-foreground">
+                  {tSearch("suggestionsBasedOn", { game: suggestions.basedOnTitle })}
+                </span>
+                {suggestions.games.map((game) => (
+                  <Link
+                    key={game.id}
+                    href={`/games/${game.slug}`}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted"
+                  >
+                    <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
+                      {game.coverUrl ? (
+                        <Image src={game.coverUrl} alt="" fill sizes="32px" className="object-cover" />
+                      ) : null}
+                    </div>
+                    <span className="min-w-0 flex-1 truncate">{game.title}</span>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={goToFullResults}
+              className="mt-1 rounded px-2 py-2 text-center text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              {tSearch("viewAllResults")}
+            </button>
+          </div>
+        </>
+      ) : null}
+    </div>
   );
 };
