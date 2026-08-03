@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { toCoverUrl, type IgdbGame } from "@/server/igdb/client";
+import { toCoverUrl, toArtworkUrl, type IgdbGame } from "@/server/igdb/client";
 import {
   findMatchingGame,
   createCanonicalGame,
@@ -47,6 +47,7 @@ export async function upsertGameFromIgdb(igdbGame: IgdbGame) {
     year,
     releaseDate: date,
     coverUrl: toCoverUrl(igdbGame.cover),
+    artworkUrl: toArtworkUrl(igdbGame.artworks),
     summary: igdbGame.summary ?? null,
     genres,
     platforms,

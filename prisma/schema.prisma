@@ -218,6 +218,7 @@ model Game {
   releaseYear Int?
   releaseDate DateTime?
   coverUrl    String?
+  artworkUrl  String? // wide IGDB artwork/marketing image, for the homepage hero — falls back to coverUrl when absent
   summary     String?   @db.Text
   genres      String[]  @default([])
   platforms   String[]  @default([])

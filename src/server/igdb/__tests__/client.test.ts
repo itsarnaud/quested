@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { resolveIgdbIdsBySteamAppIds } from "@/server/igdb/client";
+import { resolveIgdbIdsBySteamAppIds, toArtworkUrl, toCoverUrl } from "@/server/igdb/client";
 
 // The IGDB client caches its app access token at module scope, so once one
 // test triggers a token fetch, later tests in this file reuse it — mock by
@@ -51,5 +51,33 @@ describe("resolveIgdbIdsBySteamAppIds", () => {
     mockFetchByUrl([]);
     const map = await resolveIgdbIdsBySteamAppIds([]);
     expect(map.size).toBe(0);
+  });
+});
+
+describe("toCoverUrl", () => {
+  it("upgrades the thumb size to cover_big", () => {
+    expect(toCoverUrl({ url: "//images.igdb.com/igdb/image/upload/t_thumb/abc.jpg" })).toBe(
+      "https://images.igdb.com/igdb/image/upload/t_cover_big/abc.jpg",
+    );
+  });
+
+  it("returns null when there's no cover", () => {
+    expect(toCoverUrl(undefined)).toBeNull();
+  });
+});
+
+describe("toArtworkUrl", () => {
+  it("uses the first artwork, upgraded to 1080p", () => {
+    expect(
+      toArtworkUrl([
+        { url: "//images.igdb.com/igdb/image/upload/t_thumb/one.jpg" },
+        { url: "//images.igdb.com/igdb/image/upload/t_thumb/two.jpg" },
+      ]),
+    ).toBe("https://images.igdb.com/igdb/image/upload/t_1080p/one.jpg");
+  });
+
+  it("returns null when there are no artworks", () => {
+    expect(toArtworkUrl(undefined)).toBeNull();
+    expect(toArtworkUrl([])).toBeNull();
   });
 });

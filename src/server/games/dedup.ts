@@ -52,6 +52,7 @@ export async function createCanonicalGame(input: {
   year: number | null;
   releaseDate: Date | null;
   coverUrl: string | null;
+  artworkUrl?: string | null;
   summary: string | null;
   genres: string[];
   platforms: string[];
@@ -69,6 +70,7 @@ export async function createCanonicalGame(input: {
       releaseYear: input.year,
       releaseDate: input.releaseDate,
       coverUrl: input.coverUrl,
+      artworkUrl: input.artworkUrl ?? null,
       summary: input.summary,
       genres: input.genres,
       platforms: input.platforms,

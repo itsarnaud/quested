@@ -34,13 +34,14 @@ export type IgdbGame = {
   summary?: string;
   first_release_date?: number; // unix seconds
   cover?: { url: string };
+  artworks?: { url: string }[];
   genres?: { name: string }[];
   platforms?: { name: string }[];
   involved_companies?: { company: { name: string }; developer: boolean }[];
 };
 
 const GAME_FIELDS =
-  "name,summary,first_release_date,cover.url,genres.name,platforms.name,involved_companies.company.name,involved_companies.developer";
+  "name,summary,first_release_date,cover.url,artworks.url,genres.name,platforms.name,involved_companies.company.name,involved_companies.developer";
 
 async function postGamesQuery(body: string): Promise<IgdbGame[]> {
   const token = await getAppAccessToken();
@@ -77,6 +78,14 @@ export function toCoverUrl(cover?: { url: string }): string | null {
   if (!cover?.url) return null;
   // IGDB returns protocol-relative thumb URLs; upgrade to a larger size for display.
   return `https:${cover.url.replace("t_thumb", "t_cover_big")}`;
+}
+
+export function toArtworkUrl(artworks?: { url: string }[]): string | null {
+  const artwork = artworks?.[0];
+  if (!artwork?.url) return null;
+  // Artworks are wide marketing images (unlike the portrait cover) — used
+  // full-bleed on the homepage hero, so use IGDB's largest non-original size.
+  return `https:${artwork.url.replace("t_thumb", "t_1080p")}`;
 }
 
 const EXTERNAL_GAMES_BATCH_SIZE = 50;

@@ -45,9 +45,9 @@ export async function FeaturedHero() {
       className="group relative block overflow-hidden rounded-xl border border-border bg-card"
     >
       <div className="relative h-72 w-full sm:h-[26rem]">
-        {game.coverUrl ? (
+        {game.artworkUrl ?? game.coverUrl ? (
           <Image
-            src={game.coverUrl}
+            src={game.artworkUrl ?? game.coverUrl!}
             alt=""
             fill
             sizes="(max-width: 640px) 100vw, 900px"
