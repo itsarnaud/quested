@@ -27,7 +27,6 @@ export function TopNav({
   const tSearch = useTranslations("Search");
   const pathname = usePathname();
   const router = useRouter();
-  const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const links = [
@@ -42,22 +41,10 @@ export function TopNav({
         <span className="text-base font-bold uppercase tracking-tight">Quested</span>
       </Link>
 
-      <form
-        className="relative w-full max-w-md"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const q = query.trim();
-          router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
-        }}
-      >
-        <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={tSearch("placeholder")}
-          className="h-10 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
-        />
-      </form>
+      {/* Keyed by pathname so it remounts (clearing its own query state)
+          on every route change — it's just a shortcut to /search, not a
+          persistent reflection of the current page. */}
+      <NavSearchForm key={pathname} placeholder={tSearch("placeholder")} router={router} />
 
       <nav className="ml-auto flex shrink-0 items-center gap-1">
         {links.map(({ href, label }) => {
@@ -150,3 +137,26 @@ export function TopNav({
     </header>
   );
 }
+
+const NavSearchForm = ({ placeholder, router }: { placeholder: string; router: ReturnType<typeof useRouter> }) => {
+  const [query, setQuery] = useState("");
+
+  return (
+    <form
+      className="relative w-full max-w-md"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const q = query.trim();
+        router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+      }}
+    >
+      <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={placeholder}
+        className="h-10 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-accent"
+      />
+    </form>
+  );
+};
