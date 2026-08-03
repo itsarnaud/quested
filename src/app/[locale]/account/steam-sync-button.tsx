@@ -49,7 +49,12 @@ export function SteamSyncButton() {
     }
     if (size.isPrivate) {
       setState({ status: "idle" });
-      toast.error(t("steamProfilePrivate"));
+      toast.error(t("steamProfilePrivate"), {
+        action: {
+          label: t("steamPrivacySettingsLink"),
+          onClick: () => window.open("https://steamcommunity.com/my/edit/settings", "_blank", "noopener,noreferrer"),
+        },
+      });
       return;
     }
 

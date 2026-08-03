@@ -111,6 +111,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                   "--normal-bg": "var(--card)",
                   "--normal-text": "var(--foreground)",
                   "--normal-border": "var(--border)",
+                  "--width": "26rem",
                 } as React.CSSProperties
               }
             />

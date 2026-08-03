@@ -355,6 +355,7 @@
     "syncingAchievements": "Achievements",
     "syncSteamComplete": "{games} games and {achievements} achievements synced.",
     "steamProfilePrivate": "Your Steam profile is private. Make it public to import your library.",
+    "steamPrivacySettingsLink": "Steam settings",
     "showOnProfile": "Public",
     "steamBanner": "Link your Steam account to automatically import your library, playtime and achievements.",
     "steamBannerLink": "Link Steam",
