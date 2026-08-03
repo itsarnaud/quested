@@ -103,32 +103,51 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       notes: log.notes,
     }));
 
-  const likedByUser = await prisma.like.findMany({
-    where: { userId: user.id },
-    include: {
-      log: {
-        include: {
-          game: true,
-          user: { select: { username: true, name: true, badges: true } },
-          likes: { select: { userId: true } },
+  const [
+    likedByUser,
+    likedCount,
+    ownedListsCount,
+    unlockedAchievementsCount,
+    totalAchievementsForTrackedGames,
+    pinnedAchievementRows,
+    latestUserAchievement,
+    platinumGameIds,
+  ] = await Promise.all([
+    prisma.like.findMany({
+      where: { userId: user.id },
+      include: {
+        log: {
+          include: {
+            game: true,
+            user: { select: { username: true, name: true, badges: true } },
+            likes: { select: { userId: true } },
+          },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-    take: PREVIEW_SIZE,
-  });
-
-  const likedCount = await prisma.like.count({ where: { userId: user.id } });
-  const ownedListsCount = await prisma.gameList.count({ where: { userId: user.id } });
-  const unlockedAchievementsCount = await prisma.userAchievement.count({ where: { userId: user.id } });
-  const totalAchievementsForTrackedGames = await prisma.achievement.count({
-    where: { gameId: { in: user.logs.map((log) => log.gameId) } },
-  });
-  const pinnedAchievementRows = await prisma.pinnedAchievement.findMany({
-    where: { userId: user.id },
-    include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
-    orderBy: { position: "asc" },
-  });
+      orderBy: { createdAt: "desc" },
+      take: PREVIEW_SIZE,
+    }),
+    prisma.like.count({ where: { userId: user.id } }),
+    prisma.gameList.count({ where: { userId: user.id } }),
+    prisma.userAchievement.count({ where: { userId: user.id } }),
+    prisma.achievement.count({
+      where: { gameId: { in: user.logs.map((log) => log.gameId) } },
+    }),
+    prisma.pinnedAchievement.findMany({
+      where: { userId: user.id },
+      include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
+      orderBy: { position: "asc" },
+    }),
+    prisma.userAchievement.findFirst({
+      where: { userId: user.id, unlockedAt: { not: null } },
+      orderBy: { unlockedAt: "desc" },
+      include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
+    }),
+    getPlatinumGameIds(
+      user.id,
+      user.logs.map((log) => log.gameId),
+    ),
+  ]);
   const pinnedAchievements = pinnedAchievementRows.map((p) => ({
     id: p.achievement.id,
     displayName: p.achievement.displayName,
@@ -184,11 +203,6 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   const topGenreEntry = [...genreCounts.entries()].sort((a, b) => b[1] - a[1])[0];
   const topGenre = topGenreEntry ? { name: topGenreEntry[0], count: topGenreEntry[1] } : null;
 
-  const latestUserAchievement = await prisma.userAchievement.findFirst({
-    where: { userId: user.id, unlockedAt: { not: null } },
-    orderBy: { unlockedAt: "desc" },
-    include: { achievement: { include: { game: { select: { slug: true, title: true } } } } },
-  });
   const latestAchievement = latestUserAchievement
     ? {
         displayName: latestUserAchievement.achievement.displayName,
@@ -202,10 +216,6 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   const discordAccount = user.accounts.find((a) => a.provider === "discord");
   const publicSteamId = user.showSteamOnProfile ? steamAccount?.providerAccountId : undefined;
   const publicDiscordUsername = user.showDiscordOnProfile ? (discordAccount?.providerLabel ?? undefined) : undefined;
-  const platinumGameIds = await getPlatinumGameIds(
-    user.id,
-    user.logs.map((log) => log.gameId),
-  );
 
   const recentlyPlayed = [...user.logs]
     .filter((log) => log.status === "COMPLETED")

@@ -8,6 +8,7 @@ import { sendPushToUser } from "@/lib/push";
 import { withFollowingFlag } from "@/server/api/routers/user";
 
 const USER_CARD_SELECT = { id: true, username: true, name: true, image: true, badges: true } as const;
+const FOLLOW_LIST_LIMIT = 500;
 
 export const followRouter = createTRPCRouter({
   toggle: protectedProcedure
@@ -98,6 +99,7 @@ export const followRouter = createTRPCRouter({
               where: { followingId: target.id },
               select: { follower: { select: USER_CARD_SELECT } },
               orderBy: { createdAt: "desc" },
+              take: FOLLOW_LIST_LIMIT,
             })
             .then((rows) => rows.map((r) => r.follower))
         : ctx.prisma.follow
@@ -105,6 +107,7 @@ export const followRouter = createTRPCRouter({
               where: { followerId: target.id },
               select: { following: { select: USER_CARD_SELECT } },
               orderBy: { createdAt: "desc" },
+              take: FOLLOW_LIST_LIMIT,
             })
             .then((rows) => rows.map((r) => r.following)));
 

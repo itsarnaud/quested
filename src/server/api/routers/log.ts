@@ -42,7 +42,11 @@ export const logRouter = createTRPCRouter({
   listForUser: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.log.findMany({
       where: { userId: ctx.session.user.id },
-      include: { game: true },
+      select: {
+        gameId: true,
+        rating: true,
+        game: { select: { id: true, title: true, coverUrl: true } },
+      },
       orderBy: { updatedAt: "desc" },
     });
   }),

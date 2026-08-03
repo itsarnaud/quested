@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -17,7 +18,21 @@ import { pageAlternates } from "@/lib/alternates";
 import { siteUrl } from "@/lib/site";
 import { AchievementsSection } from "@/app/[locale]/games/[slug]/achievements-section";
 
-const getGame = cache((slug: string) => prisma.game.findUnique({ where: { slug } }));
+// Cached across requests (5 min) since game data only changes via IGDB
+// resync; React's cache() further dedupes within a single request.
+const getGameCached = unstable_cache(
+  (slug: string) => prisma.game.findUnique({ where: { slug } }),
+  ["game-by-slug"],
+  { revalidate: 300 },
+);
+
+// unstable_cache serializes its return value, so releaseDate comes back as
+// a string on cache hits — rehydrate it into a real Date for callers.
+const getGame = cache(async (slug: string) => {
+  const game = await getGameCached(slug);
+  if (!game) return game;
+  return { ...game, releaseDate: game.releaseDate ? new Date(game.releaseDate) : null };
+});
 
 const TOP_REVIEWS_LIMIT = 8;
 
