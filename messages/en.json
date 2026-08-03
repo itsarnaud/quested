@@ -339,7 +339,7 @@
     "steamProfilePrivate": "Your Steam profile is private. Make it public to import your library.",
     "showOnProfile": "Public",
     "steamBanner": "Link your Steam account to automatically import your library, playtime and achievements.",
-    "steamBannerLink": "Link my Steam account",
+    "steamBannerLink": "Link Steam",
     "steamBannerDismiss": "No thanks",
     "steamLinkedBanner": "Steam account linked! Sync your library and achievements to see them show up here."
   },

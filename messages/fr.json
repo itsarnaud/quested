@@ -339,7 +339,7 @@
     "steamProfilePrivate": "Ton profil Steam est privé. Rends-le public pour importer ta bibliothèque.",
     "showOnProfile": "Public",
     "steamBanner": "Lie ton compte Steam pour importer automatiquement ta bibliothèque, ton temps de jeu et tes succès.",
-    "steamBannerLink": "Lier mon compte Steam",
+    "steamBannerLink": "Lier Steam",
     "steamBannerDismiss": "Non merci",
     "steamLinkedBanner": "Compte Steam lié ! Synchronise ta bibliothèque et tes succès pour les voir apparaître ici."
   },

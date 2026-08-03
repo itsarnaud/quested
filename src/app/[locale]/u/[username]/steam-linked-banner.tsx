@@ -22,9 +22,7 @@ export function SteamLinkedBanner() {
   return (
     <div className="flex flex-col items-start justify-between gap-3 rounded-md border border-border bg-card p-3 sm:flex-row sm:items-center">
       <div className="flex items-center gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
-          <SteamIcon />
-        </div>
+        <SteamIcon width={22} height={22} className="shrink-0" />
         <p className="text-sm">{t("steamLinkedBanner")}</p>
       </div>
       <SteamSyncButton />

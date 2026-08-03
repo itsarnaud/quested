@@ -35,21 +35,23 @@ export function SteamLinkBanner({ redirectTo }: { redirectTo: string }) {
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card p-3">
+    <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
-          <SteamIcon />
-        </div>
+        <SteamIcon width={22} height={22} className="shrink-0" />
         <p className="text-sm">{t("steamBanner")}</p>
       </div>
-      <div className="flex shrink-0 gap-2">
-        <Button variant="secondary" onClick={dismiss}>
+      <div className="flex w-full shrink-0 gap-2 sm:w-auto">
+        <Button variant="secondary" className="flex-1 sm:flex-none" onClick={dismiss}>
           {t("steamBannerDismiss")}
         </Button>
         {/* A plain <a>, not Next's <Link> — this target redirects
             cross-origin to Steam, not a Next.js page. */}
-        <a href={`/api/auth/steam/login?redirectTo=${encodeURIComponent(redirectTo)}`} onClick={setAnsweredCookie}>
-          <Button>{t("steamBannerLink")}</Button>
+        <a
+          href={`/api/auth/steam/login?redirectTo=${encodeURIComponent(redirectTo)}`}
+          onClick={setAnsweredCookie}
+          className="flex-1 sm:flex-none"
+        >
+          <Button className="w-full">{t("steamBannerLink")}</Button>
         </a>
       </div>
     </div>
