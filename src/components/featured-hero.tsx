@@ -50,7 +50,7 @@ export async function FeaturedHero() {
             src={game.artworkUrl ?? game.coverUrl!}
             alt=""
             fill
-            sizes="(max-width: 640px) 100vw, 900px"
+            unoptimized
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
         ) : null}
