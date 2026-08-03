@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
@@ -9,6 +9,10 @@ import { formatPlaytime } from "@/lib/format-playtime";
 import { Button } from "@/components/ui/button";
 
 const STATUSES = ["BACKLOG", "PLAYING", "COMPLETED", "DROPPED", "WISHLIST"] as const;
+
+// How long the "Annuler" action stays valid before the log is actually
+// deleted — the row is only removed once this window elapses untouched.
+const REMOVE_UNDO_MS = 5000;
 
 type Log = {
   status: (typeof STATUSES)[number];
@@ -27,6 +31,48 @@ export function LogControls({ gameId, isUnreleased = false }: { gameId: string; 
     onSuccess: () => utils.log.getForGame.invalidate({ gameId }),
     onError: () => toast.error(tCommon("genericError")),
   });
+  const del = trpc.log.delete.useMutation({
+    onSuccess: () => utils.log.getForGame.invalidate({ gameId }),
+    onError: () => toast.error(tCommon("genericError")),
+  });
+
+  const [pendingRemoval, setPendingRemoval] = useState(false);
+  const removeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (removeTimeoutRef.current) clearTimeout(removeTimeoutRef.current);
+    };
+  }, []);
+
+  const effectiveLog = pendingRemoval ? null : log;
+
+  const handleStatusClick = (status: (typeof STATUSES)[number]) => {
+    if (log?.status === status) {
+      setPendingRemoval(true);
+      toast.success(tRating("logRemoved"), {
+        duration: REMOVE_UNDO_MS,
+        action: {
+          label: tCommon("undo"),
+          onClick: () => {
+            if (removeTimeoutRef.current) clearTimeout(removeTimeoutRef.current);
+            setPendingRemoval(false);
+          },
+        },
+      });
+      removeTimeoutRef.current = setTimeout(() => {
+        del.mutate({ gameId });
+      }, REMOVE_UNDO_MS);
+      return;
+    }
+
+    upsert.mutate({
+      gameId,
+      status,
+      rating: log?.rating ?? undefined,
+      notes: log?.notes ?? undefined,
+    });
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,17 +80,10 @@ export function LogControls({ gameId, isUnreleased = false }: { gameId: string; 
         {STATUSES.map((status) => (
           <button
             key={status}
-            onClick={() =>
-              upsert.mutate({
-                gameId,
-                status,
-                rating: log?.rating ?? undefined,
-                notes: log?.notes ?? undefined,
-              })
-            }
+            onClick={() => handleStatusClick(status)}
             className={cn(
               "h-9 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-muted",
-              log?.status === status && "border-accent bg-accent text-accent-foreground hover:opacity-90",
+              effectiveLog?.status === status && "border-accent bg-accent text-accent-foreground hover:opacity-90",
             )}
           >
             {t(status)}
@@ -52,24 +91,24 @@ export function LogControls({ gameId, isUnreleased = false }: { gameId: string; 
         ))}
       </div>
 
-      {log?.minutesPlayed != null ? (
+      {effectiveLog?.minutesPlayed != null ? (
         <p className="text-sm text-muted-foreground">
-          {tRating("playtime", { time: formatPlaytime(log.minutesPlayed) })}
+          {tRating("playtime", { time: formatPlaytime(effectiveLog.minutesPlayed) })}
         </p>
       ) : null}
 
-      {log?.status && !isUnreleased ? (
+      {effectiveLog?.status && !isUnreleased ? (
         <RatingAndNotes
-          key={`${log.rating}-${log.notes}`}
+          key={`${effectiveLog.rating}-${effectiveLog.notes}`}
           gameId={gameId}
-          log={log}
+          log={effectiveLog}
           onSave={(patch, notify) =>
             upsert.mutate(
               {
                 gameId,
-                status: log.status,
-                rating: log.rating ?? undefined,
-                notes: log.notes ?? undefined,
+                status: effectiveLog.status,
+                rating: effectiveLog.rating ?? undefined,
+                notes: effectiveLog.notes ?? undefined,
                 ...patch,
               },
               notify ? { onSuccess: () => toast.success(tRating("savedToast")) } : undefined,
@@ -77,7 +116,7 @@ export function LogControls({ gameId, isUnreleased = false }: { gameId: string; 
           }
           isPending={upsert.isPending}
         />
-      ) : log?.status && isUnreleased ? (
+      ) : effectiveLog?.status && isUnreleased ? (
         <p className="text-sm text-muted-foreground">{tRating("notYetReleased")}</p>
       ) : null}
     </div>

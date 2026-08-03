@@ -128,6 +128,7 @@
     "notesPlaceholder": "Qu'as-tu pensé de ce jeu ?",
     "save": "Enregistrer",
     "savedToast": "Avis enregistré.",
+    "logRemoved": "Jeu retiré de ton suivi.",
     "notYetReleased": "Tu pourras noter ce jeu une fois sorti."
   },
   "Profile": {
@@ -414,6 +415,7 @@
   },
   "Common": {
     "back": "Retour",
-    "genericError": "Une erreur est survenue, réessaie."
+    "genericError": "Une erreur est survenue, réessaie.",
+    "undo": "Annuler"
   }
 }

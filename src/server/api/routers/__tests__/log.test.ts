@@ -82,4 +82,16 @@ describe("log router", () => {
   it("requires auth", async () => {
     await expect(callerAs(null).log.listForUser()).rejects.toThrow();
   });
+
+  it("deletes a log", async () => {
+    await callerAs(user).log.delete({ gameId: unreleasedGame.id });
+    const log = await prisma.log.findUnique({
+      where: { userId_gameId: { userId: user.id, gameId: unreleasedGame.id } },
+    });
+    expect(log).toBeNull();
+  });
+
+  it("delete requires auth", async () => {
+    await expect(callerAs(null).log.delete({ gameId: releasedGame.id })).rejects.toThrow();
+  });
 });

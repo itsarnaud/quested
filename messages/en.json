@@ -128,6 +128,7 @@
     "notesPlaceholder": "What did you think of this game?",
     "save": "Save",
     "savedToast": "Review saved.",
+    "logRemoved": "Game removed from your tracking.",
     "notYetReleased": "You'll be able to rate this game once it's out."
   },
   "Profile": {
@@ -414,6 +415,7 @@
   },
   "Common": {
     "back": "Back",
-    "genericError": "Something went wrong, try again."
+    "genericError": "Something went wrong, try again.",
+    "undo": "Undo"
   }
 }

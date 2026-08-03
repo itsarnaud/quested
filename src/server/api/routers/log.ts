@@ -58,4 +58,12 @@ export const logRouter = createTRPCRouter({
         where: { userId_gameId: { userId: ctx.session.user.id, gameId: input.gameId } },
       });
     }),
+
+  delete: protectedProcedure
+    .input(z.object({ gameId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+      await ctx.prisma.log.delete({ where: { userId_gameId: { userId, gameId: input.gameId } } });
+      return { success: true };
+    }),
 });
