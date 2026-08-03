@@ -171,6 +171,8 @@
     "statsLists": "Lists",
     "statsPlaytime": "Playtime",
     "statsAchievements": "Unlocked achievements",
+    "statsRarityScore": "Rarity score",
+    "statsRarityScoreTooltip": "Every unlocked achievement earns points based on its global rarity: the fewer players have it, the more it's worth.",
     "statsTitle": "Stats & player profile",
     "progressionLabel": "Progress",
     "playedDaysSubtitle": "≈ {days, plural, one {# day} other {# days}} played",

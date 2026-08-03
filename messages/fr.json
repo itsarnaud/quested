@@ -171,6 +171,8 @@
     "statsLists": "Listes",
     "statsPlaytime": "Temps joué",
     "statsAchievements": "Succès débloqués",
+    "statsRarityScore": "Score de rareté",
+    "statsRarityScoreTooltip": "Chaque succès débloqué rapporte des points selon sa rareté mondiale : plus peu de joueurs l'ont obtenu, plus il vaut de points.",
     "statsTitle": "Stats & profil joueur",
     "progressionLabel": "Progression",
     "playedDaysSubtitle": "≈ {days, plural, one {# jour} other {# jours}} de jeu",

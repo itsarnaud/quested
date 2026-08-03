@@ -5,7 +5,10 @@ import { ControllerIcon } from "@/components/icons/controller-icon";
 import { ClockIcon } from "@/components/icons/clock-icon";
 import { StarIcon } from "@/components/icons/star-icon";
 import { TrophyIcon } from "@/components/icons/trophy-icon";
+import { PlatinumIcon } from "@/components/icons/platinum-icon";
+import { BadgeTooltip } from "@/components/badge-tooltip";
 import { formatPlaytime } from "@/lib/format-playtime";
+import { cn } from "@/lib/utils";
 
 type StatusCounts = {
   COMPLETED: number;
@@ -38,18 +41,29 @@ function Kpi({
   value,
   label,
   subtitle,
+  tooltip,
 }: {
   icon: React.ReactNode;
   value: string | number;
   label: string;
   subtitle?: string;
+  tooltip?: string;
 }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="text-muted-foreground/60">{icon}</div>
       <span className="text-4xl font-extrabold tracking-tight">{value}</span>
       <div className="flex flex-col gap-0.5">
-        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">{label}</span>
+        <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
+          {label}
+          {tooltip ? (
+            <BadgeTooltip label={tooltip} wrap>
+              <span className="flex size-3 items-center justify-center rounded-full border border-current text-[9px] normal-case">
+                ?
+              </span>
+            </BadgeTooltip>
+          ) : null}
+        </span>
         {subtitle ? <span className="text-xs text-muted-foreground">{subtitle}</span> : null}
       </div>
     </div>
@@ -144,6 +158,7 @@ export async function ProfileStats({
   averageRating,
   unlockedAchievementsCount,
   totalAchievementsForTrackedGames,
+  rarityScore,
   statusCounts,
   completedThisYear,
   mostPlayedGame,
@@ -157,6 +172,7 @@ export async function ProfileStats({
   averageRating: number | null;
   unlockedAchievementsCount: number;
   totalAchievementsForTrackedGames: number;
+  rarityScore: number;
   statusCounts: StatusCounts;
   completedThisYear: number;
   mostPlayedGame: MostPlayedGame | null;
@@ -175,7 +191,12 @@ export async function ProfileStats({
     <div className="flex flex-col gap-8">
       <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("statsTitle")}</h2>
 
-      <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
+      <div
+        className={cn(
+          "grid grid-cols-2 gap-x-6 gap-y-6",
+          rarityScore > 0 ? "sm:grid-cols-5" : "sm:grid-cols-4",
+        )}
+      >
         <div>
           <Kpi icon={<ControllerIcon />} value={totalGames} label={t("statsTotalGames")} />
         </div>
@@ -206,6 +227,16 @@ export async function ProfileStats({
             }
           />
         </div>
+        {rarityScore > 0 ? (
+          <div className="sm:border-l sm:border-border sm:pl-6">
+            <Kpi
+              icon={<PlatinumIcon />}
+              value={rarityScore.toLocaleString()}
+              label={t("statsRarityScore")}
+              tooltip={t("statsRarityScoreTooltip")}
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-4">

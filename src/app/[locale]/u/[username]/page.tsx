@@ -22,6 +22,7 @@ import { STATUS_SLUGS } from "@/lib/game-status";
 import { pageAlternates } from "@/lib/alternates";
 import { GameTile } from "@/components/game-tile";
 import { getPlatinumGameIds } from "@/server/games/platinum";
+import { computeRarityScore } from "@/lib/achievement-rarity";
 import { PublicAccountLinks } from "@/app/[locale]/u/[username]/public-account-links";
 import { SteamLinkBanner } from "@/app/[locale]/u/[username]/steam-link-banner";
 import { SteamLinkedBanner } from "@/app/[locale]/u/[username]/steam-linked-banner";
@@ -112,6 +113,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
     pinnedAchievementRows,
     latestUserAchievement,
     platinumGameIds,
+    unlockedAchievementPercents,
   ] = await Promise.all([
     prisma.like.findMany({
       where: { userId: user.id },
@@ -147,7 +149,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       user.id,
       user.logs.map((log) => log.gameId),
     ),
+    prisma.userAchievement.findMany({
+      where: { userId: user.id },
+      select: { achievement: { select: { globalUnlockedPercent: true } } },
+    }),
   ]);
+  const rarityScore = computeRarityScore(unlockedAchievementPercents.map((ua) => ua.achievement.globalUnlockedPercent));
   const pinnedAchievements = pinnedAchievementRows.map((p) => ({
     id: p.achievement.id,
     displayName: p.achievement.displayName,
@@ -442,6 +449,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           averageRating={personalAverageRating}
           unlockedAchievementsCount={unlockedAchievementsCount}
           totalAchievementsForTrackedGames={totalAchievementsForTrackedGames}
+          rarityScore={rarityScore}
           statusCounts={{
             COMPLETED: completedCount,
             PLAYING: playingCount,
