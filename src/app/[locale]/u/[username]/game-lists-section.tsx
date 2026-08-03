@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Link } from "@/i18n/navigation";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export function GameListsSection({ username, canEdit }: { username: string; canEdit: boolean }) {
   const t = useTranslations("Lists");
+  const tCommon = useTranslations("Common");
   const utils = trpc.useUtils();
   const { data: lists } = trpc.gameList.byUser.useQuery({ username });
 
@@ -22,7 +24,9 @@ export function GameListsSection({ username, canEdit }: { username: string; canE
       setCreating(false);
       setTitle("");
       setDescription("");
+      toast.success(t("listCreated"));
     },
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   return (

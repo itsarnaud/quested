@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Link } from "@/i18n/navigation";
@@ -25,6 +26,7 @@ export function FavoriteGamesSection({
   canEdit: boolean;
 }) {
   const t = useTranslations("Profile");
+  const tCommon = useTranslations("Common");
   const utils = trpc.useUtils();
   const { data: favorites } = trpc.user.getFavorites.useQuery(undefined, { enabled: canEdit });
   const { data: myLogs } = trpc.log.listForUser.useQuery(undefined, { enabled: canEdit });
@@ -33,7 +35,11 @@ export function FavoriteGamesSection({
   const [filter, setFilter] = useState("");
 
   const setFavorites = trpc.user.setFavorites.useMutation({
-    onSuccess: () => utils.user.getFavorites.invalidate(),
+    onSuccess: () => {
+      utils.user.getFavorites.invalidate();
+      toast.success(t("favoritesUpdated"));
+    },
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   const list = canEdit ? (favorites ?? initialFavorites) : initialFavorites;

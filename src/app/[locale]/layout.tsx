@@ -9,6 +9,7 @@ import { Header } from "@/components/header";
 import { TopNav } from "@/components/top-nav";
 import { Footer } from "@/components/footer";
 import { InstallPrompt } from "@/components/install-prompt";
+import { Toaster } from "sonner";
 import { getLatestVersion } from "@/lib/github-releases";
 import { pageAlternates } from "@/lib/alternates";
 import { siteUrl, siteName } from "@/lib/site";
@@ -102,6 +103,17 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             {children}
             <Footer />
             <InstallPrompt />
+            <Toaster
+              theme="dark"
+              position="bottom-right"
+              style={
+                {
+                  "--normal-bg": "var(--card)",
+                  "--normal-text": "var(--foreground)",
+                  "--normal-border": "var(--border)",
+                } as React.CSSProperties
+              }
+            />
           </TRPCProvider>
         </NextIntlClientProvider>
       </body>

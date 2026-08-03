@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
@@ -43,19 +44,15 @@ export function ProfileEditForm({
   const [youtubeUrl, setYoutubeUrl] = useState(initialProfile.youtubeUrl ?? "");
   const [avatarUrl, setAvatarUrl] = useState(initialProfile.image);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateProfile = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
-      setSaved(true);
-      setError(null);
+      toast.success(t("saved"));
       router.refresh();
     },
     onError: (err) => {
-      setSaved(false);
-      setError(err.data?.code === "CONFLICT" ? t("usernameTaken") : t("genericError"));
+      toast.error(err.data?.code === "CONFLICT" ? t("usernameTaken") : t("genericError"));
     },
   });
 
@@ -69,6 +66,9 @@ export function ProfileEditForm({
     try {
       const result = await uploadAvatar(formData);
       setAvatarUrl(result.url);
+      toast.success(t("avatarUpdated"));
+    } catch {
+      toast.error(t("genericError"));
     } finally {
       setAvatarUploading(false);
     }
@@ -207,9 +207,6 @@ export function ProfileEditForm({
             />
           </div>
         </div>
-
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        {saved && !error ? <p className="text-sm text-muted-foreground">{t("saved")}</p> : null}
 
         <Button type="submit" className="w-fit" disabled={updateProfile.isPending}>
           {t("saveButton")}

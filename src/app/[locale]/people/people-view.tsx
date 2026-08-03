@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
@@ -11,6 +12,8 @@ import { Link } from "@/i18n/navigation";
 
 export function PeopleView() {
   const t = useTranslations("People");
+  const tFollow = useTranslations("Follow");
+  const tCommon = useTranslations("Common");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const history = useSearchHistory("people");
@@ -33,6 +36,7 @@ export function PeopleView() {
       utils.user.search.invalidate();
       utils.user.suggestions.invalidate();
     },
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   const discovery = suggestions && suggestions.length > 0 ? suggestions : null;
@@ -90,7 +94,17 @@ export function PeopleView() {
               user={user}
               subtitle={`@${user.username}`}
               onNavigate={() => query.trim().length > 1 && history.commit(query.trim())}
-              onToggleFollow={() => user.username && toggle.mutate({ username: user.username })}
+              onToggleFollow={() => {
+                if (!user.username) return;
+                const wasFollowing = user.isFollowing;
+                toggle.mutate(
+                  { username: user.username },
+                  {
+                    onSuccess: () =>
+                      toast.success(wasFollowing ? tFollow("unfollowedToast") : tFollow("followedToast")),
+                  },
+                );
+              }}
               isTogglePending={toggle.isPending}
             />
           ))}
@@ -106,7 +120,17 @@ export function PeopleView() {
                 key={user.id}
                 user={user}
                 subtitle={`${user.mutualCount} ${t("mutualFollows", { count: user.mutualCount })}`}
-                onToggleFollow={() => user.username && toggle.mutate({ username: user.username })}
+                onToggleFollow={() => {
+                if (!user.username) return;
+                const wasFollowing = user.isFollowing;
+                toggle.mutate(
+                  { username: user.username },
+                  {
+                    onSuccess: () =>
+                      toast.success(wasFollowing ? tFollow("unfollowedToast") : tFollow("followedToast")),
+                  },
+                );
+              }}
                 isTogglePending={toggle.isPending}
               />
             ))}

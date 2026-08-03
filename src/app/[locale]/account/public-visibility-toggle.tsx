@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Switch } from "@/components/ui/switch";
@@ -9,7 +10,11 @@ export function PublicVisibilityToggle({ provider }: { provider: "steam" | "disc
   const utils = trpc.useUtils();
   const { data: prefs } = trpc.user.getPrivacyPreferences.useQuery();
   const update = trpc.user.updatePrivacyPreferences.useMutation({
-    onSuccess: () => utils.user.getPrivacyPreferences.invalidate(),
+    onSuccess: () => {
+      utils.user.getPrivacyPreferences.invalidate();
+      toast.success(t("saved"));
+    },
+    onError: () => toast.error(t("genericError")),
   });
 
   if (!prefs) return null;

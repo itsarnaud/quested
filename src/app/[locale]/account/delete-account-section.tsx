@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ export function DeleteAccountSection() {
 
   const deleteAccount = trpc.user.deleteAccount.useMutation({
     onSuccess: () => signOut({ callbackUrl: "/" }),
+    onError: () => toast.error(t("genericError")),
   });
 
   return (

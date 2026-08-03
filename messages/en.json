@@ -127,6 +127,7 @@
     "playtime": "Playtime: {time}",
     "notesPlaceholder": "What did you think of this game?",
     "save": "Save",
+    "savedToast": "Review saved.",
     "notYetReleased": "You'll be able to rate this game once it's out."
   },
   "Profile": {
@@ -146,6 +147,7 @@
     "favoritesTitle": "Favorites",
     "favoritesAdd": "Add",
     "favoritesRemove": "Remove",
+    "favoritesUpdated": "Favorites updated.",
     "favoritesCancel": "Cancel",
     "favoritesFilterPlaceholder": "Filter your rated games…",
     "favoritesNoCandidates": "Rate a game to be able to feature it here.",
@@ -155,6 +157,7 @@
     "pinnedCancel": "Cancel",
     "pinnedFilterPlaceholder": "Filter your unlocked achievements…",
     "pinnedNoCandidates": "Unlock an achievement to be able to pin it.",
+    "pinnedUpdated": "Pinned achievements updated.",
     "tasteCommon": "{count, plural, one {# game in common} other {# games in common}}",
     "tasteSimilarity": "{percent}% similar taste",
     "statsAvgRating": "Average rating",
@@ -189,6 +192,7 @@
   },
   "Lists": {
     "createButton": "New list",
+    "listCreated": "List created.",
     "titlePlaceholder": "List name",
     "descriptionPlaceholder": "Description (optional)",
     "save": "Create",
@@ -206,7 +210,12 @@
     "deleteConfirmButton": "Yes, delete",
     "noDescription": "No description.",
     "backToProfile": "Back to profile",
-    "cloneList": "Clone this list"
+    "cloneList": "Clone this list",
+    "listUpdated": "List updated.",
+    "listDeleted": "List deleted.",
+    "gameAdded": "Game added to the list.",
+    "gameRemoved": "Game removed from the list.",
+    "listCloned": "List cloned."
   },
   "Leaderboard": {
     "title": "Leaderboard",
@@ -231,7 +240,9 @@
     "noFollowers": "No followers yet.",
     "noFollowing": "Not following anyone yet.",
     "mutualFollows": "{count, plural, one {mutual follow} other {mutual follows}}",
-    "followingLabel": "Following"
+    "followingLabel": "Following",
+    "followedToast": "Followed!",
+    "unfollowedToast": "Unfollowed."
   },
   "Notifications": {
     "title": "Notifications",
@@ -298,8 +309,12 @@
     "pushUnsupported": "Push notifications aren't supported by this browser.",
     "pushEnable": "Enable on this device",
     "pushDisable": "Disable on this device",
+    "pushEnabledToast": "Push notifications enabled.",
+    "pushDisabledToast": "Push notifications disabled.",
+    "pushPermissionDenied": "Notification permission denied. Check your browser settings.",
     "exportDescription": "Download a JSON file containing your profile and all your logged games.",
     "exportButton": "Download my data (.json)",
+    "exportSuccess": "Your data has been downloaded.",
     "deleteDescription": "Permanently deletes your account, your public profile and all your logged games. This action cannot be undone.",
     "deleteButton": "Permanently delete my account",
     "linkedAccountsDescription": "Link multiple accounts so you can sign in with either one.",
@@ -308,9 +323,11 @@
     "linkDiscord": "Link my Discord account",
     "unlink": "Unlink",
     "unlinkConfirm": "Confirm?",
+    "unlinked": "Account unlinked.",
     "unlinkLastAccountWarning": "You can't unlink your only sign-in method.",
     "profileTitle": "Public profile",
     "avatarButton": "Change photo",
+    "avatarUpdated": "Profile picture updated.",
     "nameLabel": "Display name",
     "usernameLabel": "Username",
     "bioLabel": "Bio",
@@ -331,6 +348,7 @@
     "notLinked": "Not connected",
     "linkSteam": "Link my Steam account",
     "steamAlreadyLinked": "This Steam account is already linked to another Quested account.",
+    "steamLinked": "Steam account linked!",
     "steamLinkFailed": "Steam sign-in failed, please try again.",
     "syncSteam": "Sync Steam",
     "syncingLibrary": "Library",
@@ -394,6 +412,7 @@
     "privacyDescription": "How Quested handles your personal data."
   },
   "Common": {
-    "back": "Back"
+    "back": "Back",
+    "genericError": "Something went wrong, try again."
   }
 }

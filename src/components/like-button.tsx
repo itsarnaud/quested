@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useAnimate } from "motion/react";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { HeartIcon } from "@/components/icons/heart-icon";
@@ -15,6 +17,7 @@ export function LikeButton({
   initialLiked: boolean;
   initialCount: number;
 }) {
+  const t = useTranslations("Common");
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
   // Imperative pop instead of a keyed remount: the feed renders inside the
@@ -26,6 +29,7 @@ export function LikeButton({
     onError: () => {
       setLiked((v) => !v);
       setCount((c) => (liked ? c + 1 : c - 1));
+      toast.error(t("genericError"));
     },
   });
 

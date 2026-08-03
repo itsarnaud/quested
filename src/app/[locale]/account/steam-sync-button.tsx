@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { SteamIcon } from "@/components/icons/steam-icon";
@@ -11,15 +12,12 @@ const ACHIEVEMENTS_PAGE_SIZE = 5;
 
 type SyncState =
   | { status: "idle" }
-  | { status: "private" }
-  | { status: "syncing"; phase: "library" | "achievements"; done: number; total: number }
-  | { status: "complete"; games: number; achievements: number }
-  | { status: "error" };
+  | { status: "syncing"; phase: "library" | "achievements"; done: number; total: number };
 
 // Leaving mid-sync aborts the in-flight request and stops the loop for
 // good — the native "are you sure" prompt is the only real way to warn
 // against that (browsers ignore any custom message here).
-function useBeforeUnloadWarning(active: boolean) {
+const useBeforeUnloadWarning = (active: boolean) => {
   useEffect(() => {
     if (!active) return;
     const handler = (e: BeforeUnloadEvent) => {
@@ -28,7 +26,7 @@ function useBeforeUnloadWarning(active: boolean) {
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [active]);
-}
+};
 
 export function SteamSyncButton() {
   const t = useTranslations("Account");
@@ -45,11 +43,13 @@ export function SteamSyncButton() {
 
     const size = await utils.steam.getLibrarySize.fetch().catch(() => null);
     if (!size) {
-      setState({ status: "error" });
+      setState({ status: "idle" });
+      toast.error(t("genericError"));
       return;
     }
     if (size.isPrivate) {
-      setState({ status: "private" });
+      setState({ status: "idle" });
+      toast.error(t("steamProfilePrivate"));
       return;
     }
 
@@ -78,9 +78,11 @@ export function SteamSyncButton() {
         });
       }
 
-      setState({ status: "complete", games: size.total, achievements: achievementsUnlocked });
+      setState({ status: "idle" });
+      toast.success(t("syncSteamComplete", { games: size.total, achievements: achievementsUnlocked }));
     } catch {
-      setState({ status: "error" });
+      setState({ status: "idle" });
+      toast.error(t("genericError"));
     }
   }
 
@@ -114,19 +116,8 @@ export function SteamSyncButton() {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <Button type="button" variant="secondary" className="rounded-full" onClick={runSync}>
-        {t("syncSteam")}
-      </Button>
-      {state.status === "private" ? (
-        <p className="text-xs text-red-400">{t("steamProfilePrivate")}</p>
-      ) : state.status === "complete" ? (
-        <p className="text-xs text-muted-foreground">
-          {t("syncSteamComplete", { games: state.games, achievements: state.achievements })}
-        </p>
-      ) : state.status === "error" ? (
-        <p className="text-xs text-red-400">{t("genericError")}</p>
-      ) : null}
-    </div>
+    <Button type="button" variant="secondary" className="rounded-full" onClick={runSync}>
+      {t("syncSteam")}
+    </Button>
   );
 }

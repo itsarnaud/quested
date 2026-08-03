@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Link } from "@/i18n/navigation";
@@ -24,6 +25,7 @@ export function PinnedAchievementsSection({
   canEdit: boolean;
 }) {
   const t = useTranslations("Profile");
+  const tCommon = useTranslations("Common");
   const utils = trpc.useUtils();
   const { data: pinned } = trpc.user.getPinnedAchievements.useQuery(undefined, { enabled: canEdit });
   const { data: unlocked } = trpc.user.getUnlockedAchievements.useQuery(undefined, { enabled: canEdit });
@@ -32,7 +34,11 @@ export function PinnedAchievementsSection({
   const [filter, setFilter] = useState("");
 
   const setPinned = trpc.user.setPinnedAchievements.useMutation({
-    onSuccess: () => utils.user.getPinnedAchievements.invalidate(),
+    onSuccess: () => {
+      utils.user.getPinnedAchievements.invalidate();
+      toast.success(t("pinnedUpdated"));
+    },
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   const list = canEdit ? (pinned ?? initialPinned) : initialPinned;

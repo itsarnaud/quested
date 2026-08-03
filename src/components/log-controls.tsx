@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
@@ -19,10 +20,12 @@ type Log = {
 export function LogControls({ gameId, isUnreleased = false }: { gameId: string; isUnreleased?: boolean }) {
   const t = useTranslations("GameStatus");
   const tRating = useTranslations("LogControls");
+  const tCommon = useTranslations("Common");
   const utils = trpc.useUtils();
   const { data: log } = trpc.log.getForGame.useQuery({ gameId });
   const upsert = trpc.log.upsert.useMutation({
     onSuccess: () => utils.log.getForGame.invalidate({ gameId }),
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   return (
@@ -60,14 +63,17 @@ export function LogControls({ gameId, isUnreleased = false }: { gameId: string; 
           key={`${log.rating}-${log.notes}`}
           gameId={gameId}
           log={log}
-          onSave={(patch) =>
-            upsert.mutate({
-              gameId,
-              status: log.status,
-              rating: log.rating ?? undefined,
-              notes: log.notes ?? undefined,
-              ...patch,
-            })
+          onSave={(patch, notify) =>
+            upsert.mutate(
+              {
+                gameId,
+                status: log.status,
+                rating: log.rating ?? undefined,
+                notes: log.notes ?? undefined,
+                ...patch,
+              },
+              notify ? { onSuccess: () => toast.success(tRating("savedToast")) } : undefined,
+            )
           }
           isPending={upsert.isPending}
         />
@@ -85,7 +91,7 @@ function RatingAndNotes({
 }: {
   gameId: string;
   log: Log;
-  onSave: (patch: { rating?: number; notes?: string }) => void;
+  onSave: (patch: { rating?: number; notes?: string }, notify?: boolean) => void;
   isPending: boolean;
 }) {
   const tRating = useTranslations("LogControls");
@@ -144,7 +150,7 @@ function RatingAndNotes({
             variant="secondary"
             className="w-fit"
             disabled={isPending}
-            onClick={() => onSave({ notes })}
+            onClick={() => onSave({ notes }, true)}
           >
             {tRating("save")}
           </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Link } from "@/i18n/navigation";
@@ -11,11 +12,16 @@ export function SuggestionsWidget() {
   const t = useTranslations("Home");
   const tPeople = useTranslations("People");
   const tFollow = useTranslations("Follow");
+  const tCommon = useTranslations("Common");
 
   const utils = trpc.useUtils();
   const { data: suggestions } = trpc.user.suggestions.useQuery();
   const toggle = trpc.follow.toggle.useMutation({
-    onSuccess: () => utils.user.suggestions.invalidate(),
+    onSuccess: () => {
+      utils.user.suggestions.invalidate();
+      toast.success(tFollow("followedToast"));
+    },
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   if (!suggestions || suggestions.length === 0) return null;

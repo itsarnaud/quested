@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ export function FollowSection({
   isOwnProfile: boolean;
 }) {
   const t = useTranslations("Follow");
+  const tCommon = useTranslations("Common");
   const utils = trpc.useUtils();
   const { data } = trpc.follow.status.useQuery({ username });
   const { data: mutuals } = trpc.follow.mutuals.useQuery(
@@ -22,7 +24,11 @@ export function FollowSection({
     { enabled: isLoggedIn && !isOwnProfile },
   );
   const toggle = trpc.follow.toggle.useMutation({
-    onSuccess: () => utils.follow.status.invalidate({ username }),
+    onSuccess: () => {
+      utils.follow.status.invalidate({ username });
+      toast.success(data?.isFollowing ? t("unfollowedToast") : t("followedToast"));
+    },
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   return (

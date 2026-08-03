@@ -16,7 +16,7 @@ const PROVIDERS = [
   { id: "steam", name: "Steam", labelKey: "linkSteam", Icon: SteamIcon } as const,
 ];
 
-export async function LinkedAccounts({ userId, error }: { userId: string; error?: string }) {
+export async function LinkedAccounts({ userId }: { userId: string }) {
   const t = await getTranslations("Account");
 
   const accounts = await prisma.account.findMany({
@@ -25,31 +25,29 @@ export async function LinkedAccounts({ userId, error }: { userId: string; error?
   });
   const accountsByProvider = new Map(accounts.map((a) => [a.provider, a.providerLabel]));
 
-  async function unlink(provider: string) {
+  // prevState/formData are required by useActionState's action signature
+  // but unused here — provider is bound before React ever calls this.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async function unlink(provider: string, prevState: { error: boolean } | null, formData: FormData) {
     "use server";
     const session = await auth();
-    if (!session?.user) return;
+    if (!session?.user) return { error: true };
 
     const currentAccounts = await prisma.account.findMany({
       where: { userId: session.user.id },
     });
-    if (currentAccounts.length <= 1) return;
+    if (currentAccounts.length <= 1) return { error: true };
 
     await prisma.account.deleteMany({
       where: { userId: session.user.id, provider },
     });
     revalidatePath("/account");
+    return { error: false };
   }
 
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm text-muted-foreground">{t("linkedAccountsDescription")}</p>
-
-      {error === "steam-taken" ? (
-        <p className="rounded-md border border-red-500/40 bg-red-500/5 p-3 text-sm text-red-400">
-          {t("steamAlreadyLinked")}
-        </p>
-      ) : null}
 
       <div className="flex flex-col divide-y divide-border">
         {PROVIDERS.map(({ id, name, labelKey, Icon }) => {
@@ -76,9 +74,11 @@ export async function LinkedAccounts({ userId, error }: { userId: string; error?
                 <div className="flex items-center gap-2">
                   {id === "steam" ? <SteamSyncButton /> : null}
                   {accountsByProvider.size > 1 ? (
-                    <form action={unlink.bind(null, id)}>
-                      <UnlinkButton label={t("unlink")} confirmLabel={t("unlinkConfirm")} />
-                    </form>
+                    <UnlinkButton
+                      label={t("unlink")}
+                      confirmLabel={t("unlinkConfirm")}
+                      action={unlink.bind(null, id)}
+                    />
                   ) : null}
                 </div>
               ) : id === "steam" ? (

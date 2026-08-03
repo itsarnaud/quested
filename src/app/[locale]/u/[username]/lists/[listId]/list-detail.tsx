@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
@@ -27,6 +28,7 @@ export function ListDetail({
   canClone: boolean;
 }) {
   const t = useTranslations("Lists");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
   const utils = trpc.useUtils();
 
@@ -60,25 +62,41 @@ export function ListDetail({
     onSuccess: () => {
       utils.gameList.get.invalidate({ listId });
       setEditing(false);
+      toast.success(t("listUpdated"));
     },
+    onError: () => toast.error(tCommon("genericError")),
   });
   const del = trpc.gameList.delete.useMutation({
-    onSuccess: () => router.push(`/u/${username}`),
+    onSuccess: () => {
+      toast.success(t("listDeleted"));
+      router.push(`/u/${username}`);
+    },
+    onError: () => toast.error(tCommon("genericError")),
   });
   const addGame = trpc.gameList.addGame.useMutation({
     onSuccess: () => {
       utils.gameList.get.invalidate({ listId });
       setPicking(false);
       setQuery("");
+      toast.success(t("gameAdded"));
     },
+    onError: () => toast.error(tCommon("genericError")),
   });
   const removeGame = trpc.gameList.removeGame.useMutation({
-    onSuccess: () => utils.gameList.get.invalidate({ listId }),
+    onSuccess: () => {
+      utils.gameList.get.invalidate({ listId });
+      toast.success(t("gameRemoved"));
+    },
+    onError: () => toast.error(tCommon("genericError")),
   });
   const clone = trpc.gameList.clone.useMutation({
     onSuccess: (result) => {
-      if (result.username) router.push(`/u/${result.username}/lists/${result.listId}`);
+      if (result.username) {
+        toast.success(t("listCloned"));
+        router.push(`/u/${result.username}/lists/${result.listId}`);
+      }
     },
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   return (

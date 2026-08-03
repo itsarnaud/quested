@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
@@ -25,7 +25,6 @@ export function PublicAccountLinks({
   youtubeUrl?: string | null;
 }) {
   const t = useTranslations("Profile");
-  const [copied, setCopied] = useState(false);
 
   if (!steamId && !discordUsername && !website && !twitterUrl && !twitchUrl && !youtubeUrl) return null;
 
@@ -89,16 +88,14 @@ export function PublicAccountLinks({
       {discordUsername ? (
         <button
           type="button"
-          title={copied ? undefined : discordUsername}
+          title={discordUsername}
           onClick={() => {
             navigator.clipboard.writeText(discordUsername);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
+            toast.success(t("discordCopied"));
           }}
           className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
         >
           <DiscordIcon />
-          {copied ? <span className="text-xs">{t("discordCopied")}</span> : null}
         </button>
       ) : null}
     </div>

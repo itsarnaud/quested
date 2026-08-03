@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Switch } from "@/components/ui/switch";
@@ -10,7 +11,11 @@ export function NotificationPreferences() {
   const { data: prefs } = trpc.user.getNotificationPreferences.useQuery();
 
   const update = trpc.user.updateNotificationPreferences.useMutation({
-    onSuccess: () => utils.user.getNotificationPreferences.invalidate(),
+    onSuccess: () => {
+      utils.user.getNotificationPreferences.invalidate();
+      toast.success(t("saved"));
+    },
+    onError: () => toast.error(t("genericError")),
   });
 
   if (!prefs) return null;

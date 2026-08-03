@@ -127,6 +127,7 @@
     "playtime": "Temps joué : {time}",
     "notesPlaceholder": "Qu'as-tu pensé de ce jeu ?",
     "save": "Enregistrer",
+    "savedToast": "Avis enregistré.",
     "notYetReleased": "Tu pourras noter ce jeu une fois sorti."
   },
   "Profile": {
@@ -146,6 +147,7 @@
     "favoritesTitle": "Favoris",
     "favoritesAdd": "Ajouter",
     "favoritesRemove": "Retirer",
+    "favoritesUpdated": "Favoris mis à jour.",
     "favoritesCancel": "Annuler",
     "favoritesFilterPlaceholder": "Filtrer tes jeux notés…",
     "favoritesNoCandidates": "Note un jeu pour pouvoir le mettre en favori.",
@@ -155,6 +157,7 @@
     "pinnedCancel": "Annuler",
     "pinnedFilterPlaceholder": "Filtrer tes succès débloqués…",
     "pinnedNoCandidates": "Débloque un succès pour pouvoir l'épingler.",
+    "pinnedUpdated": "Succès épinglés mis à jour.",
     "tasteCommon": "{count, plural, one {# jeu en commun} other {# jeux en commun}}",
     "tasteSimilarity": "{percent}% de goûts similaires",
     "statsAvgRating": "Note moyenne",
@@ -189,6 +192,7 @@
   },
   "Lists": {
     "createButton": "Nouvelle liste",
+    "listCreated": "Liste créée.",
     "titlePlaceholder": "Nom de la liste",
     "descriptionPlaceholder": "Description (optionnel)",
     "save": "Créer",
@@ -206,7 +210,12 @@
     "deleteConfirmButton": "Oui, supprimer",
     "noDescription": "Aucune description.",
     "backToProfile": "Retour au profil",
-    "cloneList": "Cloner cette liste"
+    "cloneList": "Cloner cette liste",
+    "listUpdated": "Liste mise à jour.",
+    "listDeleted": "Liste supprimée.",
+    "gameAdded": "Jeu ajouté à la liste.",
+    "gameRemoved": "Jeu retiré de la liste.",
+    "listCloned": "Liste clonée."
   },
   "Leaderboard": {
     "title": "Classement",
@@ -231,7 +240,9 @@
     "noFollowers": "Aucun abonné pour l'instant.",
     "noFollowing": "Ne suit personne pour l'instant.",
     "mutualFollows": "{count, plural, one {abonnement en commun} other {abonnements en commun}}",
-    "followingLabel": "Suivi"
+    "followingLabel": "Suivi",
+    "followedToast": "Abonné !",
+    "unfollowedToast": "Désabonné."
   },
   "Notifications": {
     "title": "Notifications",
@@ -298,8 +309,12 @@
     "pushUnsupported": "Les notifications push ne sont pas prises en charge par ce navigateur.",
     "pushEnable": "Activer sur cet appareil",
     "pushDisable": "Désactiver sur cet appareil",
+    "pushEnabledToast": "Notifications push activées.",
+    "pushDisabledToast": "Notifications push désactivées.",
+    "pushPermissionDenied": "Autorisation refusée pour les notifications. Vérifie les réglages de ton navigateur.",
     "exportDescription": "Télécharge un fichier JSON contenant ton profil et tous tes jeux enregistrés.",
     "exportButton": "Télécharger mes données (.json)",
+    "exportSuccess": "Tes données ont été téléchargées.",
     "deleteDescription": "Supprime définitivement ton compte, ton profil public et tous tes jeux enregistrés. Cette action est irréversible.",
     "deleteButton": "Supprimer définitivement mon compte",
     "linkedAccountsDescription": "Lie plusieurs comptes pour pouvoir te connecter avec l'un ou l'autre.",
@@ -308,9 +323,11 @@
     "linkDiscord": "Lier mon compte Discord",
     "unlink": "Délier",
     "unlinkConfirm": "Confirmer ?",
+    "unlinked": "Compte délié.",
     "unlinkLastAccountWarning": "Impossible de délier ton seul moyen de connexion.",
     "profileTitle": "Profil public",
     "avatarButton": "Changer la photo",
+    "avatarUpdated": "Photo de profil mise à jour.",
     "nameLabel": "Nom d'affichage",
     "usernameLabel": "Nom d'utilisateur",
     "bioLabel": "Bio",
@@ -331,6 +348,7 @@
     "notLinked": "Non connecté",
     "linkSteam": "Lier mon compte Steam",
     "steamAlreadyLinked": "Ce compte Steam est déjà lié à un autre compte Quested.",
+    "steamLinked": "Compte Steam lié !",
     "steamLinkFailed": "La connexion à Steam a échoué, réessaie.",
     "syncSteam": "Synchroniser Steam",
     "syncingLibrary": "Bibliothèque",
@@ -394,6 +412,7 @@
     "privacyDescription": "Comment Quested traite tes données personnelles."
   },
   "Common": {
-    "back": "Retour"
+    "back": "Retour",
+    "genericError": "Une erreur est survenue, réessaie."
   }
 }

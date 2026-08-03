@@ -35,36 +35,45 @@ export function usePushSubscription() {
     check();
   }, []);
 
-  const subscribe = useCallback(async () => {
+  const subscribe = useCallback(async (): Promise<"subscribed" | "denied" | "error"> => {
     const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-    if (!publicKey) return false;
+    if (!publicKey) return "error";
 
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") return false;
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return "denied";
 
-    const reg = await navigator.serviceWorker.register("/sw.js");
-    await navigator.serviceWorker.ready;
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey),
-    });
-    const json = sub.toJSON();
-    await subscribeMutation.mutateAsync({
-      endpoint: json.endpoint!,
-      keys: { p256dh: json.keys!.p256dh!, auth: json.keys!.auth! },
-    });
-    setSubscribed(true);
-    return true;
+      const reg = await navigator.serviceWorker.register("/sw.js");
+      await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+      const json = sub.toJSON();
+      await subscribeMutation.mutateAsync({
+        endpoint: json.endpoint!,
+        keys: { p256dh: json.keys!.p256dh!, auth: json.keys!.auth! },
+      });
+      setSubscribed(true);
+      return "subscribed";
+    } catch {
+      return "error";
+    }
   }, [subscribeMutation]);
 
-  const unsubscribe = useCallback(async () => {
-    const reg = await navigator.serviceWorker.getRegistration();
-    const sub = await reg?.pushManager.getSubscription();
-    if (sub) {
-      await unsubscribeMutation.mutateAsync({ endpoint: sub.endpoint });
-      await sub.unsubscribe();
+  const unsubscribe = useCallback(async (): Promise<"unsubscribed" | "error"> => {
+    try {
+      const reg = await navigator.serviceWorker.getRegistration();
+      const sub = await reg?.pushManager.getSubscription();
+      if (sub) {
+        await unsubscribeMutation.mutateAsync({ endpoint: sub.endpoint });
+        await sub.unsubscribe();
+      }
+      setSubscribed(false);
+      return "unsubscribed";
+    } catch {
+      return "error";
     }
-    setSubscribed(false);
   }, [unsubscribeMutation]);
 
   return { supported, subscribed, loading, subscribe, unsubscribe };

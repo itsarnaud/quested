@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Link } from "@/i18n/navigation";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export function NotificationBell() {
   const t = useTranslations("Notifications");
+  const tCommon = useTranslations("Common");
   const [open, setOpen] = useState(false);
 
   const utils = trpc.useUtils();
@@ -21,6 +23,7 @@ export function NotificationBell() {
     // Only refresh the unread dot — not the list itself, otherwise the
     // unread-only dropdown would empty out right as the user opens it.
     onSuccess: () => utils.notification.unreadCount.invalidate(),
+    onError: () => toast.error(tCommon("genericError")),
   });
 
   return (
