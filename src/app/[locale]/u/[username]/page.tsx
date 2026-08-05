@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { GearIcon } from "@/components/icons/gear-icon";
+import { EmptyState } from "@/components/empty-state";
 import { ReviewRow } from "@/components/review-row";
 import { LikedLogRow } from "@/components/liked-log-row";
 import { DiaryEntries, type DiaryLogEntry } from "@/components/diary-entries";
@@ -240,7 +241,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const gamesContent =
     logsByStatus.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noGames")}</p>
+      <EmptyState title={t("noGames")} subtitle={t("noGamesSubtitle")} />
     ) : (
       <div className="flex flex-col gap-8">
         {logsByStatus.map((group) => (
@@ -268,7 +269,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const reviewsContent =
     reviews.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noReviews")}</p>
+      <EmptyState title={t("noReviews")} subtitle={t("noReviewsSubtitle")} />
     ) : (
       <div className="flex flex-col gap-4">
         <div className="flex flex-col divide-y divide-border">
@@ -325,7 +326,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const diaryContent =
     diaryLogs.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noDiaryEntries")}</p>
+      <EmptyState title={t("noDiaryEntries")} subtitle={t("noDiaryEntriesSubtitle")} />
     ) : (
       <div className="flex flex-col gap-4">
         <DiaryEntries logs={diaryLogs} locale={locale} statusLabel={tStatus} />
@@ -339,7 +340,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const likesContent =
     likedByUser.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noLikes")}</p>
+      <EmptyState title={t("noLikes")} subtitle={t("noLikesSubtitle")} />
     ) : (
       <div className="flex flex-col gap-4">
         <div className="flex flex-col divide-y divide-border">

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { Pagination } from "@/components/pagination";
 import { LikedLogRow } from "@/components/liked-log-row";
+import { EmptyState } from "@/components/empty-state";
 import { pageAlternates } from "@/lib/alternates";
 
 const PAGE_SIZE = 20;
@@ -61,7 +62,7 @@ export default async function LikesPage({ params, searchParams }: PageProps) {
       <h1 className="text-xl font-semibold tracking-tight">{t("likesTab")}</h1>
 
       {likes.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noLikes")}</p>
+        <EmptyState title={t("noLikes")} subtitle={t("noLikesSubtitle")} />
       ) : (
         <div className="flex flex-col divide-y divide-border">
           {likes.map(({ log }) => {

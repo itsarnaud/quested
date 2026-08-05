@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { PersonRow } from "@/components/person-row";
+import { EmptyState } from "@/components/empty-state";
 
 export function FollowList({ username, type }: { username: string; type: "followers" | "following" }) {
   const t = useTranslations("Follow");
@@ -16,7 +17,12 @@ export function FollowList({ username, type }: { username: string; type: "follow
   });
 
   if (users && users.length === 0) {
-    return <p className="text-sm text-muted-foreground">{t(type === "followers" ? "noFollowers" : "noFollowing")}</p>;
+    return (
+      <EmptyState
+        title={t(type === "followers" ? "noFollowers" : "noFollowing")}
+        subtitle={t(type === "followers" ? "noFollowersSubtitle" : "noFollowingSubtitle")}
+      />
+    );
   }
 
   return (

@@ -9,6 +9,7 @@ import { useSearchHistory } from "@/lib/use-search-history";
 import { PersonRow } from "@/components/person-row";
 import { SearchIcon } from "@/components/icons/search-icon";
 import { Link } from "@/i18n/navigation";
+import { EmptyState } from "@/components/empty-state";
 
 export function PeopleView() {
   const t = useTranslations("People");
@@ -83,7 +84,7 @@ export function PeopleView() {
       {isFetching ? <p className="text-sm text-muted-foreground">{t("searching")}</p> : null}
 
       {isSearching && !isFetching && users && users.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noResults")}</p>
+        <EmptyState title={t("noResults")} subtitle={t("noResultsSubtitle")} />
       ) : null}
 
       {isSearching ? (

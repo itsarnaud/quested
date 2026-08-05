@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { Pagination } from "@/components/pagination";
 import { ReviewRow } from "@/components/review-row";
+import { EmptyState } from "@/components/empty-state";
 import { pageAlternates } from "@/lib/alternates";
 
 const PAGE_SIZE = 20;
@@ -58,7 +59,7 @@ export default async function ReviewsPage({ params, searchParams }: PageProps) {
       <h1 className="text-xl font-semibold tracking-tight">{t("reviewsTab")}</h1>
 
       {logs.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noReviews")}</p>
+        <EmptyState title={t("noReviews")} subtitle={t("noReviewsSubtitle")} />
       ) : (
         <div className="flex flex-col divide-y divide-border">
           {logs.map((log) => {

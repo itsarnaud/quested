@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { GameTile } from "@/components/game-tile";
+import { EmptyState } from "@/components/empty-state";
 import { Pagination } from "@/components/pagination";
 import { statusFromSlug } from "@/lib/game-status";
 import { pageAlternates } from "@/lib/alternates";
@@ -67,7 +68,7 @@ export default async function GamesByStatusPage({ params, searchParams }: PagePr
       </h1>
 
       {logs.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noGames")}</p>
+        <EmptyState title={t("noGames")} subtitle={t("noGamesSubtitle")} />
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
           {logs.map((log) => (
