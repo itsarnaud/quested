@@ -54,10 +54,20 @@ export const gameRouter = createTRPCRouter({
         return localGames;
       }
 
-      const [igdbResults, rawgResults] = await Promise.all([
+      // Settled independently: IGDB or RAWG being down shouldn't take the
+      // other provider's results down with it.
+      const [igdbSettled, rawgSettled] = await Promise.allSettled([
         searchIgdbGames(input.query),
         searchRawgGames(input.query),
       ]);
+      if (igdbSettled.status === "rejected") {
+        console.error("IGDB search failed:", igdbSettled.reason);
+      }
+      if (rawgSettled.status === "rejected") {
+        console.error("RAWG search failed:", rawgSettled.reason);
+      }
+      const igdbResults = igdbSettled.status === "fulfilled" ? igdbSettled.value : [];
+      const rawgResults = rawgSettled.status === "fulfilled" ? rawgSettled.value : [];
 
       // IGDB upserts run first and are fully awaited so RAWG's
       // title+year matching can dedupe against games IGDB already created.

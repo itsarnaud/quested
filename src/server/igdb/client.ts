@@ -1,6 +1,9 @@
 const TOKEN_URL = "https://id.twitch.tv/oauth2/token";
 const API_URL = "https://api.igdb.com/v4";
 
+// Keeps a hung IGDB/Twitch endpoint from stalling the whole search request.
+const FETCH_TIMEOUT_MS = 5_000;
+
 let cachedToken: { accessToken: string; expiresAt: number } | null = null;
 
 async function getAppAccessToken(): Promise<string> {
@@ -14,7 +17,10 @@ async function getAppAccessToken(): Promise<string> {
     grant_type: "client_credentials",
   });
 
-  const res = await fetch(`${TOKEN_URL}?${params.toString()}`, { method: "POST" });
+  const res = await fetch(`${TOKEN_URL}?${params.toString()}`, {
+    method: "POST",
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (!res.ok) {
     throw new Error(`Failed to get IGDB app access token: ${res.status} ${await res.text()}`);
   }
@@ -54,6 +60,7 @@ async function postGamesQuery(body: string): Promise<IgdbGame[]> {
       "Content-Type": "text/plain",
     },
     body,
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
 
   if (!res.ok) {
@@ -111,6 +118,7 @@ export async function resolveIgdbIdsBySteamAppIds(appIds: string[]): Promise<Map
         "Content-Type": "text/plain",
       },
       body: `fields uid,game.id; where uid = (${uids}) & external_game_source = 1; limit ${batch.length};`,
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 
     if (!res.ok) {
