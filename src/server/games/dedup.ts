@@ -63,6 +63,18 @@ export async function createCanonicalGame(input: {
   const baseSlug = slugify(input.title) || `game-${input.sourceId}`;
   const slug = input.year ? `${baseSlug}-${input.year}` : baseSlug;
 
+  // A slug collision here means another (source, sourceId) already created
+  // a Game with the same normalized title — near-certainly the same game
+  // under a different platform release or SKU (this is common for
+  // no-year sources like PSN, which don't disambiguate PS4/PS5 versions
+  // etc). Link the new external id to that existing game instead of
+  // crashing on the unique constraint or minting a confusing duplicate.
+  const collision = await prisma.game.findUnique({ where: { slug } });
+  if (collision) {
+    await linkExternalId(collision.id, input.source, input.sourceId);
+    return collision;
+  }
+
   return prisma.game.create({
     data: {
       slug,
