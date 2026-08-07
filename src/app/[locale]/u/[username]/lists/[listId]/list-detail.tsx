@@ -149,7 +149,7 @@ export function ListDetail({
                 <Button
                   type="button"
                   variant="secondary"
-                  className="border-red-600 text-red-600 hover:bg-red-50"
+                  className="border-red-600 text-red-500 hover:bg-red-500/10"
                   onClick={() => del.mutate({ listId })}
                   disabled={del.isPending}
                 >
@@ -159,7 +159,7 @@ export function ListDetail({
                 <Button
                   type="button"
                   variant="secondary"
-                  className="border-red-600 text-red-600 hover:bg-red-50"
+                  className="border-red-600 text-red-500 hover:bg-red-500/10"
                   onClick={() => setConfirmingDelete(true)}
                 >
                   {t("deleteList")}
