@@ -46,7 +46,7 @@ export function SearchHistoryDropdown({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onRemove(term)}
               className="px-2 text-xs text-muted-foreground hover:text-foreground"
-              aria-label="remove"
+              aria-label={t("remove")}
             >
               ×
             </button>

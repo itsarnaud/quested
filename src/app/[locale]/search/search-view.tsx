@@ -82,6 +82,7 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
         <select
           value={genre}
           onChange={(e) => setGenre(e.target.value)}
+          aria-label={t("filterGenre")}
           className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
         >
           <option value="">{t("filterGenre")}</option>
@@ -95,6 +96,7 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
+          aria-label={t("filterPlatform")}
           className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
         >
           <option value="">{t("filterPlatform")}</option>
@@ -108,6 +110,7 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
         <select
           value={year}
           onChange={(e) => setYear(e.target.value)}
+          aria-label={t("filterYear")}
           className="h-9 rounded-md border border-border bg-card px-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent"
         >
           <option value="">{t("filterYear")}</option>

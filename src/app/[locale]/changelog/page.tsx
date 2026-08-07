@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { fetchReleases } from "@/lib/github-releases";
 import { renderReleaseNotesHtml } from "@/lib/render-release-notes";
 import { pageAlternates } from "@/lib/alternates";
+import { EmptyState } from "@/components/empty-state";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -27,7 +28,7 @@ export default async function ChangelogPage() {
       </div>
 
       {releases.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <EmptyState title={t("empty")} />
       ) : (
         <div className="flex flex-col gap-8">
           {releases.map((release) => (

@@ -153,7 +153,15 @@ export default async function GamePage({ params }: PageProps) {
         <div className="mx-auto w-44 shrink-0 sm:mx-0 sm:w-56">
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg border border-border bg-muted">
             {game.coverUrl ? (
-              <Image src={game.coverUrl} alt={game.title} fill unoptimized className="object-cover" />
+              <Image
+                src={game.coverUrl}
+                alt={game.title}
+                fill
+                unoptimized
+                priority
+                fetchPriority="high"
+                className="object-cover"
+              />
             ) : null}
           </div>
         </div>

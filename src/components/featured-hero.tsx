@@ -51,6 +51,8 @@ export async function FeaturedHero() {
             alt=""
             fill
             unoptimized
+            priority
+            fetchPriority="high"
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
         ) : null}

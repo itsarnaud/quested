@@ -21,6 +21,7 @@ import { UserBadges } from "@/components/user-badges";
 import { GameListsSection } from "@/app/[locale]/u/[username]/game-lists-section";
 import { STATUS_SLUGS } from "@/lib/game-status";
 import { pageAlternates } from "@/lib/alternates";
+import { siteUrl } from "@/lib/site";
 import { GameTile } from "@/components/game-tile";
 import { getPlatinumGameIds } from "@/server/games/platinum";
 import { computeRarityScore } from "@/lib/achievement-rarity";
@@ -382,8 +383,23 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       </div>
     );
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    dateCreated: user.createdAt.toISOString(),
+    mainEntity: {
+      "@type": "Person",
+      name: user.name ?? username,
+      alternateName: username,
+      url: `${siteUrl}/u/${username}`,
+      ...(user.image ? { image: user.image } : {}),
+      ...(user.bio ? { description: user.bio } : {}),
+    },
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-center gap-5">
           <div className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border bg-muted sm:size-24">

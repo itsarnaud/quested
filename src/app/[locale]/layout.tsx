@@ -100,7 +100,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
               version={version}
             />
             <Header />
-            {children}
+            <main className="flex flex-1 flex-col">{children}</main>
             <Footer />
             <InstallPrompt />
             <Toaster

@@ -124,7 +124,7 @@ export function ListDetail({
             className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-accent"
           />
           <div className="flex gap-2">
-            <Button type="submit" disabled={!title.trim() || update.isPending}>
+            <Button type="submit" disabled={!title.trim()} isLoading={update.isPending}>
               {t("saveChanges")}
             </Button>
             <Button type="button" variant="secondary" onClick={() => setEditing(false)}>
@@ -149,9 +149,9 @@ export function ListDetail({
                 <Button
                   type="button"
                   variant="secondary"
-                  className="border-red-600 text-red-600 hover:bg-red-50"
+                  className="border-red-600 text-red-500 hover:bg-red-500/10"
                   onClick={() => del.mutate({ listId })}
-                  disabled={del.isPending}
+                  isLoading={del.isPending}
                 >
                   {t("deleteConfirmButton")}
                 </Button>
@@ -159,7 +159,7 @@ export function ListDetail({
                 <Button
                   type="button"
                   variant="secondary"
-                  className="border-red-600 text-red-600 hover:bg-red-50"
+                  className="border-red-600 text-red-500 hover:bg-red-500/10"
                   onClick={() => setConfirmingDelete(true)}
                 >
                   {t("deleteList")}
@@ -172,7 +172,7 @@ export function ListDetail({
               variant="secondary"
               className="shrink-0"
               onClick={() => clone.mutate({ listId })}
-              disabled={clone.isPending}
+              isLoading={clone.isPending}
             >
               {t("cloneList")}
             </Button>
@@ -191,8 +191,9 @@ export function ListDetail({
                 <button
                   type="button"
                   onClick={() => removeGame.mutate({ listId, gameId: game.id })}
+                  disabled={removeGame.isPending}
                   aria-label={t("removeGame")}
-                  className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background"
+                  className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background disabled:opacity-50"
                 >
                   ×
                 </button>
@@ -246,7 +247,8 @@ export function ListDetail({
                     key={game.id}
                     type="button"
                     onClick={() => addGame.mutate({ listId, gameId: game.id })}
-                    className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                    disabled={addGame.isPending}
+                    className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted disabled:opacity-50"
                   >
                     <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
                       {game.coverUrl ? (

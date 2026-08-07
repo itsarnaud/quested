@@ -57,7 +57,7 @@ export function GameListsSection({ username, canEdit }: { username: string; canE
               className="h-9 rounded-md border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-accent"
             />
             <div className="flex gap-2">
-              <Button type="submit" disabled={!title.trim() || createList.isPending}>
+              <Button type="submit" disabled={!title.trim()} isLoading={createList.isPending}>
                 {t("save")}
               </Button>
               <Button

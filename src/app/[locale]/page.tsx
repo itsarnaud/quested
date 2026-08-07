@@ -10,6 +10,8 @@ import { LikeButton } from "@/components/like-button";
 import { UserBadges } from "@/components/user-badges";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { HomeWidgets } from "@/components/home-widgets";
+import { EmptyState } from "@/components/empty-state";
+import { siteName, siteUrl, siteDescription } from "@/lib/site";
 import type { Game } from "@/generated/prisma/client";
 
 const DISCOVERY_GAMES_LIMIT = 24;
@@ -191,8 +193,32 @@ export default async function Home() {
 async function MarketingHome() {
   const [t, popularGames] = await Promise.all([getTranslations("Home"), getPopularGames()]);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: siteName,
+        url: siteUrl,
+        description: siteDescription,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${siteUrl}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        name: siteName,
+        url: siteUrl,
+        logo: `${siteUrl}/icons/apple-touch-icon.png`,
+      },
+    ],
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1 gap-10 px-6 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="flex min-w-0 flex-1 flex-col gap-12 pt-6">
         <div className="flex flex-col items-center gap-6 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Quested</h1>
@@ -259,7 +285,7 @@ async function Feed({ userId }: { userId: string }) {
         <h2 className="text-lg font-semibold tracking-tight">{t("latestActivity")}</h2>
 
         {activity.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noActivity")}</p>
+          <EmptyState title={t("noActivity")} />
         ) : (
           <div className="grid items-start gap-x-8 gap-y-7 lg:grid-cols-2">
             {activity.map((log) => (
@@ -336,7 +362,7 @@ async function Feed({ userId }: { userId: string }) {
 
   const recommendedContent =
     recommendationSections.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noRecommendations")}</p>
+      <EmptyState title={t("noRecommendations")} />
     ) : (
       <div className="flex flex-col gap-8">
         {recommendationSections.map((section) => (
@@ -354,14 +380,14 @@ async function Feed({ userId }: { userId: string }) {
 
   const topRatedContent =
     topRatedGames.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noTopRated")}</p>
+      <EmptyState title={t("noTopRated")} />
     ) : (
       <GameGrid games={topRatedGames} />
     );
 
   const mostAnticipatedContent =
     mostAnticipatedGames.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noMostAnticipated")}</p>
+      <EmptyState title={t("noMostAnticipated")} />
     ) : (
       <GameGrid games={mostAnticipatedGames} />
     );

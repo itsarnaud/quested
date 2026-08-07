@@ -34,7 +34,7 @@ export function UnlinkButton({
           type="submit"
           variant="secondary"
           className="rounded-full border-red-500/40 text-red-400 hover:bg-red-500/10"
-          disabled={isPending}
+          isLoading={isPending}
         >
           {confirmLabel}
         </Button>

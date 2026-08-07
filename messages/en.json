@@ -85,7 +85,8 @@
   },
   "SearchHistory": {
     "recent": "Recent searches",
-    "clear": "Clear"
+    "clear": "Clear",
+    "remove": "Remove"
   },
   "People": {
     "title": "Find players",
