@@ -84,6 +84,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   setRequestLocale(locale);
 
   const [messages, session, version] = await Promise.all([getMessages(), auth(), getLatestVersion()]);
+  // The proxy redirects any logged-in, not-yet-onboarded user to /onboarding
+  // before they ever reach another page — so hiding chrome here whenever
+  // onboarding is incomplete is equivalent to hiding it just on that route,
+  // without needing to know the current pathname.
+  const isOnboarding = Boolean(session?.user) && !session?.user.onboardedAt;
 
   return (
     <html
@@ -93,16 +98,24 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <body className="flex min-h-full flex-col pb-20 sm:pb-0">
         <NextIntlClientProvider messages={messages}>
           <TRPCProvider>
-            <TopNav
-              isLoggedIn={Boolean(session?.user)}
-              username={session?.user?.username ?? null}
-              userImage={session?.user?.image ?? null}
-              version={version}
-            />
-            <Header />
+            {isOnboarding ? null : (
+              <>
+                <TopNav
+                  isLoggedIn={Boolean(session?.user)}
+                  username={session?.user?.username ?? null}
+                  userImage={session?.user?.image ?? null}
+                  version={version}
+                />
+                <Header />
+              </>
+            )}
             <main className="flex flex-1 flex-col">{children}</main>
-            <Footer />
-            <InstallPrompt />
+            {isOnboarding ? null : (
+              <>
+                <Footer />
+                <InstallPrompt />
+              </>
+            )}
             <Toaster
               theme="dark"
               position="bottom-right"

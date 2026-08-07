@@ -67,6 +67,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Null until the first-login onboarding flow is finished or skipped.
+  // onboardingStep persists progress across the full-page redirect a Steam
+  // link requires, so a returning user resumes instead of restarting.
+  onboardedAt    DateTime?
+  onboardingStep Int       @default(0)
+
   accounts Account[]
   sessions Session[]
   logs     Log[]

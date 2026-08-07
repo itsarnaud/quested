@@ -41,6 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session({ session, user }) {
       session.user.id = user.id;
       session.user.username = user.username ?? null;
+      session.user.onboardedAt = user.onboardedAt ?? null;
       return session;
     },
   },
