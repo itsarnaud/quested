@@ -379,4 +379,22 @@ export const userRouter = createTRPCRouter({
 
     return { success: true };
   }),
+
+  setOnboardingStep: protectedProcedure
+    .input(z.object({ step: z.number().int().min(0).max(3) }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: { onboardingStep: input.step },
+      });
+      return { success: true };
+    }),
+
+  completeOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
+    await ctx.prisma.user.update({
+      where: { id: ctx.session.user.id },
+      data: { onboardedAt: new Date() },
+    });
+    return { success: true };
+  }),
 });

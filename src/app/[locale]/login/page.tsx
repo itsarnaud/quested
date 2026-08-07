@@ -32,7 +32,11 @@ export default async function LoginPage({ params, searchParams }: PageProps) {
     getTranslations("Home"),
     prisma.game.findMany({ orderBy: { logs: { _count: "desc" } }, take: 24 }),
   ]);
-  const searchHref = locale === routing.defaultLocale ? "/search" : `/${locale}/search`;
+  // Always routed through /onboarding first — it immediately bounces
+  // already-onboarded users on to /search, so this adds one cheap server
+  // redirect for returning users in exchange for never missing a new
+  // signup regardless of which page Auth.js would otherwise land on.
+  const onboardingHref = locale === routing.defaultLocale ? "/onboarding" : `/${locale}/onboarding`;
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1 gap-10 px-6 py-10">
@@ -53,7 +57,7 @@ export default async function LoginPage({ params, searchParams }: PageProps) {
             <form
               action={async () => {
                 "use server";
-                await signIn("google", { redirectTo: searchHref });
+                await signIn("google", { redirectTo: onboardingHref });
               }}
             >
               <Button type="submit" variant="secondary" className="w-full gap-2">
@@ -64,7 +68,7 @@ export default async function LoginPage({ params, searchParams }: PageProps) {
             <form
               action={async () => {
                 "use server";
-                await signIn("discord", { redirectTo: searchHref });
+                await signIn("discord", { redirectTo: onboardingHref });
               }}
             >
               <Button type="submit" variant="secondary" className="w-full gap-2">

@@ -28,7 +28,7 @@ const useBeforeUnloadWarning = (active: boolean) => {
   }, [active]);
 };
 
-export function SteamSyncButton() {
+export function SteamSyncButton({ className = "rounded-full" }: { className?: string }) {
   const t = useTranslations("Account");
   const [state, setState] = useState<SyncState>({ status: "idle" });
 
@@ -41,7 +41,11 @@ export function SteamSyncButton() {
   async function runSync() {
     setState({ status: "syncing", phase: "library", done: 0, total: 0 });
 
-    const size = await utils.steam.getLibrarySize.fetch().catch(() => null);
+    // Bypass the query cache's default staleTime: this checks live Steam-side
+    // state (profile visibility, library size) that can change between two
+    // clicks of this button — a cached "private" result must never block a
+    // retry right after the user actually made their profile public.
+    const size = await utils.steam.getLibrarySize.fetch(undefined, { staleTime: 0 }).catch(() => null);
     if (!size) {
       setState({ status: "idle" });
       toast.error(t("genericError"));
@@ -97,7 +101,7 @@ export function SteamSyncButton() {
 
     return (
       <>
-        <Button type="button" variant="secondary" className="rounded-full" isLoading>
+        <Button type="button" variant="secondary" className={className} isLoading>
           {label} · {state.done}/{state.total}
         </Button>
 
@@ -121,7 +125,7 @@ export function SteamSyncButton() {
   }
 
   return (
-    <Button type="button" variant="secondary" className="rounded-full" onClick={runSync}>
+    <Button type="button" variant="secondary" className={className} onClick={runSync}>
       {t("syncSteam")}
     </Button>
   );
