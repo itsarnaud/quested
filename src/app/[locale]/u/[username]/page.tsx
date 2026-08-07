@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { GearIcon } from "@/components/icons/gear-icon";
+import { EmptyState } from "@/components/empty-state";
 import { ReviewRow } from "@/components/review-row";
 import { LikedLogRow } from "@/components/liked-log-row";
 import { DiaryEntries, type DiaryLogEntry } from "@/components/diary-entries";
@@ -22,6 +23,7 @@ import { STATUS_SLUGS } from "@/lib/game-status";
 import { pageAlternates } from "@/lib/alternates";
 import { GameTile } from "@/components/game-tile";
 import { getPlatinumGameIds } from "@/server/games/platinum";
+import { computeRarityScore } from "@/lib/achievement-rarity";
 import { PublicAccountLinks } from "@/app/[locale]/u/[username]/public-account-links";
 import { SteamLinkBanner } from "@/app/[locale]/u/[username]/steam-link-banner";
 import { SteamLinkedBanner } from "@/app/[locale]/u/[username]/steam-linked-banner";
@@ -112,6 +114,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
     pinnedAchievementRows,
     latestUserAchievement,
     platinumGameIds,
+    unlockedAchievementPercents,
   ] = await Promise.all([
     prisma.like.findMany({
       where: { userId: user.id },
@@ -147,7 +150,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       user.id,
       user.logs.map((log) => log.gameId),
     ),
+    prisma.userAchievement.findMany({
+      where: { userId: user.id },
+      select: { achievement: { select: { globalUnlockedPercent: true } } },
+    }),
   ]);
+  const rarityScore = computeRarityScore(unlockedAchievementPercents.map((ua) => ua.achievement.globalUnlockedPercent));
   const pinnedAchievements = pinnedAchievementRows.map((p) => ({
     id: p.achievement.id,
     displayName: p.achievement.displayName,
@@ -233,7 +241,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const gamesContent =
     logsByStatus.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noGames")}</p>
+      <EmptyState title={t("noGames")} subtitle={t("noGamesSubtitle")} />
     ) : (
       <div className="flex flex-col gap-8">
         {logsByStatus.map((group) => (
@@ -261,7 +269,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const reviewsContent =
     reviews.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noReviews")}</p>
+      <EmptyState title={t("noReviews")} subtitle={t("noReviewsSubtitle")} />
     ) : (
       <div className="flex flex-col gap-4">
         <div className="flex flex-col divide-y divide-border">
@@ -318,7 +326,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const diaryContent =
     diaryLogs.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noDiaryEntries")}</p>
+      <EmptyState title={t("noDiaryEntries")} subtitle={t("noDiaryEntriesSubtitle")} />
     ) : (
       <div className="flex flex-col gap-4">
         <DiaryEntries logs={diaryLogs} locale={locale} statusLabel={tStatus} />
@@ -332,7 +340,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const likesContent =
     likedByUser.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noLikes")}</p>
+      <EmptyState title={t("noLikes")} subtitle={t("noLikesSubtitle")} />
     ) : (
       <div className="flex flex-col gap-4">
         <div className="flex flex-col divide-y divide-border">
@@ -442,6 +450,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           averageRating={personalAverageRating}
           unlockedAchievementsCount={unlockedAchievementsCount}
           totalAchievementsForTrackedGames={totalAchievementsForTrackedGames}
+          rarityScore={rarityScore}
           statusCounts={{
             COMPLETED: completedCount,
             PLAYING: playingCount,

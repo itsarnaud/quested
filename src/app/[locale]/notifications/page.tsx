@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/i18n/navigation";
 import { PushNotificationBanner } from "@/components/push-notification-banner";
+import { EmptyState } from "@/components/empty-state";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 
 type PageProps = {
@@ -51,7 +52,7 @@ export default async function NotificationsPage({ params }: PageProps) {
       <PushNotificationBanner />
 
       {notifications.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <EmptyState title={t("empty")} subtitle={t("emptySubtitle")} />
       ) : (
         <div className="flex flex-col divide-y divide-border">
           {notifications.map((n) => (

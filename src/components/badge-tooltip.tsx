@@ -3,7 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-export function BadgeTooltip({ label, children }: { label: string; children: React.ReactNode }) {
+export function BadgeTooltip({
+  label,
+  children,
+  wrap = false,
+}: {
+  label: string;
+  children: React.ReactNode;
+  wrap?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -33,7 +41,8 @@ export function BadgeTooltip({ label, children }: { label: string; children: Rea
       <span
         role="tooltip"
         className={cn(
-          "pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background opacity-0 transition-opacity",
+          "pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 rounded bg-foreground px-2 py-1 text-xs normal-case text-background opacity-0 transition-opacity",
+          wrap ? "w-48 text-pretty" : "whitespace-nowrap",
           "group-hover:opacity-100 group-focus-visible:opacity-100",
           open && "opacity-100",
         )}

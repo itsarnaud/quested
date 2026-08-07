@@ -7,6 +7,7 @@ import { GameCard } from "@/components/game-card";
 import { SearchHistoryDropdown } from "@/components/search-history-dropdown";
 import { SearchIcon } from "@/components/icons/search-icon";
 import { useSearchHistory } from "@/lib/use-search-history";
+import { EmptyState } from "@/components/empty-state";
 
 export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
   const t = useTranslations("Search");
@@ -139,7 +140,7 @@ export function SearchView({ initialQuery = "" }: { initialQuery?: string }) {
       ) : null}
 
       {isSearching && !isFetching && displayedGames && displayedGames.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noResults")}</p>
+        <EmptyState title={t("noResults")} subtitle={t("noResultsSubtitle")} />
       ) : null}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">

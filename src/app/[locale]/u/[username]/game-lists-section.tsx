@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/empty-state";
 
 export function GameListsSection({ username, canEdit }: { username: string; canEdit: boolean }) {
   const t = useTranslations("Lists");
@@ -114,7 +115,7 @@ export function GameListsSection({ username, canEdit }: { username: string; canE
           ))}
         </div>
       ) : !creating ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <EmptyState title={t("empty")} subtitle={t("emptySubtitle")} />
       ) : null}
     </div>
   );

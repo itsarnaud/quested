@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Pagination } from "@/components/pagination";
 import { DiaryEntries, type DiaryLogEntry } from "@/components/diary-entries";
+import { EmptyState } from "@/components/empty-state";
 import { pageAlternates } from "@/lib/alternates";
 
 const PAGE_SIZE = 20;
@@ -146,7 +147,7 @@ export default async function DiaryPage({ params, searchParams }: PageProps) {
       ) : null}
 
       {logs.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noDiaryEntries")}</p>
+        <EmptyState title={t("noDiaryEntries")} subtitle={t("noDiaryEntriesSubtitle")} />
       ) : (
         <DiaryEntries logs={logs} locale={locale} statusLabel={tStatus} />
       )}
