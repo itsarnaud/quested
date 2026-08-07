@@ -17,6 +17,14 @@ function entry(path: string, rest: Omit<MetadataRoute.Sitemap[number], "url" | "
   return { url: localizedUrls(path)[routing.defaultLocale], alternates: { languages: localizedUrls(path) }, ...rest };
 }
 
+// The sitemap protocol's W3C-DTF profile only defines second precision —
+// Date's default toISOString() includes milliseconds, which some sitemap
+// parsers (reportedly including Google's) reject as non-conformant even
+// though the file is still well-formed XML.
+function toSitemapDate(date: Date): string {
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
 // Regenerate at most once an hour instead of hitting Postgres on every
 // crawler request — cheaper, and removes a possible source of intermittent
 // failures (e.g. a cold start or connection-limit hiccup on the DB) right
@@ -43,14 +51,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/search", { changeFrequency: "weekly", priority: 0.8 }),
     ...games.map((game) =>
       entry(`/games/${game.slug}`, {
-        lastModified: game.updatedAt,
+        lastModified: toSitemapDate(game.updatedAt),
         changeFrequency: "weekly",
         priority: 0.6,
       }),
     ),
     ...users.map((user) =>
       entry(`/u/${user.username}`, {
-        lastModified: user.updatedAt,
+        lastModified: toSitemapDate(user.updatedAt),
         changeFrequency: "weekly",
         priority: 0.5,
       }),
