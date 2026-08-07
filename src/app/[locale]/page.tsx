@@ -10,6 +10,7 @@ import { LikeButton } from "@/components/like-button";
 import { UserBadges } from "@/components/user-badges";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { HomeWidgets } from "@/components/home-widgets";
+import { EmptyState } from "@/components/empty-state";
 import { siteName, siteUrl, siteDescription } from "@/lib/site";
 import type { Game } from "@/generated/prisma/client";
 
@@ -284,7 +285,7 @@ async function Feed({ userId }: { userId: string }) {
         <h2 className="text-lg font-semibold tracking-tight">{t("latestActivity")}</h2>
 
         {activity.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noActivity")}</p>
+          <EmptyState title={t("noActivity")} />
         ) : (
           <div className="grid items-start gap-x-8 gap-y-7 lg:grid-cols-2">
             {activity.map((log) => (
@@ -361,7 +362,7 @@ async function Feed({ userId }: { userId: string }) {
 
   const recommendedContent =
     recommendationSections.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noRecommendations")}</p>
+      <EmptyState title={t("noRecommendations")} />
     ) : (
       <div className="flex flex-col gap-8">
         {recommendationSections.map((section) => (
@@ -379,14 +380,14 @@ async function Feed({ userId }: { userId: string }) {
 
   const topRatedContent =
     topRatedGames.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noTopRated")}</p>
+      <EmptyState title={t("noTopRated")} />
     ) : (
       <GameGrid games={topRatedGames} />
     );
 
   const mostAnticipatedContent =
     mostAnticipatedGames.length === 0 ? (
-      <p className="text-sm text-muted-foreground">{t("noMostAnticipated")}</p>
+      <EmptyState title={t("noMostAnticipated")} />
     ) : (
       <GameGrid games={mostAnticipatedGames} />
     );

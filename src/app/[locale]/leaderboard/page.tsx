@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { BackLink } from "@/components/back-link";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { LeaderboardRow, type LeaderboardEntry } from "@/components/leaderboard-row";
+import { EmptyState } from "@/components/empty-state";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -43,7 +44,7 @@ export default async function LeaderboardPage({ params }: PageProps) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-10">
         <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("noFollows")}</p>
+        <EmptyState title={t("noFollows")} />
       </div>
     );
   }
@@ -126,7 +127,7 @@ export default async function LeaderboardPage({ params }: PageProps) {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">{t("notEnoughRatings", { count: MIN_RATED_FOR_AVERAGE })}</p>
+            <EmptyState title={t("notEnoughRatings", { count: MIN_RATED_FOR_AVERAGE })} />
           )}
         </TabPanel>
         <TabPanel tabKey="reviews" label={t("reviewsTitle")}>
