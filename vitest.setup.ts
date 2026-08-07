@@ -8,4 +8,5 @@ vi.mock("@/lib/redis", () => ({
   searchRatelimit: { limit: async () => ({ success: true }) },
   standardRatelimit: { limit: async () => ({ success: true }) },
   steamSyncRatelimit: { limit: async () => ({ success: true }) },
+  psnSyncRatelimit: { limit: async () => ({ success: true }) },
 }));

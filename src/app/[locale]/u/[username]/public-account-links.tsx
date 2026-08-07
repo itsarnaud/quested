@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
+import { PsnIcon } from "@/components/icons/psn-icon";
 import { LinkIcon } from "@/components/icons/link-icon";
 import { XIcon } from "@/components/icons/x-icon";
 import { TwitchIcon } from "@/components/icons/twitch-icon";
@@ -12,6 +13,7 @@ import { YoutubeIcon } from "@/components/icons/youtube-icon";
 export function PublicAccountLinks({
   steamId,
   discordUsername,
+  psnUsername,
   website,
   twitterUrl,
   twitchUrl,
@@ -19,6 +21,7 @@ export function PublicAccountLinks({
 }: {
   steamId?: string;
   discordUsername?: string;
+  psnUsername?: string;
   website?: string | null;
   twitterUrl?: string | null;
   twitchUrl?: string | null;
@@ -26,7 +29,9 @@ export function PublicAccountLinks({
 }) {
   const t = useTranslations("Profile");
 
-  if (!steamId && !discordUsername && !website && !twitterUrl && !twitchUrl && !youtubeUrl) return null;
+  if (!steamId && !discordUsername && !psnUsername && !website && !twitterUrl && !twitchUrl && !youtubeUrl) {
+    return null;
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -96,6 +101,19 @@ export function PublicAccountLinks({
           className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
         >
           <DiscordIcon />
+        </button>
+      ) : null}
+      {psnUsername ? (
+        <button
+          type="button"
+          title={psnUsername}
+          onClick={() => {
+            navigator.clipboard.writeText(psnUsername);
+            toast.success(t("psnCopied"));
+          }}
+          className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <PsnIcon />
         </button>
       ) : null}
     </div>

@@ -214,6 +214,7 @@
     "topGenreCount": "{count, plural, one {# jeu} other {# jeux}}",
     "latestAchievementLabel": "Dernier succès débloqué",
     "discordCopied": "Copié !",
+    "psnCopied": "Copié !",
     "recentlyPlayedTitle": "Joués récemment",
     "statsCompleted": "Terminés",
     "statsPlaying": "En cours",
@@ -404,7 +405,18 @@
     "steamRedirecting": "Redirection vers Steam…",
     "steamRedirectingWarning": "Ne ferme pas ou ne quitte pas cette page, sinon la connexion risque d'être interrompue.",
     "steamSyncWarning": "Ne ferme pas et ne quitte pas cette page pendant la synchronisation, sinon elle s'arrêtera en cours de route.",
-    "steamLinkedBanner": "Compte Steam lié ! Synchronise ta bibliothèque et tes succès pour les voir apparaître ici."
+    "steamLinkedBanner": "Compte Steam lié ! Synchronise ta bibliothèque et tes succès pour les voir apparaître ici.",
+    "linkPsn": "Lier mon compte PSN",
+    "psnUsernamePlaceholder": "Ton pseudo PSN",
+    "psnNotFound": "Profil PSN introuvable. Vérifie l'orthographe du pseudo.",
+    "psnAlreadyLinked": "Ce compte PSN est déjà lié à un autre compte Quested.",
+    "syncPsn": "Synchroniser PSN",
+    "syncPsnComplete": "{games} jeux et {achievements} trophées synchronisés.",
+    "psnProfilePrivate": "Impossible de lire ta bibliothèque PSN. Vérifie que ton profil et tes trophées sont publics dans les réglages PlayStation.",
+    "psnPreviewStats": "{games} jeux · {trophies} trophées",
+    "psnConfirmPrompt": "C'est bien toi ?",
+    "psnConfirmYes": "Oui, c'est moi",
+    "psnConfirmNo": "Non"
   },
   "Legal": {
     "mentionsTitle": "Mentions légales",
@@ -427,7 +439,7 @@
     "privacySections": [
       {
         "heading": "Données collectées",
-        "body": "Lors de la connexion via Google ou Discord : ton nom, ton adresse email et ta photo de profil.\nLors de l'utilisation du site : les jeux que tu ajoutes à ta bibliothèque, leur statut, ta note et tes notes personnelles."
+        "body": "Lors de la connexion via Google ou Discord : ton nom, ton adresse email et ta photo de profil.\nSi tu lies ton compte Steam : ton identifiant Steam public, ta bibliothèque de jeux, ton temps de jeu et tes succès débloqués, via l'API publique Steam. Quested n'a jamais accès à ton mot de passe.\nSi tu lies ton compte PlayStation Network en indiquant ton pseudo public : ton identifiant de compte PSN, ta bibliothèque de jeux et tes trophées, récupérés via un compte de service dédié à Quested. Tu n'as jamais besoin de saisir tes identifiants PlayStation, et Quested ne les connaît pas.\nLors de l'utilisation du site : les jeux que tu ajoutes à ta bibliothèque, leur statut, ta note et tes notes personnelles."
       },
       {
         "heading": "Finalité",
@@ -435,7 +447,7 @@
       },
       {
         "heading": "Destinataires des données",
-        "body": "Google ou Discord (authentification), Neon (hébergement de la base de données, Union Européenne), Vercel (hébergement du site). IGDB et RAWG sont utilisés pour rechercher des jeux mais ne reçoivent jamais tes données personnelles, uniquement les termes recherchés."
+        "body": "Google ou Discord (authentification), Steam et PlayStation Network (si tu lies ces comptes), Neon (hébergement de la base de données, Union Européenne), Vercel (hébergement du site). IGDB et RAWG sont utilisés pour rechercher des jeux mais ne reçoivent jamais tes données personnelles, uniquement les termes recherchés."
       },
       {
         "heading": "Durée de conservation",

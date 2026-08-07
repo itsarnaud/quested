@@ -37,6 +37,7 @@
     "next-intl": "^4.13.4",
     "nodemailer": "^8.0.11",
     "prisma": "^7.9.1",
+    "psn-api": "^2.18.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "sharp": "^0.35.3",

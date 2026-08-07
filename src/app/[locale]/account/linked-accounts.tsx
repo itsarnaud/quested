@@ -6,14 +6,18 @@ import { Button } from "@/components/ui/button";
 import { GoogleIcon } from "@/components/icons/google-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
 import { SteamIcon } from "@/components/icons/steam-icon";
+import { PsnIcon } from "@/components/icons/psn-icon";
 import { UnlinkButton } from "@/app/[locale]/account/unlink-button";
 import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
 import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
+import { PsnSyncButton } from "@/app/[locale]/account/psn-sync-button";
+import { PsnLinkForm } from "@/app/[locale]/account/psn-link-form";
 
 const PROVIDERS = [
   { id: "google", name: "Google", labelKey: "linkGoogle", Icon: GoogleIcon } as const,
   { id: "discord", name: "Discord", labelKey: "linkDiscord", Icon: DiscordIcon } as const,
   { id: "steam", name: "Steam", labelKey: "linkSteam", Icon: SteamIcon } as const,
+  { id: "psn", name: "PlayStation Network", labelKey: "linkPsn", Icon: PsnIcon } as const,
 ];
 
 export async function LinkedAccounts({ userId }: { userId: string }) {
@@ -73,6 +77,7 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
               {isLinked ? (
                 <div className="flex items-center gap-2">
                   {id === "steam" ? <SteamSyncButton /> : null}
+                  {id === "psn" ? <PsnSyncButton /> : null}
                   {accountsByProvider.size > 1 ? (
                     <UnlinkButton
                       label={t("unlink")}
@@ -87,6 +92,8 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                   label={t(labelKey)}
                   rounded
                 />
+              ) : id === "psn" ? (
+                <PsnLinkForm />
               ) : (
                 <form
                   action={async () => {

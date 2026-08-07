@@ -1,3 +1,6 @@
 {
-  "crons": [{ "path": "/api/cron/game-releases", "schedule": "0 8 * * *" }]
+  "crons": [
+    { "path": "/api/cron/game-releases", "schedule": "0 8 * * *" },
+    { "path": "/api/cron/psn-token-check", "schedule": "0 9 * * 1" }
+  ]
 }
