@@ -77,8 +77,9 @@ export function FavoriteGamesSection({
                 <button
                   type="button"
                   onClick={() => remove(game.id)}
+                  disabled={setFavorites.isPending}
                   aria-label={t("favoritesRemove")}
-                  className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background"
+                  className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background disabled:opacity-50"
                 >
                   ×
                 </button>
@@ -138,7 +139,8 @@ export function FavoriteGamesSection({
                   key={log.gameId}
                   type="button"
                   onClick={() => pick(log.gameId)}
-                  className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                  disabled={setFavorites.isPending}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted disabled:opacity-50"
                 >
                   <div className="relative h-10 w-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
                     {log.game.coverUrl ? (

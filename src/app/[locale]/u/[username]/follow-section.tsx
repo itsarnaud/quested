@@ -47,7 +47,7 @@ export function FollowSection({
           <Button
             variant={data?.isFollowing ? "secondary" : "primary"}
             onClick={() => toggle.mutate({ username })}
-            disabled={toggle.isPending}
+            isLoading={toggle.isPending}
           >
             {data?.isFollowing ? t("unfollow") : t("follow")}
           </Button>

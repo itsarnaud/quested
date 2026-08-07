@@ -97,7 +97,7 @@ export function SteamSyncButton() {
 
     return (
       <>
-        <Button type="button" variant="secondary" className="rounded-full" disabled>
+        <Button type="button" variant="secondary" className="rounded-full" isLoading>
           {label} · {state.done}/{state.total}
         </Button>
 

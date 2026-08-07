@@ -72,7 +72,7 @@ export function PersonRow({
           variant={user.isFollowing ? "secondary" : "primary"}
           className="shrink-0 rounded-full"
           onClick={onToggleFollow}
-          disabled={isTogglePending}
+          isLoading={isTogglePending}
         >
           {user.isFollowing ? tFollow("followingLabel") : tFollow("follow")}
         </Button>

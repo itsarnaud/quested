@@ -79,8 +79,9 @@ export function PinnedAchievementsSection({
                 <button
                   type="button"
                   onClick={() => remove(achievement.id)}
+                  disabled={setPinned.isPending}
                   aria-label={t("pinnedRemove")}
-                  className="absolute right-0.5 top-0.5 flex size-4 items-center justify-center rounded-full bg-background/80 text-[10px] leading-none text-foreground hover:bg-background"
+                  className="absolute right-0.5 top-0.5 flex size-4 items-center justify-center rounded-full bg-background/80 text-[10px] leading-none text-foreground hover:bg-background disabled:opacity-50"
                 >
                   ×
                 </button>
@@ -139,7 +140,8 @@ export function PinnedAchievementsSection({
                   key={achievement.id}
                   type="button"
                   onClick={() => pick(achievement.id)}
-                  className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                  disabled={setPinned.isPending}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted disabled:opacity-50"
                 >
                   <div className="relative size-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
                     <Image src={achievement.iconUrl} alt="" fill unoptimized className="object-cover" />

@@ -95,7 +95,7 @@ export function ProfileEditForm({
           type="button"
           variant="secondary"
           onClick={() => fileInputRef.current?.click()}
-          disabled={avatarUploading}
+          isLoading={avatarUploading}
         >
           {t("avatarButton")}
         </Button>
@@ -208,7 +208,7 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        <Button type="submit" className="w-fit" disabled={updateProfile.isPending}>
+        <Button type="submit" className="w-fit" isLoading={updateProfile.isPending}>
           {t("saveButton")}
         </Button>
       </form>

@@ -67,13 +67,13 @@ describe("toCoverUrl", () => {
 });
 
 describe("toArtworkUrl", () => {
-  it("uses the first artwork, upgraded to 1080p", () => {
+  it("uses the first artwork, upgraded to 720p", () => {
     expect(
       toArtworkUrl([
         { url: "//images.igdb.com/igdb/image/upload/t_thumb/one.jpg" },
         { url: "//images.igdb.com/igdb/image/upload/t_thumb/two.jpg" },
       ]),
-    ).toBe("https://images.igdb.com/igdb/image/upload/t_1080p/one.jpg");
+    ).toBe("https://images.igdb.com/igdb/image/upload/t_720p/one.jpg");
   });
 
   it("returns null when there are no artworks", () => {

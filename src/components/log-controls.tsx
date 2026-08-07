@@ -81,8 +81,9 @@ export function LogControls({ gameId, isUnreleased = false }: { gameId: string; 
           <button
             key={status}
             onClick={() => handleStatusClick(status)}
+            disabled={upsert.isPending || del.isPending}
             className={cn(
-              "h-9 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-muted",
+              "h-9 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50",
               effectiveLog?.status === status && "border-accent bg-accent text-accent-foreground hover:opacity-90",
             )}
           >
@@ -188,7 +189,7 @@ function RatingAndNotes({
             type="button"
             variant="secondary"
             className="w-fit"
-            disabled={isPending}
+            isLoading={isPending}
             onClick={() => onSave({ notes }, true)}
           >
             {tRating("save")}
