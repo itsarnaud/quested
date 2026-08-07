@@ -91,8 +91,10 @@ export function toArtworkUrl(artworks?: { url: string }[]): string | null {
   const artwork = artworks?.[0];
   if (!artwork?.url) return null;
   // Artworks are wide marketing images (unlike the portrait cover) — used
-  // full-bleed on the homepage hero, so use IGDB's largest non-original size.
-  return `https:${artwork.url.replace("t_thumb", "t_1080p")}`;
+  // full-bleed on the homepage hero. t_720p is still sharp at that display
+  // size and meaningfully lighter than t_1080p (mobile never renders it
+  // anywhere near 1080p wide).
+  return `https:${artwork.url.replace("t_thumb", "t_720p")}`;
 }
 
 const EXTERNAL_GAMES_BATCH_SIZE = 50;

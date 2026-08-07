@@ -8,7 +8,11 @@
   --muted-foreground: #8b8b93;
   --border: #232326;
   --card: #17171a;
-  --accent: #7170ff;
+  /* Darkened from the original #7170ff design value: with white
+     (--accent-foreground) text/icons on top, #7170ff only hit a 3.84:1
+     contrast ratio (WCAG AA needs 4.5:1 for normal text). This shade keeps
+     the same hue and reaches ~5.1:1. */
+  --accent: #605fd8;
   --accent-foreground: #ffffff;
 }
 

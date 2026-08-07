@@ -85,7 +85,8 @@
   },
   "SearchHistory": {
     "recent": "Recherches récentes",
-    "clear": "Effacer"
+    "clear": "Effacer",
+    "remove": "Supprimer"
   },
   "People": {
     "title": "Trouver des joueurs",

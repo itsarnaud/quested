@@ -10,6 +10,7 @@ import { LikeButton } from "@/components/like-button";
 import { UserBadges } from "@/components/user-badges";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { HomeWidgets } from "@/components/home-widgets";
+import { siteName, siteUrl, siteDescription } from "@/lib/site";
 import type { Game } from "@/generated/prisma/client";
 
 const DISCOVERY_GAMES_LIMIT = 24;
@@ -191,8 +192,32 @@ export default async function Home() {
 async function MarketingHome() {
   const [t, popularGames] = await Promise.all([getTranslations("Home"), getPopularGames()]);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: siteName,
+        url: siteUrl,
+        description: siteDescription,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${siteUrl}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        name: siteName,
+        url: siteUrl,
+        logo: `${siteUrl}/icons/apple-touch-icon.png`,
+      },
+    ],
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1 gap-10 px-6 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="flex min-w-0 flex-1 flex-col gap-12 pt-6">
         <div className="flex flex-col items-center gap-6 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Quested</h1>
