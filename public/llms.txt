@@ -1,0 +1,20 @@
+# Quested
+
+> Quested is a free, ad-free, open-source video game tracker — the Letterboxd of video games. Users log the games they play, rate them, write reviews, follow other players, build lists, and sync their Steam library and achievements automatically.
+
+## About
+
+- Free, no ads, and fully open source: [github.com/itsarnaud/quested](https://github.com/itsarnaud/quested).
+- Built and maintained by Arnaud Royer, a French fullstack developer, as a personal side project.
+- Available in French (default, no URL prefix) and English (under /en).
+- More: [https://quested.cc/a-propos](https://quested.cc/a-propos)
+
+## Key pages
+
+- [https://quested.cc/search](https://quested.cc/search) — browse and search the game catalog.
+- [https://quested.cc/changelog](https://quested.cc/changelog) — release notes for every version.
+
+## Notes
+
+- Quested has no public API; the pages above reflect the live site's real data.
+- Individual game pages live at https://quested.cc/games/{slug} and user profiles at https://quested.cc/u/{username}.
