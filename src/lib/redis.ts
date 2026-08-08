@@ -30,3 +30,13 @@ export const steamSyncRatelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(20, "1 m"),
   prefix: "ratelimit:steam-sync",
 });
+
+// Same shape as steamSyncRatelimit but its own bucket — PSN sync calls go
+// through one shared app-level service token (see PsnServiceToken), so this
+// also indirectly protects that single account from being hammered by many
+// users syncing at once, not just this app's own DB/IGDB load.
+export const psnSyncRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  prefix: "ratelimit:psn-sync",
+});

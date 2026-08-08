@@ -214,6 +214,7 @@
     "topGenreCount": "{count, plural, one {# game} other {# games}}",
     "latestAchievementLabel": "Latest unlocked achievement",
     "discordCopied": "Copied!",
+    "psnCopied": "Copied!",
     "recentlyPlayedTitle": "Recently played",
     "statsCompleted": "Completed",
     "statsPlaying": "Playing",
@@ -404,7 +405,18 @@
     "steamRedirecting": "Redirecting to Steam…",
     "steamRedirectingWarning": "Don't close or leave this page, or the connection might get interrupted.",
     "steamSyncWarning": "Don't close or leave this page while syncing, or it will stop partway through.",
-    "steamLinkedBanner": "Steam account linked! Sync your library and achievements to see them show up here."
+    "steamLinkedBanner": "Steam account linked! Sync your library and achievements to see them show up here.",
+    "linkPsn": "Link my PSN account",
+    "psnUsernamePlaceholder": "Your PSN username",
+    "psnNotFound": "Couldn't find that PSN profile. Check the spelling of the username.",
+    "psnAlreadyLinked": "This PSN account is already linked to another Quested account.",
+    "syncPsn": "Sync PSN",
+    "syncPsnComplete": "{games} games and {achievements} trophies synced.",
+    "psnProfilePrivate": "Couldn't read your PSN library. Make sure your profile and trophies are public in your PlayStation settings.",
+    "psnPreviewStats": "{games} games · {trophies} trophies",
+    "psnConfirmPrompt": "Is this you?",
+    "psnConfirmYes": "Yes, that's me",
+    "psnConfirmNo": "No"
   },
   "Legal": {
     "mentionsTitle": "Legal notice",
@@ -427,7 +439,7 @@
     "privacySections": [
       {
         "heading": "Data collected",
-        "body": "When signing in with Google or Discord: your name, email address and profile picture.\nWhen using the site: the games you add to your library, their status, your rating and your personal notes."
+        "body": "When signing in with Google or Discord: your name, email address and profile picture.\nIf you link your Steam account: your public Steam ID, your game library, playtime and unlocked achievements, via the public Steam API. Quested never has access to your password.\nIf you link your PlayStation Network account by entering your public username: your PSN account ID, your game library and trophies, fetched through a service account dedicated to Quested. You never need to enter your PlayStation credentials, and Quested never sees them.\nWhen using the site: the games you add to your library, their status, your rating and your personal notes."
       },
       {
         "heading": "Purpose",
@@ -435,7 +447,7 @@
       },
       {
         "heading": "Who receives this data",
-        "body": "Google or Discord (authentication), Neon (database hosting, European Union), Vercel (site hosting). IGDB and RAWG are used to search for games but never receive your personal data, only the search terms."
+        "body": "Google or Discord (authentication), Steam and PlayStation Network (if you link those accounts), Neon (database hosting, European Union), Vercel (site hosting). IGDB and RAWG are used to search for games but never receive your personal data, only the search terms."
       },
       {
         "heading": "Retention period",

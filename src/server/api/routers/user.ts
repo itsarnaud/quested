@@ -180,17 +180,23 @@ export const userRouter = createTRPCRouter({
   getPrivacyPreferences: protectedProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findUniqueOrThrow({
       where: { id: ctx.session.user.id },
-      select: { showSteamOnProfile: true, showDiscordOnProfile: true },
+      select: { showSteamOnProfile: true, showDiscordOnProfile: true, showPsnOnProfile: true },
     });
   }),
 
   updatePrivacyPreferences: protectedProcedure
-    .input(z.object({ showSteamOnProfile: z.boolean(), showDiscordOnProfile: z.boolean() }))
+    .input(
+      z.object({
+        showSteamOnProfile: z.boolean(),
+        showDiscordOnProfile: z.boolean(),
+        showPsnOnProfile: z.boolean(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
         data: input,
-        select: { showSteamOnProfile: true, showDiscordOnProfile: true },
+        select: { showSteamOnProfile: true, showDiscordOnProfile: true, showPsnOnProfile: true },
       });
     }),
 
@@ -338,6 +344,13 @@ export const userRouter = createTRPCRouter({
         logs: {
           include: { game: { select: { title: true, slug: true, releaseYear: true } } },
         },
+        // Only the public-facing identity per provider — never the
+        // access/refresh tokens (Account.access_token etc.), which are
+        // secrets and have no reason to leave the database, even in an
+        // export the user requested themselves.
+        accounts: {
+          select: { provider: true, providerAccountId: true, providerLabel: true },
+        },
       },
     });
 
@@ -348,6 +361,11 @@ export const userRouter = createTRPCRouter({
       email: user.email,
       image: user.image,
       createdAt: user.createdAt,
+      linkedAccounts: user.accounts.map((account) => ({
+        provider: account.provider,
+        label: account.providerLabel,
+        accountId: account.providerAccountId,
+      })),
       logs: user.logs.map((log) => ({
         game: log.game.title,
         slug: log.game.slug,

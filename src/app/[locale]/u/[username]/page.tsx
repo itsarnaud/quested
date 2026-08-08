@@ -45,7 +45,7 @@ const getUserProfile = cache((username: string) =>
         orderBy: { position: "asc" },
       },
       accounts: {
-        where: { provider: { in: ["steam", "discord"] } },
+        where: { provider: { in: ["steam", "discord", "psn"] } },
         select: { provider: true, providerAccountId: true, providerLabel: true },
       },
     },
@@ -223,8 +223,10 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const steamAccount = user.accounts.find((a) => a.provider === "steam");
   const discordAccount = user.accounts.find((a) => a.provider === "discord");
+  const psnAccount = user.accounts.find((a) => a.provider === "psn");
   const publicSteamId = user.showSteamOnProfile ? steamAccount?.providerAccountId : undefined;
   const publicDiscordUsername = user.showDiscordOnProfile ? (discordAccount?.providerLabel ?? undefined) : undefined;
+  const publicPsnUsername = user.showPsnOnProfile ? (psnAccount?.providerLabel ?? undefined) : undefined;
 
   const recentlyPlayed = [...user.logs]
     .filter((log) => log.status === "COMPLETED")
@@ -426,6 +428,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
               <PublicAccountLinks
                 steamId={publicSteamId}
                 discordUsername={publicDiscordUsername}
+                psnUsername={publicPsnUsername}
                 website={user.website}
                 twitterUrl={user.twitterUrl}
                 twitchUrl={user.twitchUrl}

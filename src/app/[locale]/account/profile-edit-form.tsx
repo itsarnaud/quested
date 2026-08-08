@@ -11,6 +11,7 @@ import { uploadAvatar } from "@/app/[locale]/account/actions";
 import { PublicVisibilityToggle } from "@/app/[locale]/account/public-visibility-toggle";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
+import { PsnIcon } from "@/components/icons/psn-icon";
 
 type Profile = {
   name: string | null;
@@ -27,10 +28,12 @@ export function ProfileEditForm({
   initialProfile,
   hasSteamLinked,
   hasDiscordLinked,
+  hasPsnLinked,
 }: {
   initialProfile: Profile;
   hasSteamLinked: boolean;
   hasDiscordLinked: boolean;
+  hasPsnLinked: boolean;
 }) {
   const t = useTranslations("Account");
   const router = useRouter();
@@ -213,7 +216,7 @@ export function ProfileEditForm({
         </Button>
       </form>
 
-      {hasSteamLinked || hasDiscordLinked ? (
+      {hasSteamLinked || hasDiscordLinked || hasPsnLinked ? (
         <div className="flex flex-col gap-3 border-t border-border pt-4">
           <h3 className="text-sm font-medium">{t("publicAccountsTitle")}</h3>
 
@@ -234,6 +237,16 @@ export function ProfileEditForm({
                 Discord
               </div>
               <PublicVisibilityToggle provider="discord" />
+            </div>
+          ) : null}
+
+          {hasPsnLinked ? (
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <PsnIcon />
+                PSN
+              </div>
+              <PublicVisibilityToggle provider="psn" />
             </div>
           ) : null}
         </div>
