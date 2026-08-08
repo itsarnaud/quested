@@ -267,7 +267,10 @@
     "you": "(you)",
     "findMember": "Find a member",
     "reviewsTitle": "Reviews posted",
-    "reviewsPublished": "{count, plural, one {# review} other {# reviews}}"
+    "reviewsPublished": "{count, plural, one {# review} other {# reviews}}",
+    "rarityTitle": "Rarity score",
+    "rarityPoints": "{score} pts",
+    "noRarityScore": "No achievements imported yet."
   },
   "Follow": {
     "follow": "Follow",

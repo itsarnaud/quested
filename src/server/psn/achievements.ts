@@ -29,6 +29,7 @@ export async function syncTrophiesForTitle(
           description: t.trophyDetail ?? null,
           iconUrl: t.trophyIconUrl ?? "",
           iconGrayUrl: t.trophyIconUrl ?? "",
+          isPlatinum: t.trophyType === "platinum",
         })),
         skipDuplicates: true,
       });
@@ -71,6 +72,23 @@ export async function syncTrophiesForTitle(
     unlocked++;
   }
 
+  // A Platinum unlock is an unambiguous "done" signal, even when the
+  // trophy list isn't 100% complete (Sony can add trophies post-launch —
+  // see Achievement.isPlatinum) — so it overrides whatever status the
+  // library sync guessed at import time, or whatever the user set.
+  const platinumAchievement = achievements.find((a) => a.isPlatinum);
+  if (platinumAchievement) {
+    const platinumUnlocked = earnedTrophies.some(
+      (t) => t.earned && String(t.trophyId) === platinumAchievement.apiName,
+    );
+    if (platinumUnlocked) {
+      await prisma.log.updateMany({
+        where: { userId, gameId, status: { not: "COMPLETED" } },
+        data: { status: "COMPLETED" },
+      });
+    }
+  }
+
   return unlocked;
 }
 
@@ -88,12 +106,26 @@ export async function syncPsnAchievementsPage(userId: string, accountId: string,
   const total = linkedGames.length;
   const page = linkedGames.slice(offset, offset + limit);
 
+  // Parallelized within the page rather than one game at a time — each game
+  // is 1-2 PSN API round trips, and syncing them sequentially was the main
+  // reason a big library took a long time to fully sync. allSettled (not
+  // all) so one game's transient failure doesn't lose the rest of the page.
+  const results = await Promise.allSettled(
+    page.map(({ game }) => {
+      const sourceId = game.externalIds[0]?.sourceId;
+      if (!sourceId) return Promise.resolve(0);
+      const title = parsePsnSourceId(sourceId);
+      return syncTrophiesForTitle(userId, accountId, game.id, title);
+    }),
+  );
+
   let achievementsUnlocked = 0;
-  for (const { game } of page) {
-    const sourceId = game.externalIds[0]?.sourceId;
-    if (!sourceId) continue;
-    const title = parsePsnSourceId(sourceId);
-    achievementsUnlocked += await syncTrophiesForTitle(userId, accountId, game.id, title);
+  for (const result of results) {
+    if (result.status === "fulfilled") {
+      achievementsUnlocked += result.value;
+    } else {
+      console.error("PSN trophy sync failed for one game:", result.reason);
+    }
   }
 
   return { gamesProcessed: page.length, achievementsUnlocked, done: offset + limit >= total };

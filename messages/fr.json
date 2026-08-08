@@ -267,7 +267,10 @@
     "you": "(toi)",
     "findMember": "Chercher un membre",
     "reviewsTitle": "Avis publiés",
-    "reviewsPublished": "{count, plural, one {# avis} other {# avis}}"
+    "reviewsPublished": "{count, plural, one {# avis} other {# avis}}",
+    "rarityTitle": "Score de rareté",
+    "rarityPoints": "{score} pts",
+    "noRarityScore": "Aucun succès importé pour l'instant."
   },
   "Follow": {
     "follow": "Suivre",

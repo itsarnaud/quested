@@ -7,6 +7,7 @@ import { BackLink } from "@/components/back-link";
 import { Tabs, TabPanel } from "@/components/tabs";
 import { LeaderboardRow, type LeaderboardEntry } from "@/components/leaderboard-row";
 import { EmptyState } from "@/components/empty-state";
+import { computeRarityScore } from "@/lib/achievement-rarity";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -49,7 +50,7 @@ export default async function LeaderboardPage({ params }: PageProps) {
     );
   }
 
-  const [completedCounts, ratingAverages, reviewCounts] = await Promise.all([
+  const [completedCounts, ratingAverages, reviewCounts, rarityRows] = await Promise.all([
     prisma.log.groupBy({
       by: ["userId"],
       where: { userId: { in: userIds }, status: "COMPLETED" },
@@ -65,6 +66,10 @@ export default async function LeaderboardPage({ params }: PageProps) {
       by: ["userId"],
       where: { userId: { in: userIds }, notes: { not: null } },
       _count: { userId: true },
+    }),
+    prisma.userAchievement.findMany({
+      where: { userId: { in: userIds } },
+      select: { userId: true, achievement: { select: { globalUnlockedPercent: true } } },
     }),
   ]);
 
@@ -96,6 +101,18 @@ export default async function LeaderboardPage({ params }: PageProps) {
     .map((id) => ({ id, count: reviewCounts.find((c) => c.userId === id)?._count.userId ?? 0 }))
     .sort((a, b) => b.count - a.count)
     .map(({ id, count }) => toEntry(id, t("reviewsPublished", { count })));
+
+  const percentsByUser = new Map<string, (number | null)[]>();
+  for (const row of rarityRows) {
+    const percents = percentsByUser.get(row.userId) ?? [];
+    percents.push(row.achievement.globalUnlockedPercent);
+    percentsByUser.set(row.userId, percents);
+  }
+  const rarityBoard = userIds
+    .map((id) => ({ id, score: computeRarityScore(percentsByUser.get(id) ?? []) }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(({ id, score }) => toEntry(id, t("rarityPoints", { score })));
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-10">
@@ -136,6 +153,17 @@ export default async function LeaderboardPage({ params }: PageProps) {
               <LeaderboardRow key={entry.id} rank={i + 1} entry={entry} youLabel={t("you")} />
             ))}
           </div>
+        </TabPanel>
+        <TabPanel tabKey="rarity" label={t("rarityTitle")}>
+          {rarityBoard.length > 0 ? (
+            <div className="flex flex-col divide-y divide-border">
+              {rarityBoard.map((entry, i) => (
+                <LeaderboardRow key={entry.id} rank={i + 1} entry={entry} youLabel={t("you")} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState title={t("noRarityScore")} />
+          )}
         </TabPanel>
       </Tabs>
     </div>

@@ -333,6 +333,10 @@ model Achievement {
   iconUrl               String
   iconGrayUrl           String
   globalUnlockedPercent Float?
+  // Only ever true for PSN trophies (Sony's own `trophyType === "platinum"`)
+  // — Steam has no equivalent concept, so this is always false there and
+  // the "100% unlocked" heuristic in getPlatinumGameIds is used instead.
+  isPlatinum            Boolean @default(false)
 
   game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId String

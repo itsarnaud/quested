@@ -86,11 +86,25 @@ export async function syncAchievementsPage(userId: string, offset: number, limit
   });
   if (!account) return { gamesProcessed: 0, achievementsUnlocked: 0, done: true };
 
+  // Parallelized within the page rather than one game at a time — see the
+  // same change in src/server/psn/achievements.ts for the reasoning.
+  // allSettled (not all) so one game's transient failure doesn't lose the
+  // rest of the page.
+  const results = await Promise.allSettled(
+    page.map(({ game }) => {
+      const steamAppId = game.externalIds[0]?.sourceId;
+      if (!steamAppId) return Promise.resolve(0);
+      return syncAchievementsForGame(userId, account.providerAccountId, game.id, steamAppId);
+    }),
+  );
+
   let achievementsUnlocked = 0;
-  for (const { game } of page) {
-    const steamAppId = game.externalIds[0]?.sourceId;
-    if (!steamAppId) continue;
-    achievementsUnlocked += await syncAchievementsForGame(userId, account.providerAccountId, game.id, steamAppId);
+  for (const result of results) {
+    if (result.status === "fulfilled") {
+      achievementsUnlocked += result.value;
+    } else {
+      console.error("Steam achievement sync failed for one game:", result.reason);
+    }
   }
 
   return { gamesProcessed: page.length, achievementsUnlocked, done: offset + limit >= total };
