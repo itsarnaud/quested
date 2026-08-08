@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { SteamIcon } from "@/components/icons/steam-icon";
 
 const LIBRARY_PAGE_SIZE = 40;
-const ACHIEVEMENTS_PAGE_SIZE = 5;
+// Server-side sync of a page now runs its games in parallel (Promise.allSettled),
+// so a bigger page is still fast — and means fewer round trips against the
+// shared steamSyncRatelimit bucket (syncPage + syncAchievementsPage together).
+const ACHIEVEMENTS_PAGE_SIZE = 20;
 
 type SyncState =
   | { status: "idle" }
