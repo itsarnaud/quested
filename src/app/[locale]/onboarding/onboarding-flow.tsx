@@ -13,6 +13,8 @@ import { WelcomeIllustration } from "@/components/icons/welcome-illustration";
 import { CameraIcon } from "@/components/icons/camera-icon";
 import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
 import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
+import { PsnLinkForm } from "@/app/[locale]/account/psn-link-form";
+import { PsnSyncButton } from "@/app/[locale]/account/psn-sync-button";
 import { uploadAvatar } from "@/app/[locale]/account/actions";
 
 const STEP_COUNT = 4;
@@ -23,10 +25,12 @@ export function OnboardingFlow({
   initialStep,
   profile,
   hasSteamLinked,
+  hasPsnLinked,
 }: {
   initialStep: number;
   profile: Profile;
   hasSteamLinked: boolean;
+  hasPsnLinked: boolean;
 }) {
   const t = useTranslations("Onboarding");
 
@@ -113,6 +117,7 @@ export function OnboardingFlow({
             ) : (
               <AccountsStep
                 hasSteamLinked={hasSteamLinked}
+                hasPsnLinked={hasPsnLinked}
                 onBack={onBack}
                 onFinish={finish}
                 isFinishing={completeOnboarding.isPending}
@@ -479,20 +484,26 @@ function GamesStep({
 
 function AccountsStep({
   hasSteamLinked,
+  hasPsnLinked,
   onBack,
   onFinish,
   isFinishing,
 }: {
   hasSteamLinked: boolean;
+  hasPsnLinked: boolean;
   onBack?: () => void;
   onFinish: () => void;
   isFinishing: boolean;
 }) {
   const t = useTranslations("Onboarding");
+  const anyLinked = hasSteamLinked || hasPsnLinked;
 
   // hasSteamLinked only turns true via a full page navigation (the Steam
   // OAuth redirect back to /onboarding), so this component only ever mounts
   // once per link — a mount-time toast is enough, no transition to watch for.
+  // PSN linking doesn't reload the page (PsnLinkForm just calls
+  // router.refresh()), so it already shows its own success toast — no
+  // equivalent effect needed here for it.
   useEffect(() => {
     if (hasSteamLinked) toast.success(t("steamLinked"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -509,7 +520,7 @@ function AccountsStep({
 
       {/* Everything below sits in one gap-2 group (same tight rhythm as
           StepActions elsewhere) instead of inheriting the step's own
-          gap-8 — the Steam CTA and the buttons under it read as one unit. */}
+          gap-8 — the Steam/PSN CTAs and the buttons under them read as one unit. */}
       <Reveal>
         <div className="flex w-full flex-col gap-2">
           {hasSteamLinked ? (
@@ -525,24 +536,30 @@ function AccountsStep({
             />
           )}
 
-          {hasSteamLinked ? (
+          {hasPsnLinked ? (
+            <PsnSyncButton className="w-full" />
+          ) : (
+            <PsnLinkForm className="flex w-full gap-2" rounded={false} />
+          )}
+
+          {anyLinked ? (
             <Button variant="primary" className="w-full" onClick={onFinish} isLoading={isFinishing}>
               {t("finish")}
             </Button>
           ) : null}
 
-          {onBack && hasSteamLinked ? (
+          {onBack && anyLinked ? (
             <Button variant="secondary" className="w-full" onClick={onBack}>
               {t("back")}
             </Button>
-          ) : onBack || !hasSteamLinked ? (
+          ) : onBack || !anyLinked ? (
             <div className="flex w-full gap-2">
               {onBack ? (
                 <Button variant="secondary" className="flex-1" onClick={onBack}>
                   {t("back")}
                 </Button>
               ) : null}
-              {!hasSteamLinked ? (
+              {!anyLinked ? (
                 <Button variant="secondary" className="flex-1" onClick={onFinish} isLoading={isFinishing}>
                   {t("skip")}
                 </Button>

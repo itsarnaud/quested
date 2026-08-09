@@ -88,8 +88,8 @@
     "gamesSubtitle": "Quelques jeux auxquels tu joues en ce moment, ou que tu comptes faire un jour ?",
     "gamesSearchPlaceholder": "Chercher un jeu…",
     "gamesAddedCount": "{count, plural, =0 {Aucun jeu pour l'instant} other {# sur {max}}}",
-    "accountsTitle": "Un compte Steam sous la main ?",
-    "accountsSubtitle": "Relie-le et ta bibliothèque + tes succès débarquent tout seuls.",
+    "accountsTitle": "Un compte Steam ou PSN sous la main ?",
+    "accountsSubtitle": "Relie-le(s) et ta bibliothèque + tes succès débarquent tout seuls.",
     "steamLinked": "C'est fait, ton compte Steam est relié.",
     "linkSteam": "Lier mon compte Steam"
   },
