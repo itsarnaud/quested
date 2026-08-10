@@ -107,6 +107,7 @@ model User {
   showSteamOnProfile   Boolean @default(false)
   showDiscordOnProfile Boolean @default(false)
   showPsnOnProfile     Boolean @default(false)
+  showXboxOnProfile    Boolean @default(false)
 }
 
 // A single app-level PSN session, not tied to any user — Sony has no public

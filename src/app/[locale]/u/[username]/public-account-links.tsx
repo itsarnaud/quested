@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
 import { PsnIcon } from "@/components/icons/psn-icon";
+import { XboxIcon } from "@/components/icons/xbox-icon";
 import { LinkIcon } from "@/components/icons/link-icon";
 import { XIcon } from "@/components/icons/x-icon";
 import { TwitchIcon } from "@/components/icons/twitch-icon";
@@ -14,6 +15,7 @@ export function PublicAccountLinks({
   steamId,
   discordUsername,
   psnUsername,
+  xboxGamertag,
   website,
   twitterUrl,
   twitchUrl,
@@ -22,6 +24,7 @@ export function PublicAccountLinks({
   steamId?: string;
   discordUsername?: string;
   psnUsername?: string;
+  xboxGamertag?: string;
   website?: string | null;
   twitterUrl?: string | null;
   twitchUrl?: string | null;
@@ -29,7 +32,16 @@ export function PublicAccountLinks({
 }) {
   const t = useTranslations("Profile");
 
-  if (!steamId && !discordUsername && !psnUsername && !website && !twitterUrl && !twitchUrl && !youtubeUrl) {
+  if (
+    !steamId &&
+    !discordUsername &&
+    !psnUsername &&
+    !xboxGamertag &&
+    !website &&
+    !twitterUrl &&
+    !twitchUrl &&
+    !youtubeUrl
+  ) {
     return null;
   }
 
@@ -114,6 +126,19 @@ export function PublicAccountLinks({
           className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
         >
           <PsnIcon />
+        </button>
+      ) : null}
+      {xboxGamertag ? (
+        <button
+          type="button"
+          title={xboxGamertag}
+          onClick={() => {
+            navigator.clipboard.writeText(xboxGamertag);
+            toast.success(t("xboxCopied"));
+          }}
+          className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <XboxIcon />
         </button>
       ) : null}
     </div>

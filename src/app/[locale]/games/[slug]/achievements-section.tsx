@@ -4,6 +4,10 @@ import { AchievementsCarousel } from "@/app/[locale]/games/[slug]/achievements-c
 import { PlatinumIcon } from "@/components/icons/platinum-icon";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { PsnIcon } from "@/components/icons/psn-icon";
+import { XboxIcon } from "@/components/icons/xbox-icon";
+
+const SOURCES = ["STEAM", "PSN", "XBOX"] as const;
+type Source = (typeof SOURCES)[number];
 
 export async function AchievementsSection({ gameId, userId }: { gameId: string; userId?: string }) {
   const achievements = await prisma.achievement.findMany({
@@ -14,6 +18,11 @@ export async function AchievementsSection({ gameId, userId }: { gameId: string; 
   if (achievements.length === 0) return null;
 
   const t = await getTranslations("GamePage");
+  const SOURCE_META: Record<Source, { label: string; Icon: typeof SteamIcon }> = {
+    STEAM: { label: t("steamAchievementsLabel"), Icon: SteamIcon },
+    PSN: { label: t("psnTrophiesLabel"), Icon: PsnIcon },
+    XBOX: { label: t("xboxAchievementsLabel"), Icon: XboxIcon },
+  };
 
   const items = achievements
     .map((a) => ({
@@ -36,25 +45,29 @@ export async function AchievementsSection({ gameId, userId }: { gameId: string; 
       return aPct - bPct;
     });
 
-  // A game linked to both Steam and PSN has two independent achievement
-  // lists sharing this page — grouped and labeled separately below so they
-  // don't read as duplicates of each other (they aren't: different sources,
-  // different unlock states).
-  const steamItems = items.filter((a) => a.source === "STEAM");
-  const psnItems = items.filter((a) => a.source === "PSN");
+  // A game can be linked to several sources at once (Steam+PSN, Steam+Xbox,
+  // all three...) sharing this page — grouped and labeled separately below
+  // so they don't read as duplicates of each other (they aren't: different
+  // sources, different unlock states).
+  const bySource = Object.fromEntries(SOURCES.map((s) => [s, items.filter((a) => a.source === s)])) as Record<
+    Source,
+    typeof items
+  >;
+  const presentSources = SOURCES.filter((s) => bySource[s].length > 0);
   const unlockedCount = items.filter((a) => a.unlocked).length;
 
-  // "Platinum" here means 100%'d on at least one platform — a real PSN
-  // Platinum trophy unlocked, or every Steam achievement unlocked (Steam has
-  // no equivalent single trophy). Checked per source rather than requiring
-  // the combined list at 100%, since a game linked to both rarely gets
-  // finished identically on each.
-  const psnPlatinumAchievement = psnItems.find((a) => a.isPlatinum);
+  // "Platinum" here means 100%'d on at least one linked platform — a real
+  // PSN Platinum trophy unlocked, or every achievement unlocked on a source
+  // with no equivalent single trophy (Steam, Xbox). Checked per source
+  // rather than requiring the combined list at 100%, since a game linked to
+  // several platforms rarely finishes identically on each.
+  const psnPlatinumAchievement = bySource.PSN.find((a) => a.isPlatinum);
   const psnPlatinum = psnPlatinumAchievement
     ? psnPlatinumAchievement.unlocked
-    : psnItems.length > 0 && psnItems.every((a) => a.unlocked);
-  const steamPlatinum = steamItems.length > 0 && steamItems.every((a) => a.unlocked);
-  const isPlatinum = Boolean(userId) && (psnPlatinum || steamPlatinum);
+    : bySource.PSN.length > 0 && bySource.PSN.every((a) => a.unlocked);
+  const steamPlatinum = bySource.STEAM.length > 0 && bySource.STEAM.every((a) => a.unlocked);
+  const xboxPlatinum = bySource.XBOX.length > 0 && bySource.XBOX.every((a) => a.unlocked);
+  const isPlatinum = Boolean(userId) && (psnPlatinum || steamPlatinum || xboxPlatinum);
 
   return (
     <div className="flex flex-col gap-4">
@@ -74,29 +87,23 @@ export async function AchievementsSection({ gameId, userId }: { gameId: string; 
         ) : null}
       </h2>
 
-      {steamItems.length > 0 && psnItems.length > 0 ? (
-        <>
-          <div className="flex flex-col gap-2">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-              <SteamIcon width={16} height={16} />
-              {t("steamAchievementsLabel")}
-              <span className="font-normal">
-                {steamItems.filter((a) => a.unlocked).length}/{steamItems.length}
-              </span>
-            </h3>
-            <AchievementsCarousel achievements={steamItems} />
-          </div>
-          <div className="flex flex-col gap-2">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-              <PsnIcon width={16} height={16} />
-              {t("psnTrophiesLabel")}
-              <span className="font-normal">
-                {psnItems.filter((a) => a.unlocked).length}/{psnItems.length}
-              </span>
-            </h3>
-            <AchievementsCarousel achievements={psnItems} />
-          </div>
-        </>
+      {presentSources.length > 1 ? (
+        presentSources.map((source) => {
+          const { label, Icon } = SOURCE_META[source];
+          const sourceItems = bySource[source];
+          return (
+            <div key={source} className="flex flex-col gap-2">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                <Icon width={16} height={16} />
+                {label}
+                <span className="font-normal">
+                  {sourceItems.filter((a) => a.unlocked).length}/{sourceItems.length}
+                </span>
+              </h3>
+              <AchievementsCarousel achievements={sourceItems} />
+            </div>
+          );
+        })
       ) : (
         <AchievementsCarousel achievements={items} />
       )}

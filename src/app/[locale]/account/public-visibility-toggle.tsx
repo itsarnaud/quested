@@ -5,12 +5,13 @@ import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc/client";
 import { Switch } from "@/components/ui/switch";
 
-type Provider = "steam" | "discord" | "psn";
+type Provider = "steam" | "discord" | "psn" | "xbox";
 
 const FIELD_BY_PROVIDER = {
   steam: "showSteamOnProfile",
   discord: "showDiscordOnProfile",
   psn: "showPsnOnProfile",
+  xbox: "showXboxOnProfile",
 } as const;
 
 export function PublicVisibilityToggle({ provider }: { provider: Provider }) {

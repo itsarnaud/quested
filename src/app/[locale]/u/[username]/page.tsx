@@ -226,6 +226,7 @@ export default async function ProfilePage({ params }: PageProps) {
   const publicSteamId = user.showSteamOnProfile ? steamAccount?.providerAccountId : undefined;
   const publicDiscordUsername = user.showDiscordOnProfile ? (discordAccount?.providerLabel ?? undefined) : undefined;
   const publicPsnUsername = user.showPsnOnProfile ? (psnAccount?.providerLabel ?? undefined) : undefined;
+  const publicXboxUsername = user.showXboxOnProfile ? (xboxAccount?.providerLabel ?? undefined) : undefined;
 
   const recentlyPlayed = [...user.logs]
     .filter((log) => log.status === "COMPLETED")
@@ -428,6 +429,7 @@ export default async function ProfilePage({ params }: PageProps) {
                 steamId={publicSteamId}
                 discordUsername={publicDiscordUsername}
                 psnUsername={publicPsnUsername}
+                xboxGamertag={publicXboxUsername}
                 website={user.website}
                 twitterUrl={user.twitterUrl}
                 twitchUrl={user.twitchUrl}

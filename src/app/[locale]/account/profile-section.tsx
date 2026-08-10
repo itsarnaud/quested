@@ -21,10 +21,11 @@ export async function ProfileSection() {
         showSteamOnProfile: true,
         showDiscordOnProfile: true,
         showPsnOnProfile: true,
+        showXboxOnProfile: true,
       },
     }),
     prisma.account.findMany({
-      where: { userId: session.user.id, provider: { in: ["steam", "discord", "psn"] } },
+      where: { userId: session.user.id, provider: { in: ["steam", "discord", "psn", "xbox"] } },
       select: { provider: true },
     }),
   ]);
@@ -37,6 +38,7 @@ export async function ProfileSection() {
       hasSteamLinked={linkedProviders.has("steam")}
       hasDiscordLinked={linkedProviders.has("discord")}
       hasPsnLinked={linkedProviders.has("psn")}
+      hasXboxLinked={linkedProviders.has("xbox")}
     />
   );
 }
