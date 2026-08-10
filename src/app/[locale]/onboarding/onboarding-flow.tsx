@@ -12,9 +12,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { WelcomeIllustration } from "@/components/icons/welcome-illustration";
 import { CameraIcon } from "@/components/icons/camera-icon";
 import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
-import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
 import { PsnLinkForm } from "@/app/[locale]/account/psn-link-form";
-import { PsnSyncButton } from "@/app/[locale]/account/psn-sync-button";
+import { SyncAllButton } from "@/app/[locale]/account/sync-all-button";
 import { uploadAvatar } from "@/app/[locale]/account/actions";
 
 const STEP_COUNT = 4;
@@ -509,6 +508,10 @@ function AccountsStep({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Every account linked here is brand new (onboarding), so it's always
+  // safe to auto-sync it immediately rather than making the user find and
+  // press a separate button — one less step in an already multi-step flow.
+
   return (
     <StepReveal>
       <Reveal>
@@ -523,9 +526,7 @@ function AccountsStep({
           gap-8 — the Steam/PSN CTAs and the buttons under them read as one unit. */}
       <Reveal>
         <div className="flex w-full flex-col gap-2">
-          {hasSteamLinked ? (
-            <SteamSyncButton className="w-full" />
-          ) : (
+          {!hasSteamLinked ? (
             // SteamLinkButton's own <a> defaults to inline, which shrinks to
             // its text instead of matching every other step's full-width
             // button — block+w-full here makes it line up like the rest.
@@ -534,13 +535,13 @@ function AccountsStep({
               label={t("linkSteam")}
               className="block w-full"
             />
-          )}
+          ) : null}
 
-          {hasPsnLinked ? (
-            <PsnSyncButton className="w-full" />
-          ) : (
-            <PsnLinkForm className="flex w-full gap-2" rounded={false} />
-          )}
+          {!hasPsnLinked ? <PsnLinkForm className="flex w-full gap-2" rounded={false} /> : null}
+
+          {anyLinked ? (
+            <SyncAllButton hasSteamLinked={hasSteamLinked} hasPsnLinked={hasPsnLinked} autoStart className="w-full" />
+          ) : null}
 
           {anyLinked ? (
             <Button variant="primary" className="w-full" onClick={onFinish} isLoading={isFinishing}>
