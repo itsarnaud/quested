@@ -23,13 +23,14 @@ export default async function OnboardingPage({ params }: PageProps) {
     return;
   }
 
-  const [user, steamAccount, psnAccount] = await Promise.all([
+  const [user, steamAccount, psnAccount, xboxAccount] = await Promise.all([
     prisma.user.findUniqueOrThrow({
       where: { id: session.user.id },
       select: { onboardedAt: true, onboardingStep: true, name: true, username: true, image: true },
     }),
     prisma.account.findFirst({ where: { userId: session.user.id, provider: "steam" } }),
     prisma.account.findFirst({ where: { userId: session.user.id, provider: "psn" } }),
+    prisma.account.findFirst({ where: { userId: session.user.id, provider: "xbox" } }),
   ]);
 
   if (user.onboardedAt) {
@@ -43,6 +44,7 @@ export default async function OnboardingPage({ params }: PageProps) {
       profile={{ name: user.name, username: user.username, image: user.image }}
       hasSteamLinked={Boolean(steamAccount)}
       hasPsnLinked={Boolean(psnAccount)}
+      hasXboxLinked={Boolean(xboxAccount)}
     />
   );
 }

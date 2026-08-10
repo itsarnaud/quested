@@ -7,11 +7,14 @@ import { GoogleIcon } from "@/components/icons/google-icon";
 import { DiscordIcon } from "@/components/icons/discord-icon";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { PsnIcon } from "@/components/icons/psn-icon";
+import { XboxIcon } from "@/components/icons/xbox-icon";
 import { UnlinkButton } from "@/app/[locale]/account/unlink-button";
 import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
 import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
 import { PsnSyncButton } from "@/app/[locale]/account/psn-sync-button";
 import { PsnLinkForm } from "@/app/[locale]/account/psn-link-form";
+import { XboxSyncButton } from "@/app/[locale]/account/xbox-sync-button";
+import { XboxLinkForm } from "@/app/[locale]/account/xbox-link-form";
 import { SyncAllButton } from "@/app/[locale]/account/sync-all-button";
 
 const PROVIDERS = [
@@ -19,6 +22,7 @@ const PROVIDERS = [
   { id: "discord", name: "Discord", labelKey: "linkDiscord", Icon: DiscordIcon } as const,
   { id: "steam", name: "Steam", labelKey: "linkSteam", Icon: SteamIcon } as const,
   { id: "psn", name: "PlayStation Network", labelKey: "linkPsn", Icon: PsnIcon } as const,
+  { id: "xbox", name: "Xbox", labelKey: "linkXbox", Icon: XboxIcon } as const,
 ];
 
 export async function LinkedAccounts({ userId }: { userId: string }) {
@@ -31,6 +35,7 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
   const accountsByProvider = new Map(accounts.map((a) => [a.provider, a.providerLabel]));
   const hasSteamLinked = accountsByProvider.has("steam");
   const hasPsnLinked = accountsByProvider.has("psn");
+  const hasXboxLinked = accountsByProvider.has("xbox");
 
   // prevState/formData are required by useActionState's action signature
   // but unused here — provider is bound before React ever calls this.
@@ -81,6 +86,7 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                 <div className="flex items-center gap-2">
                   {id === "steam" ? <SteamSyncButton /> : null}
                   {id === "psn" ? <PsnSyncButton /> : null}
+                  {id === "xbox" ? <XboxSyncButton /> : null}
                   {accountsByProvider.size > 1 ? (
                     <UnlinkButton
                       label={t("unlink")}
@@ -93,6 +99,8 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                 <SteamLinkButton href="/api/auth/steam/login?redirectTo=/account/comptes-lies" label={t(labelKey)} />
               ) : id === "psn" ? (
                 <PsnLinkForm />
+              ) : id === "xbox" ? (
+                <XboxLinkForm />
               ) : (
                 <form
                   action={async () => {
@@ -108,10 +116,11 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
         })}
       </div>
 
-      {hasSteamLinked || hasPsnLinked ? (
+      {hasSteamLinked || hasPsnLinked || hasXboxLinked ? (
         <SyncAllButton
           hasSteamLinked={hasSteamLinked}
           hasPsnLinked={hasPsnLinked}
+          hasXboxLinked={hasXboxLinked}
           variant="primary"
           className="mt-2 w-fit px-5"
         />

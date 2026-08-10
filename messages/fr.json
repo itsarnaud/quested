@@ -88,7 +88,7 @@
     "gamesSubtitle": "Quelques jeux auxquels tu joues en ce moment, ou que tu comptes faire un jour ?",
     "gamesSearchPlaceholder": "Chercher un jeu…",
     "gamesAddedCount": "{count, plural, =0 {Aucun jeu pour l'instant} other {# sur {max}}}",
-    "accountsTitle": "Un compte Steam ou PSN sous la main ?",
+    "accountsTitle": "Un compte Steam, PSN ou Xbox sous la main ?",
     "accountsSubtitle": "Relie-le(s) et ta bibliothèque + tes succès débarquent tout seuls.",
     "steamLinked": "C'est fait, ton compte Steam est relié.",
     "linkSteam": "Lier mon compte Steam"
@@ -405,7 +405,7 @@
     "steamProfilePrivate": "Ton profil Steam est privé. Rends-le public pour importer ta bibliothèque.",
     "steamPrivacySettingsLink": "Réglages Steam",
     "showOnProfile": "Public",
-    "linkAccountsBanner": "Lie ton compte Steam et/ou PlayStation Network pour importer automatiquement ta bibliothèque et tes succès.",
+    "linkAccountsBanner": "Lie ton compte Steam, PlayStation Network et/ou Xbox pour importer automatiquement ta bibliothèque et tes succès.",
     "linkAccountsBannerCta": "Lier un compte",
     "bannerDismiss": "Non merci",
     "steamRedirecting": "Redirection vers Steam…",
@@ -454,7 +454,7 @@
     "privacySections": [
       {
         "heading": "Données collectées",
-        "body": "Lors de la connexion via Google ou Discord : ton nom, ton adresse email et ta photo de profil.\nSi tu lies ton compte Steam : ton identifiant Steam public, ta bibliothèque de jeux, ton temps de jeu et tes succès débloqués, via l'API publique Steam. Quested n'a jamais accès à ton mot de passe.\nSi tu lies ton compte PlayStation Network en indiquant ton pseudo public : ton identifiant de compte PSN, ta bibliothèque de jeux et tes trophées, récupérés via un compte de service dédié à Quested. Tu n'as jamais besoin de saisir tes identifiants PlayStation, et Quested ne les connaît pas.\nLors de l'utilisation du site : les jeux que tu ajoutes à ta bibliothèque, leur statut, ta note et tes notes personnelles."
+        "body": "Lors de la connexion via Google ou Discord : ton nom, ton adresse email et ta photo de profil.\nSi tu lies ton compte Steam : ton identifiant Steam public, ta bibliothèque de jeux, ton temps de jeu et tes succès débloqués, via l'API publique Steam. Quested n'a jamais accès à ton mot de passe.\nSi tu lies ton compte PlayStation Network en indiquant ton pseudo public : ton identifiant de compte PSN, ta bibliothèque de jeux et tes trophées, récupérés via un compte de service dédié à Quested. Tu n'as jamais besoin de saisir tes identifiants PlayStation, et Quested ne les connaît pas.\nSi tu lies ton compte Xbox en indiquant ton gamertag public : ton identifiant Xbox, ta bibliothèque de jeux et tes succès, récupérés via OpenXBL, un service tiers utilisé par Quested pour accéder à l'API Xbox Live. Tu n'as jamais besoin de saisir tes identifiants Microsoft, et Quested ne les connaît pas.\nLors de l'utilisation du site : les jeux que tu ajoutes à ta bibliothèque, leur statut, ta note et tes notes personnelles."
       },
       {
         "heading": "Finalité",
@@ -462,7 +462,7 @@
       },
       {
         "heading": "Destinataires des données",
-        "body": "Google ou Discord (authentification), Steam et PlayStation Network (si tu lies ces comptes), Neon (hébergement de la base de données, Union Européenne), Vercel (hébergement du site). IGDB et RAWG sont utilisés pour rechercher des jeux mais ne reçoivent jamais tes données personnelles, uniquement les termes recherchés."
+        "body": "Google ou Discord : authentification.\nSteam, PlayStation Network et Xbox : si tu lies un de ces comptes, pour importer ta bibliothèque et tes succès. Xbox passe par OpenXBL, un service tiers utilisé pour accéder à l'API Xbox Live.\nNeon : hébergement de la base de données (Union Européenne).\nVercel : hébergement du site.\nIGDB et RAWG : recherche de jeux — ne reçoivent jamais tes données personnelles, uniquement les termes recherchés."
       },
       {
         "heading": "Durée de conservation",
@@ -483,6 +483,7 @@
   "Common": {
     "back": "Retour",
     "genericError": "Une erreur est survenue, réessaie.",
-    "undo": "Annuler"
+    "undo": "Annuler",
+    "close": "Fermer"
   }
 }

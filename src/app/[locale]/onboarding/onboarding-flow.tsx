@@ -13,6 +13,7 @@ import { WelcomeIllustration } from "@/components/icons/welcome-illustration";
 import { CameraIcon } from "@/components/icons/camera-icon";
 import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
 import { PsnLinkForm } from "@/app/[locale]/account/psn-link-form";
+import { XboxLinkForm } from "@/app/[locale]/account/xbox-link-form";
 import { SyncAllButton } from "@/app/[locale]/account/sync-all-button";
 import { uploadAvatar } from "@/app/[locale]/account/actions";
 
@@ -25,11 +26,13 @@ export function OnboardingFlow({
   profile,
   hasSteamLinked,
   hasPsnLinked,
+  hasXboxLinked,
 }: {
   initialStep: number;
   profile: Profile;
   hasSteamLinked: boolean;
   hasPsnLinked: boolean;
+  hasXboxLinked: boolean;
 }) {
   const t = useTranslations("Onboarding");
 
@@ -117,6 +120,7 @@ export function OnboardingFlow({
               <AccountsStep
                 hasSteamLinked={hasSteamLinked}
                 hasPsnLinked={hasPsnLinked}
+                hasXboxLinked={hasXboxLinked}
                 onBack={onBack}
                 onFinish={finish}
                 isFinishing={completeOnboarding.isPending}
@@ -484,18 +488,20 @@ function GamesStep({
 function AccountsStep({
   hasSteamLinked,
   hasPsnLinked,
+  hasXboxLinked,
   onBack,
   onFinish,
   isFinishing,
 }: {
   hasSteamLinked: boolean;
   hasPsnLinked: boolean;
+  hasXboxLinked: boolean;
   onBack?: () => void;
   onFinish: () => void;
   isFinishing: boolean;
 }) {
   const t = useTranslations("Onboarding");
-  const anyLinked = hasSteamLinked || hasPsnLinked;
+  const anyLinked = hasSteamLinked || hasPsnLinked || hasXboxLinked;
 
   // hasSteamLinked only turns true via a full page navigation (the Steam
   // OAuth redirect back to /onboarding), so this component only ever mounts
@@ -535,11 +541,19 @@ function AccountsStep({
 
           {!hasPsnLinked ? <PsnLinkForm className="flex w-full gap-2" /> : null}
 
+          {!hasXboxLinked ? <XboxLinkForm className="flex w-full gap-2" /> : null}
+
           {/* autoStart: every account linked here is brand new (onboarding),
               so it's always safe to sync it immediately rather than making
               the user find and press a separate button. */}
           {anyLinked ? (
-            <SyncAllButton hasSteamLinked={hasSteamLinked} hasPsnLinked={hasPsnLinked} autoStart className="w-full" />
+            <SyncAllButton
+              hasSteamLinked={hasSteamLinked}
+              hasPsnLinked={hasPsnLinked}
+              hasXboxLinked={hasXboxLinked}
+              autoStart
+              className="w-full"
+            />
           ) : null}
 
           {anyLinked ? (

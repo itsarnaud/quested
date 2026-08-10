@@ -45,7 +45,7 @@ const getUserProfile = cache((username: string) =>
         orderBy: { position: "asc" },
       },
       accounts: {
-        where: { provider: { in: ["steam", "discord", "psn"] } },
+        where: { provider: { in: ["steam", "discord", "psn", "xbox"] } },
         select: { provider: true, providerAccountId: true, providerLabel: true },
       },
     },
@@ -222,6 +222,7 @@ export default async function ProfilePage({ params }: PageProps) {
   const steamAccount = user.accounts.find((a) => a.provider === "steam");
   const discordAccount = user.accounts.find((a) => a.provider === "discord");
   const psnAccount = user.accounts.find((a) => a.provider === "psn");
+  const xboxAccount = user.accounts.find((a) => a.provider === "xbox");
   const publicSteamId = user.showSteamOnProfile ? steamAccount?.providerAccountId : undefined;
   const publicDiscordUsername = user.showDiscordOnProfile ? (discordAccount?.providerLabel ?? undefined) : undefined;
   const publicPsnUsername = user.showPsnOnProfile ? (psnAccount?.providerLabel ?? undefined) : undefined;
@@ -445,17 +446,22 @@ export default async function ProfilePage({ params }: PageProps) {
         isOwnProfile={isOwnProfile}
       />
 
-      {isOwnProfile && (steamAccount || psnAccount) ? (
+      {isOwnProfile && (steamAccount || psnAccount || xboxAccount) ? (
         <SyncAllButton
           hasSteamLinked={Boolean(steamAccount)}
           hasPsnLinked={Boolean(psnAccount)}
+          hasXboxLinked={Boolean(xboxAccount)}
           variant="primary"
           className="w-fit px-5"
         />
       ) : null}
 
-      {isOwnProfile && !(steamAccount && psnAccount) ? (
-        <LinkAccountsBanner hasSteamLinked={Boolean(steamAccount)} hasPsnLinked={Boolean(psnAccount)} />
+      {isOwnProfile && !(steamAccount && psnAccount && xboxAccount) ? (
+        <LinkAccountsBanner
+          hasSteamLinked={Boolean(steamAccount)}
+          hasPsnLinked={Boolean(psnAccount)}
+          hasXboxLinked={Boolean(xboxAccount)}
+        />
       ) : null}
 
       {!isOwnProfile && session?.user ? <TasteComparison username={username} /> : null}

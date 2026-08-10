@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { SteamIcon } from "@/components/icons/steam-icon";
 import { PsnIcon } from "@/components/icons/psn-icon";
+import { XboxIcon } from "@/components/icons/xbox-icon";
 import { Button } from "@/components/ui/button";
 
 const COOKIE_NAME = "quested-link-banner-answered";
@@ -18,16 +19,18 @@ function setAnsweredCookie() {
   document.cookie = `${COOKIE_NAME}=1; max-age=${oneYear}; path=/`;
 }
 
-// Mentions whichever of Steam/PSN isn't linked yet (Xbox to add later once
-// it exists), but links out to the settings page rather than embedding the
-// Steam redirect button and PSN username form inline — cramming both into
-// one row got cluttered fast, and the settings page already has that UI.
+// Mentions whichever of Steam/PSN/Xbox isn't linked yet, but links out to
+// the settings page rather than embedding each provider's redirect
+// button/username form inline — cramming all of them into one row got
+// cluttered fast, and the settings page already has that UI.
 export function LinkAccountsBanner({
   hasSteamLinked,
   hasPsnLinked,
+  hasXboxLinked,
 }: {
   hasSteamLinked: boolean;
   hasPsnLinked: boolean;
+  hasXboxLinked: boolean;
 }) {
   const t = useTranslations("Account");
   const [dismissed, setDismissed] = useState(true);
@@ -52,6 +55,7 @@ export function LinkAccountsBanner({
         <div className="flex shrink-0 items-center gap-1.5">
           {!hasSteamLinked ? <SteamIcon width={22} height={22} /> : null}
           {!hasPsnLinked ? <PsnIcon width={22} height={22} /> : null}
+          {!hasXboxLinked ? <XboxIcon width={22} height={22} /> : null}
         </div>
         <p className="text-sm">{t("linkAccountsBanner")}</p>
       </div>
