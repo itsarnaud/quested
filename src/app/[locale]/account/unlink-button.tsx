@@ -33,7 +33,7 @@ export function UnlinkButton({
           key="confirm"
           type="submit"
           variant="secondary"
-          className="rounded-full border-red-500/40 text-red-400 hover:bg-red-500/10"
+          className="border-red-500/40 text-red-400 hover:bg-red-500/10"
           isLoading={isPending}
         >
           {confirmLabel}
@@ -47,7 +47,6 @@ export function UnlinkButton({
       key="initial"
       type="button"
       variant="secondary"
-      className="rounded-full"
       onClick={() => setConfirming(true)}
     >
       {label}

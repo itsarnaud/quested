@@ -407,6 +407,7 @@
     "showOnProfile": "Public",
     "steamBanner": "Link your Steam account to automatically import your library, playtime and achievements.",
     "linkAccountsBanner": "Link your Steam and/or PlayStation Network account to automatically import your library and achievements.",
+    "linkAccountsBannerCta": "Link an account",
     "steamBannerLink": "Link Steam",
     "steamBannerDismiss": "No thanks",
     "steamRedirecting": "Redirecting to Steam…",

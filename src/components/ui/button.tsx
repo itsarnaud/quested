@@ -2,6 +2,11 @@ import { type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 
+// Square (rounded-md) is the one shape for every button in the app — don't
+// override with rounded-full via className, that's what drifted into every
+// account/sync/link button looking different from the next one (fixed
+// 10/08/2026). Pills/chips (filters, badges, tags) are a different, deliberate
+// pattern and aren't this component.
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary";
   isLoading?: boolean;

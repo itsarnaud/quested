@@ -407,6 +407,7 @@
     "showOnProfile": "Public",
     "steamBanner": "Lie ton compte Steam pour importer automatiquement ta bibliothèque, ton temps de jeu et tes succès.",
     "linkAccountsBanner": "Lie ton compte Steam et/ou PlayStation Network pour importer automatiquement ta bibliothèque et tes succès.",
+    "linkAccountsBannerCta": "Lier un compte",
     "steamBannerLink": "Lier Steam",
     "steamBannerDismiss": "Non merci",
     "steamRedirecting": "Redirection vers Steam…",

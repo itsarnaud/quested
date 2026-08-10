@@ -8,13 +8,7 @@ import { useRouter } from "@/i18n/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 
-export function PsnLinkForm({
-  className = "flex w-full gap-2 sm:w-auto",
-  rounded = true,
-}: {
-  className?: string;
-  rounded?: boolean;
-}) {
+export function PsnLinkForm({ className = "flex w-full gap-2 sm:w-auto" }: { className?: string }) {
   const t = useTranslations("Account");
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -102,7 +96,7 @@ export function PsnLinkForm({
         />
         <Button
           type="submit"
-          className={rounded ? "shrink-0 rounded-full" : "shrink-0"}
+          className="shrink-0"
           disabled={!username.trim()}
           isLoading={preview.isPending}
         >

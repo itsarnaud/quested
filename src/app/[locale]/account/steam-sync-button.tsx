@@ -31,7 +31,7 @@ const useBeforeUnloadWarning = (active: boolean) => {
   }, [active]);
 };
 
-export function SteamSyncButton({ className = "rounded-full" }: { className?: string }) {
+export function SteamSyncButton({ className }: { className?: string }) {
   const t = useTranslations("Account");
   const [state, setState] = useState<SyncState>({ status: "idle" });
 

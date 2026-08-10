@@ -54,7 +54,7 @@ export function SyncAllButton({
   hasPsnLinked,
   autoStart = false,
   variant = "secondary",
-  className = "rounded-full",
+  className,
 }: {
   hasSteamLinked: boolean;
   hasPsnLinked: boolean;

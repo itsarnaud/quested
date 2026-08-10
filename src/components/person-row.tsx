@@ -70,7 +70,7 @@ export function PersonRow({
       {user.isViewer ? null : (
         <Button
           variant={user.isFollowing ? "secondary" : "primary"}
-          className="shrink-0 rounded-full"
+          className="shrink-0"
           onClick={onToggleFollow}
           isLoading={isTogglePending}
         >

@@ -450,16 +450,12 @@ export default async function ProfilePage({ params }: PageProps) {
           hasSteamLinked={Boolean(steamAccount)}
           hasPsnLinked={Boolean(psnAccount)}
           variant="primary"
-          className="w-fit rounded-full px-5"
+          className="w-fit px-5"
         />
       ) : null}
 
       {isOwnProfile && !(steamAccount && psnAccount) ? (
-        <LinkAccountsBanner
-          redirectTo={`/u/${username}`}
-          hasSteamLinked={Boolean(steamAccount)}
-          hasPsnLinked={Boolean(psnAccount)}
-        />
+        <LinkAccountsBanner hasSteamLinked={Boolean(steamAccount)} hasPsnLinked={Boolean(psnAccount)} />
       ) : null}
 
       {!isOwnProfile && session?.user ? <TasteComparison username={username} /> : null}

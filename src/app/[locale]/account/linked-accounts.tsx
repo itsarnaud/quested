@@ -90,11 +90,7 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                   ) : null}
                 </div>
               ) : id === "steam" ? (
-                <SteamLinkButton
-                  href="/api/auth/steam/login?redirectTo=/account/comptes-lies"
-                  label={t(labelKey)}
-                  rounded
-                />
+                <SteamLinkButton href="/api/auth/steam/login?redirectTo=/account/comptes-lies" label={t(labelKey)} />
               ) : id === "psn" ? (
                 <PsnLinkForm />
               ) : (
@@ -104,9 +100,7 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                     await signIn(id, { redirectTo: "/account" });
                   }}
                 >
-                  <Button type="submit" className="rounded-full">
-                    {t(labelKey)}
-                  </Button>
+                  <Button type="submit">{t(labelKey)}</Button>
                 </form>
               )}
             </div>
@@ -119,7 +113,7 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
           hasSteamLinked={hasSteamLinked}
           hasPsnLinked={hasPsnLinked}
           variant="primary"
-          className="mt-2 w-fit rounded-full px-5"
+          className="mt-2 w-fit px-5"
         />
       ) : null}
     </div>

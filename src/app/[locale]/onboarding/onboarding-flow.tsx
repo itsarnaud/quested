@@ -537,7 +537,7 @@ function AccountsStep({
             />
           ) : null}
 
-          {!hasPsnLinked ? <PsnLinkForm className="flex w-full gap-2" rounded={false} /> : null}
+          {!hasPsnLinked ? <PsnLinkForm className="flex w-full gap-2" /> : null}
 
           {anyLinked ? (
             <SyncAllButton hasSteamLinked={hasSteamLinked} hasPsnLinked={hasPsnLinked} autoStart className="w-full" />
