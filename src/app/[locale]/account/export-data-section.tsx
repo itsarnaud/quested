@@ -28,7 +28,7 @@ export function ExportDataSection() {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted-foreground">{t("exportDescription")}</p>
-      <Button className="w-fit rounded-full" onClick={handleExport}>
+      <Button className="w-fit" onClick={handleExport}>
         {t("exportButton")}
       </Button>
     </div>

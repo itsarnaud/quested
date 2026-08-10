@@ -18,15 +18,6 @@ function psnPlatformsToNames(trophyTitlePlatform: string): string[] {
   return trophyTitlePlatform.split(",").map((p) => PLATFORM_NAMES[p.trim()] ?? p.trim());
 }
 
-/**
- * Resolves a single PSN trophy title to a canonical Game. Match order:
- * existing GameExternalId(PSN, npCommunicationId) link from a prior sync
- * (fast path) > an IGDB search result whose title matches exactly once
- * normalized (PSN has no crosswalk table like Steam's external_games, so
- * this is a text match rather than an ID lookup) > a bare Game created
- * straight from PSN's own title data, for anything that doesn't confidently
- * match (DLC-only trophy sets, regional variants, etc).
- */
 // GameExternalId only has (source, sourceId) — npServiceName ("trophy" vs
 // "trophy2") is required by every later trophy API call but isn't derivable
 // from npCommunicationId alone, so it's packed into the sourceId itself
@@ -40,6 +31,15 @@ export function parsePsnSourceId(sourceId: string): { npServiceName: "trophy" | 
   return { npServiceName: npServiceName as "trophy" | "trophy2", npCommunicationId };
 }
 
+/**
+ * Resolves a single PSN trophy title to a canonical Game. Match order:
+ * existing GameExternalId(PSN, npCommunicationId) link from a prior sync
+ * (fast path) > an IGDB search result whose title matches exactly once
+ * normalized (PSN has no crosswalk table like Steam's external_games, so
+ * this is a text match rather than an ID lookup) > a bare Game created
+ * straight from PSN's own title data, for anything that doesn't confidently
+ * match (DLC-only trophy sets, regional variants, etc).
+ */
 async function upsertGameFromPsnTitle(title: TrophyTitle) {
   const sourceId = encodePsnSourceId(title);
 
@@ -51,7 +51,18 @@ async function upsertGameFromPsnTitle(title: TrophyTitle) {
 
   const normalized = normalizeTitle(title.trophyTitleName);
   const igdbResults = await searchIgdbGames(title.trophyTitleName, 5);
-  const igdbMatch = igdbResults.find((g) => normalizeTitle(g.name) === normalized);
+  const titleMatches = igdbResults.filter((g) => normalizeTitle(g.name) === normalized);
+
+  // IGDB occasionally has duplicate/junk entries sharing the exact same
+  // name (e.g. a stray "Hollow Knight" entry covering only Vita, alongside
+  // the real one listing every platform including PS4/PS5) — a bare .find()
+  // on title alone can land on the wrong one and silently split a game the
+  // user already has on Steam into a second, disconnected Game row. Among
+  // same-named matches, prefer whichever one actually lists this trophy
+  // title's own platform.
+  const psnPlatformNames = new Set(psnPlatformsToNames(title.trophyTitlePlatform));
+  const igdbMatch =
+    titleMatches.find((g) => g.platforms?.some((p) => psnPlatformNames.has(p.name))) ?? titleMatches[0];
 
   if (igdbMatch) {
     const game = await upsertGameFromIgdb(igdbMatch);

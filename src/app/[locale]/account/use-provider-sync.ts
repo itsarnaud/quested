@@ -1,0 +1,124 @@
+"use client";
+
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { trpc } from "@/lib/trpc/client";
+
+const LIBRARY_PAGE_SIZE = 40;
+// Server-side sync of a page runs its games in parallel (Promise.allSettled),
+// so a bigger page is still fast — and means fewer round trips against the
+// shared per-provider rate limit bucket (syncPage + syncAchievementsPage
+// together).
+const ACHIEVEMENTS_PAGE_SIZE = 20;
+
+export type SyncPhase = "library" | "achievements";
+export type SyncProgress = { phase: SyncPhase; done: number; total: number };
+
+// Leaving mid-sync aborts the in-flight request and stops the loop for
+// good — the native "are you sure" prompt is the only real way to warn
+// against that (browsers ignore any custom message here).
+export const useBeforeUnloadWarning = (active: boolean) => {
+  useEffect(() => {
+    if (!active) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [active]);
+};
+
+// Shared library+achievements sync loop, used by SteamSyncButton,
+// PsnSyncButton and SyncAllButton — keeping it in one place means a rate
+// limit, page size, or error-handling fix only has to happen once.
+export function useSteamSync() {
+  const t = useTranslations("Account");
+  const utils = trpc.useUtils();
+  const syncPage = trpc.steam.syncPage.useMutation();
+  const syncAchievementsPage = trpc.steam.syncAchievementsPage.useMutation();
+
+  return async function sync(onProgress: (progress: SyncProgress) => void) {
+    // Bypass the query cache's default staleTime: this checks live Steam-side
+    // state (profile visibility, library size) that can change between two
+    // clicks of this button — a cached "private" result must never block a
+    // retry right after the user actually made their profile public.
+    const size = await utils.steam.getLibrarySize.fetch(undefined, { staleTime: 0 }).catch(() => null);
+    if (!size) {
+      toast.error(t("genericError"));
+      return;
+    }
+    if (size.isPrivate) {
+      toast.error(t("steamProfilePrivate"), {
+        action: {
+          label: t("steamPrivacySettingsLink"),
+          onClick: () => window.open("https://steamcommunity.com/my/edit/settings", "_blank", "noopener,noreferrer"),
+        },
+      });
+      return;
+    }
+
+    let offset = 0;
+    onProgress({ phase: "library", done: 0, total: size.total });
+    while (offset < size.total) {
+      await syncPage.mutateAsync({ offset, limit: LIBRARY_PAGE_SIZE });
+      offset += LIBRARY_PAGE_SIZE;
+      onProgress({ phase: "library", done: Math.min(offset, size.total), total: size.total });
+    }
+
+    const gameCount = await utils.steam.getTrackedGameCount.fetch();
+    let achOffset = 0;
+    let achievementsUnlocked = 0;
+    onProgress({ phase: "achievements", done: 0, total: gameCount });
+    while (achOffset < gameCount) {
+      const result = await syncAchievementsPage.mutateAsync({ offset: achOffset, limit: ACHIEVEMENTS_PAGE_SIZE });
+      achievementsUnlocked += result.achievementsUnlocked;
+      achOffset += ACHIEVEMENTS_PAGE_SIZE;
+      onProgress({ phase: "achievements", done: Math.min(achOffset, gameCount), total: gameCount });
+    }
+
+    toast.success(t("syncSteamComplete", { games: size.total, achievements: achievementsUnlocked }));
+  };
+}
+
+export function usePsnSync() {
+  const t = useTranslations("Account");
+  const utils = trpc.useUtils();
+  const syncPage = trpc.psn.syncPage.useMutation();
+  const syncAchievementsPage = trpc.psn.syncAchievementsPage.useMutation();
+
+  return async function sync(onProgress: (progress: SyncProgress) => void) {
+    // Same reasoning as Steam's: never trust a cached "private" result here,
+    // the user may have just flipped their PSN privacy setting.
+    const size = await utils.psn.getLibrarySize.fetch(undefined, { staleTime: 0 }).catch(() => null);
+    if (!size) {
+      toast.error(t("genericError"));
+      return;
+    }
+    if (size.isPrivate) {
+      toast.error(t("psnProfilePrivate"));
+      return;
+    }
+
+    let offset = 0;
+    onProgress({ phase: "library", done: 0, total: size.total });
+    while (offset < size.total) {
+      await syncPage.mutateAsync({ offset, limit: LIBRARY_PAGE_SIZE });
+      offset += LIBRARY_PAGE_SIZE;
+      onProgress({ phase: "library", done: Math.min(offset, size.total), total: size.total });
+    }
+
+    const gameCount = await utils.psn.getTrackedGameCount.fetch();
+    let achOffset = 0;
+    let achievementsUnlocked = 0;
+    onProgress({ phase: "achievements", done: 0, total: gameCount });
+    while (achOffset < gameCount) {
+      const result = await syncAchievementsPage.mutateAsync({ offset: achOffset, limit: ACHIEVEMENTS_PAGE_SIZE });
+      achievementsUnlocked += result.achievementsUnlocked;
+      achOffset += ACHIEVEMENTS_PAGE_SIZE;
+      onProgress({ phase: "achievements", done: Math.min(achOffset, gameCount), total: gameCount });
+    }
+
+    toast.success(t("syncPsnComplete", { games: size.total, achievements: achievementsUnlocked }));
+  };
+}

@@ -8,7 +8,7 @@ import { useRouter } from "@/i18n/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 
-export function PsnLinkForm() {
+export function PsnLinkForm({ className = "flex w-full gap-2 sm:w-auto" }: { className?: string }) {
   const t = useTranslations("Account");
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -82,7 +82,7 @@ export function PsnLinkForm() {
       ) : null}
 
       <form
-        className="flex w-full gap-2 sm:w-auto"
+        className={className}
         onSubmit={(e) => {
           e.preventDefault();
           if (username.trim()) preview.mutate({ username: username.trim() });
@@ -96,7 +96,7 @@ export function PsnLinkForm() {
         />
         <Button
           type="submit"
-          className="shrink-0 rounded-full"
+          className="shrink-0"
           disabled={!username.trim()}
           isLoading={preview.isPending}
         >

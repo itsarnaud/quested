@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-// A game is "platinum" two different ways depending on its source:
+// A game is "platinum" — 100%'d on at least one linked platform:
 //
 // - PSN games have a real Platinum trophy (Achievement.isPlatinum) — that
 //   specific trophy being unlocked IS the definition, straight from Sony.
@@ -9,6 +9,11 @@ import { prisma } from "@/lib/prisma";
 //   can be wrong for PSN in edge cases (a title's trophy list growing after
 //   launch means someone who platinumed early won't show 100% of what we
 //   later import) which is exactly why real games get the real signal instead.
+//
+// Checked per source (Achievement.source), not across a game's combined
+// list: a game linked to both Steam and PSN (same Game row, two
+// independent achievement lists) rarely finishes identically on each, so a
+// real Steam 100% shouldn't get hidden behind an unearned PSN Platinum.
 export async function getPlatinumGameIds(userId: string, gameIds: string[]): Promise<Set<string>> {
   if (gameIds.length === 0) return new Set();
 
@@ -31,29 +36,29 @@ export async function getPlatinumGameIds(userId: string, gameIds: string[]): Pro
     }
   }
 
-  const heuristicGameIds = gameIds.filter((id) => !platinumAchievementIdByGame.has(id));
+  const heuristicGameIds = gameIds.filter((id) => !platinum.has(id));
   if (heuristicGameIds.length === 0) return platinum;
 
   const totals = await prisma.achievement.groupBy({
-    by: ["gameId"],
+    by: ["gameId", "source"],
     where: { gameId: { in: heuristicGameIds } },
     _count: { _all: true },
   });
   if (totals.length === 0) return platinum;
 
-  const totalByGame = new Map(totals.map((t) => [t.gameId, t._count._all]));
-
   const unlocked = await prisma.userAchievement.findMany({
-    where: { userId, achievement: { gameId: { in: Array.from(totalByGame.keys()) } } },
-    select: { achievement: { select: { gameId: true } } },
+    where: { userId, achievement: { gameId: { in: heuristicGameIds } } },
+    select: { achievement: { select: { gameId: true, source: true } } },
   });
-  const unlockedByGame = new Map<string, number>();
+  const unlockedByGameSource = new Map<string, number>();
   for (const u of unlocked) {
-    unlockedByGame.set(u.achievement.gameId, (unlockedByGame.get(u.achievement.gameId) ?? 0) + 1);
+    const key = `${u.achievement.gameId}:${u.achievement.source}`;
+    unlockedByGameSource.set(key, (unlockedByGameSource.get(key) ?? 0) + 1);
   }
 
-  for (const [gameId, total] of totalByGame) {
-    if (unlockedByGame.get(gameId) === total) platinum.add(gameId);
+  for (const t of totals) {
+    const key = `${t.gameId}:${t.source}`;
+    if (unlockedByGameSource.get(key) === t._count._all) platinum.add(t.gameId);
   }
   return platinum;
 }

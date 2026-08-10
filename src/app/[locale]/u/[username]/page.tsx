@@ -26,8 +26,8 @@ import { GameTile } from "@/components/game-tile";
 import { getPlatinumGameIds } from "@/server/games/platinum";
 import { computeRarityScore } from "@/lib/achievement-rarity";
 import { PublicAccountLinks } from "@/app/[locale]/u/[username]/public-account-links";
-import { SteamLinkBanner } from "@/app/[locale]/u/[username]/steam-link-banner";
-import { SteamLinkedBanner } from "@/app/[locale]/u/[username]/steam-linked-banner";
+import { LinkAccountsBanner } from "@/app/[locale]/u/[username]/link-accounts-banner";
+import { SyncAllButton } from "@/app/[locale]/account/sync-all-button";
 import { ProfileStats } from "@/app/[locale]/u/[username]/profile-stats";
 
 const STATUS_ORDER = ["COMPLETED", "PLAYING", "BACKLOG", "WISHLIST", "DROPPED"] as const;
@@ -54,7 +54,6 @@ const getUserProfile = cache((username: string) =>
 
 type PageProps = {
   params: Promise<{ username: string }>;
-  searchParams: Promise<{ steamLinked?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -79,9 +78,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ProfilePage({ params, searchParams }: PageProps) {
+export default async function ProfilePage({ params }: PageProps) {
   const { username } = await params;
-  const { steamLinked } = await searchParams;
 
   const [user, session, t, tStatus, locale] = await Promise.all([
     getUserProfile(username),
@@ -447,10 +445,17 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
         isOwnProfile={isOwnProfile}
       />
 
-      {isOwnProfile && steamLinked === "1" ? (
-        <SteamLinkedBanner />
-      ) : isOwnProfile && !steamAccount ? (
-        <SteamLinkBanner redirectTo={`/u/${username}`} />
+      {isOwnProfile && (steamAccount || psnAccount) ? (
+        <SyncAllButton
+          hasSteamLinked={Boolean(steamAccount)}
+          hasPsnLinked={Boolean(psnAccount)}
+          variant="primary"
+          className="w-fit px-5"
+        />
+      ) : null}
+
+      {isOwnProfile && !(steamAccount && psnAccount) ? (
+        <LinkAccountsBanner hasSteamLinked={Boolean(steamAccount)} hasPsnLinked={Boolean(psnAccount)} />
       ) : null}
 
       {!isOwnProfile && session?.user ? <TasteComparison username={username} /> : null}

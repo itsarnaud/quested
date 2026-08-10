@@ -12,13 +12,11 @@ export function SteamLinkButton({
   href,
   label,
   className,
-  rounded,
   onNavigate,
 }: {
   href: string;
   label: string;
   className?: string;
-  rounded?: boolean;
   onNavigate?: () => void;
 }) {
   const t = useTranslations("Account");
@@ -36,7 +34,7 @@ export function SteamLinkButton({
           setRedirecting(true);
         }}
       >
-        <Button type="button" className={rounded ? "w-full rounded-full" : "w-full"}>
+        <Button type="button" className="w-full">
           {label}
         </Button>
       </a>

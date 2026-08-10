@@ -12,6 +12,7 @@ import { SteamSyncButton } from "@/app/[locale]/account/steam-sync-button";
 import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
 import { PsnSyncButton } from "@/app/[locale]/account/psn-sync-button";
 import { PsnLinkForm } from "@/app/[locale]/account/psn-link-form";
+import { SyncAllButton } from "@/app/[locale]/account/sync-all-button";
 
 const PROVIDERS = [
   { id: "google", name: "Google", labelKey: "linkGoogle", Icon: GoogleIcon } as const,
@@ -28,6 +29,8 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
     select: { provider: true, providerLabel: true },
   });
   const accountsByProvider = new Map(accounts.map((a) => [a.provider, a.providerLabel]));
+  const hasSteamLinked = accountsByProvider.has("steam");
+  const hasPsnLinked = accountsByProvider.has("psn");
 
   // prevState/formData are required by useActionState's action signature
   // but unused here — provider is bound before React ever calls this.
@@ -87,11 +90,7 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                   ) : null}
                 </div>
               ) : id === "steam" ? (
-                <SteamLinkButton
-                  href="/api/auth/steam/login?redirectTo=/account/comptes-lies"
-                  label={t(labelKey)}
-                  rounded
-                />
+                <SteamLinkButton href="/api/auth/steam/login?redirectTo=/account/comptes-lies" label={t(labelKey)} />
               ) : id === "psn" ? (
                 <PsnLinkForm />
               ) : (
@@ -101,15 +100,22 @@ export async function LinkedAccounts({ userId }: { userId: string }) {
                     await signIn(id, { redirectTo: "/account" });
                   }}
                 >
-                  <Button type="submit" className="rounded-full">
-                    {t(labelKey)}
-                  </Button>
+                  <Button type="submit">{t(labelKey)}</Button>
                 </form>
               )}
             </div>
           );
         })}
       </div>
+
+      {hasSteamLinked || hasPsnLinked ? (
+        <SyncAllButton
+          hasSteamLinked={hasSteamLinked}
+          hasPsnLinked={hasPsnLinked}
+          variant="primary"
+          className="mt-2 w-fit px-5"
+        />
+      ) : null}
     </div>
   );
 }

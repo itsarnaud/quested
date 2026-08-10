@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { SteamIcon } from "@/components/icons/steam-icon";
+import { PsnIcon } from "@/components/icons/psn-icon";
 import { Button } from "@/components/ui/button";
-import { SteamLinkButton } from "@/app/[locale]/account/steam-link-button";
 
-const COOKIE_NAME = "quested-steam-banner-answered";
+const COOKIE_NAME = "quested-link-banner-answered";
 
 function hasAnsweredCookie() {
   return document.cookie.split("; ").some((row) => row.startsWith(`${COOKIE_NAME}=`));
@@ -17,7 +18,17 @@ function setAnsweredCookie() {
   document.cookie = `${COOKIE_NAME}=1; max-age=${oneYear}; path=/`;
 }
 
-export function SteamLinkBanner({ redirectTo }: { redirectTo: string }) {
+// Mentions whichever of Steam/PSN isn't linked yet (Xbox to add later once
+// it exists), but links out to the settings page rather than embedding the
+// Steam redirect button and PSN username form inline — cramming both into
+// one row got cluttered fast, and the settings page already has that UI.
+export function LinkAccountsBanner({
+  hasSteamLinked,
+  hasPsnLinked,
+}: {
+  hasSteamLinked: boolean;
+  hasPsnLinked: boolean;
+}) {
   const t = useTranslations("Account");
   const [dismissed, setDismissed] = useState(true);
 
@@ -38,19 +49,19 @@ export function SteamLinkBanner({ redirectTo }: { redirectTo: string }) {
   return (
     <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <SteamIcon width={22} height={22} className="shrink-0" />
-        <p className="text-sm">{t("steamBanner")}</p>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {!hasSteamLinked ? <SteamIcon width={22} height={22} /> : null}
+          {!hasPsnLinked ? <PsnIcon width={22} height={22} /> : null}
+        </div>
+        <p className="text-sm">{t("linkAccountsBanner")}</p>
       </div>
       <div className="flex w-full shrink-0 gap-2 sm:w-auto">
         <Button variant="secondary" className="flex-1 sm:flex-none" onClick={dismiss}>
-          {t("steamBannerDismiss")}
+          {t("bannerDismiss")}
         </Button>
-        <SteamLinkButton
-          href={`/api/auth/steam/login?redirectTo=${encodeURIComponent(redirectTo)}`}
-          label={t("steamBannerLink")}
-          className="flex-1 sm:flex-none"
-          onNavigate={setAnsweredCookie}
-        />
+        <Link href="/account/comptes-lies" onClick={setAnsweredCookie} className="flex-1 sm:flex-none">
+          <Button className="w-full">{t("linkAccountsBannerCta")}</Button>
+        </Link>
       </div>
     </div>
   );
