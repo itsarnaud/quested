@@ -51,7 +51,18 @@ async function upsertGameFromPsnTitle(title: TrophyTitle) {
 
   const normalized = normalizeTitle(title.trophyTitleName);
   const igdbResults = await searchIgdbGames(title.trophyTitleName, 5);
-  const igdbMatch = igdbResults.find((g) => normalizeTitle(g.name) === normalized);
+  const titleMatches = igdbResults.filter((g) => normalizeTitle(g.name) === normalized);
+
+  // IGDB occasionally has duplicate/junk entries sharing the exact same
+  // name (e.g. a stray "Hollow Knight" entry covering only Vita, alongside
+  // the real one listing every platform including PS4/PS5) — a bare .find()
+  // on title alone can land on the wrong one and silently split a game the
+  // user already has on Steam into a second, disconnected Game row. Among
+  // same-named matches, prefer whichever one actually lists this trophy
+  // title's own platform.
+  const psnPlatformNames = new Set(psnPlatformsToNames(title.trophyTitlePlatform));
+  const igdbMatch =
+    titleMatches.find((g) => g.platforms?.some((p) => psnPlatformNames.has(p.name))) ?? titleMatches[0];
 
   if (igdbMatch) {
     const game = await upsertGameFromIgdb(igdbMatch);

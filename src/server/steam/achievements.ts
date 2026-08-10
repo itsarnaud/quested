@@ -11,6 +11,12 @@ import {
  * once ever per canonical Game — every later sync, by any user, reuses the
  * rows already in the `Achievement` table. Only the per-user unlock state
  * (`GetPlayerAchievements`) is fetched on every call.
+ *
+ * Scoped by `source: "STEAM"` throughout — a game linked to both Steam and
+ * PSN shares one Game row but has two independent achievement lists (see
+ * Achievement.source in the schema). Without this scoping, whichever
+ * provider synced first would block the other's definitions from ever
+ * being created.
  */
 export async function syncAchievementsForGame(
   userId: string,
@@ -20,7 +26,7 @@ export async function syncAchievementsForGame(
 ): Promise<number> {
   const appid = Number(steamAppId);
 
-  const existingCount = await prisma.achievement.count({ where: { gameId } });
+  const existingCount = await prisma.achievement.count({ where: { gameId, source: "STEAM" } });
   if (existingCount === 0) {
     const [schema, percentages] = await Promise.all([
       getSteamGameSchema(appid),
@@ -31,6 +37,7 @@ export async function syncAchievementsForGame(
       await prisma.achievement.createMany({
         data: schema.map((a) => ({
           gameId,
+          source: "STEAM",
           apiName: a.apiName,
           displayName: a.displayName,
           description: a.description,
@@ -43,7 +50,7 @@ export async function syncAchievementsForGame(
     }
   }
 
-  const achievements = await prisma.achievement.findMany({ where: { gameId } });
+  const achievements = await prisma.achievement.findMany({ where: { gameId, source: "STEAM" } });
   if (achievements.length === 0) return 0;
 
   const playerAchievements = await getSteamPlayerAchievements(steamId, appid);
@@ -61,6 +68,19 @@ export async function syncAchievementsForGame(
       create: { userId, achievementId: achievement.id, unlockedAt: playerAchievement.unlockedAt },
     });
     unlocked++;
+  }
+
+  // Steam has no Platinum-style single trophy, so unlike PSN this can only
+  // go by "every achievement Steam reports for this game is unlocked" —
+  // mirrors the PSN Platinum-unlock override in src/server/psn/achievements.ts.
+  const totalUnlocked = await prisma.userAchievement.count({
+    where: { userId, achievementId: { in: achievements.map((a) => a.id) } },
+  });
+  if (totalUnlocked === achievements.length) {
+    await prisma.log.updateMany({
+      where: { userId, gameId, status: { not: "COMPLETED" } },
+      data: { status: "COMPLETED" },
+    });
   }
 
   return unlocked;

@@ -10,6 +10,12 @@ import { parsePsnSourceId } from "@/server/psn/sync";
  * in the `Achievement` table. Only the per-user earned status (which also
  * carries the global earn-rate, PSN's equivalent of Steam's global
  * unlocked percentage) is fetched on every call.
+ *
+ * Scoped by `source: "PSN"` throughout — a game linked to both Steam and
+ * PSN shares one Game row but has two independent achievement lists (see
+ * Achievement.source in the schema). Without this scoping, whichever
+ * provider synced first would block the other's definitions from ever
+ * being created.
  */
 export async function syncTrophiesForTitle(
   userId: string,
@@ -17,13 +23,14 @@ export async function syncTrophiesForTitle(
   gameId: string,
   title: Pick<TrophyTitle, "npCommunicationId" | "npServiceName">,
 ): Promise<number> {
-  const existingCount = await prisma.achievement.count({ where: { gameId } });
+  const existingCount = await prisma.achievement.count({ where: { gameId, source: "PSN" } });
   if (existingCount === 0) {
     const { trophies } = await getPsnTitleTrophyDefinitions(title);
     if (trophies.length > 0) {
       await prisma.achievement.createMany({
         data: trophies.map((t) => ({
           gameId,
+          source: "PSN",
           apiName: String(t.trophyId),
           displayName: t.trophyName ?? "?",
           description: t.trophyDetail ?? null,
@@ -36,7 +43,7 @@ export async function syncTrophiesForTitle(
     }
   }
 
-  const achievements = await prisma.achievement.findMany({ where: { gameId } });
+  const achievements = await prisma.achievement.findMany({ where: { gameId, source: "PSN" } });
   if (achievements.length === 0) return 0;
 
   const { trophies: earnedTrophies } = await getPsnUserEarnedTrophies(accountId, title);

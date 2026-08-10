@@ -326,17 +326,23 @@ model Log {
 // One row per (canonical Game, Steam achievement) — shared across all
 // users, fetched once per game from GetSchemaForGame and reused forever.
 model Achievement {
-  id                    String  @id @default(cuid())
+  id                    String     @id @default(cuid())
+  // A game linked to both Steam and PSN (same canonical Game row) has two
+  // separate achievement lists — apiName formats aren't unique across
+  // providers (PSN's is a bare numeric trophyId), so this disambiguates
+  // which sync a row belongs to. Without it, whichever provider synced
+  // first "won" the row and the other's unlocks silently never matched.
+  source                GameSource
   apiName               String
   displayName           String
-  description           String? @db.Text
+  description           String?    @db.Text
   iconUrl               String
   iconGrayUrl           String
   globalUnlockedPercent Float?
   // Only ever true for PSN trophies (Sony's own `trophyType === "platinum"`)
   // — Steam has no equivalent concept, so this is always false there and
   // the "100% unlocked" heuristic in getPlatinumGameIds is used instead.
-  isPlatinum            Boolean @default(false)
+  isPlatinum            Boolean    @default(false)
 
   game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId String
@@ -344,7 +350,7 @@ model Achievement {
   unlockedBy UserAchievement[]
   pinnedBy   PinnedAchievement[]
 
-  @@unique([gameId, apiName])
+  @@unique([gameId, source, apiName])
   @@index([gameId])
 }
 

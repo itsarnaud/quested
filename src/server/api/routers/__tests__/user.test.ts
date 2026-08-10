@@ -91,7 +91,14 @@ describe("pinned achievements", () => {
     const achievements = await Promise.all(
       Array.from({ length: 6 }, (_, i) =>
         prisma.achievement.create({
-          data: { gameId: game.id, apiName: `ACH_${i}`, displayName: `Achievement ${i}`, iconUrl: "u", iconGrayUrl: "g" },
+          data: {
+            gameId: game.id,
+            source: "STEAM",
+            apiName: `ACH_${i}`,
+            displayName: `Achievement ${i}`,
+            iconUrl: "u",
+            iconGrayUrl: "g",
+          },
         }),
       ),
     );
