@@ -54,3 +54,12 @@ export const xboxGlobalRatelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(130, "1 h"),
   prefix: "ratelimit:xbox-global",
 });
+
+// Per-user tRPC-layer guard on top of xboxGlobalRatelimit — protects against
+// one user's client retrying in a tight loop eating the shared budget alone,
+// same role steamSyncRatelimit/psnSyncRatelimit play for their providers.
+export const xboxSyncRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(40, "1 m"),
+  prefix: "ratelimit:xbox-sync",
+});

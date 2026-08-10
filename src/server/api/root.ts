@@ -9,6 +9,7 @@ import { gameListRouter } from "@/server/api/routers/gameList";
 import { pushSubscriptionRouter } from "@/server/api/routers/pushSubscription";
 import { steamRouter } from "@/server/api/routers/steam";
 import { psnRouter } from "@/server/api/routers/psn";
+import { xboxRouter } from "@/server/api/routers/xbox";
 import { adminRouter } from "@/server/api/routers/admin";
 
 export const appRouter = createTRPCRouter({
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   pushSubscription: pushSubscriptionRouter,
   steam: steamRouter,
   psn: psnRouter,
+  xbox: xboxRouter,
   admin: adminRouter,
 });
 

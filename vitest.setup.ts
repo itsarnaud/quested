@@ -9,4 +9,6 @@ vi.mock("@/lib/redis", () => ({
   standardRatelimit: { limit: async () => ({ success: true }) },
   steamSyncRatelimit: { limit: async () => ({ success: true }) },
   psnSyncRatelimit: { limit: async () => ({ success: true }) },
+  xboxSyncRatelimit: { limit: async () => ({ success: true }) },
+  xboxGlobalRatelimit: { limit: async () => ({ success: true, reset: Date.now() }) },
 }));

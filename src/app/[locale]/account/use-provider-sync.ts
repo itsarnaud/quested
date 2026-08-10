@@ -13,7 +13,10 @@ const LIBRARY_PAGE_SIZE = 40;
 const ACHIEVEMENTS_PAGE_SIZE = 20;
 
 export type SyncPhase = "library" | "achievements";
-export type SyncProgress = { phase: SyncPhase; done: number; total: number };
+// pausedUntil: only ever set by useXboxSync, when OpenXBL's shared 150/hour
+// budget runs out mid-sync — Steam/PSN never set it, their callers can
+// safely ignore the field.
+export type SyncProgress = { phase: SyncPhase; done: number; total: number; pausedUntil?: number };
 
 // Leaving mid-sync aborts the in-flight request and stops the loop for
 // good — the native "are you sure" prompt is the only real way to warn
@@ -120,5 +123,48 @@ export function usePsnSync() {
     }
 
     toast.success(t("syncPsnComplete", { games: size.total, achievements: achievementsUnlocked }));
+  };
+}
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export function useXboxSync() {
+  const t = useTranslations("Account");
+  const utils = trpc.useUtils();
+  const syncLibrary = trpc.xbox.syncLibrary.useMutation();
+  const syncAchievementsPage = trpc.xbox.syncAchievementsPage.useMutation();
+
+  return async function sync(onProgress: (progress: SyncProgress) => void) {
+    // OpenXBL's 150/hour budget is shared by every user of the app at
+    // once (see xboxGlobalRatelimit) — a page can come back with
+    // pausedUntil set instead of failing outright, meaning "wait, then
+    // pick up right where you left off" rather than "something broke".
+    onProgress({ phase: "library", done: 0, total: 1 });
+    let library = await syncLibrary.mutateAsync();
+    while (library.pausedUntil) {
+      onProgress({ phase: "library", done: 0, total: 1, pausedUntil: library.pausedUntil });
+      await wait(Math.max(0, library.pausedUntil - Date.now()));
+      library = await syncLibrary.mutateAsync();
+    }
+    onProgress({ phase: "library", done: 1, total: 1 });
+
+    const gameCount = await utils.xbox.getTrackedGameCount.fetch();
+    let achOffset = 0;
+    let achievementsUnlocked = 0;
+    onProgress({ phase: "achievements", done: 0, total: gameCount });
+    while (achOffset < gameCount) {
+      const result = await syncAchievementsPage.mutateAsync({ offset: achOffset, limit: ACHIEVEMENTS_PAGE_SIZE });
+      achievementsUnlocked += result.achievementsUnlocked;
+      achOffset += result.gamesProcessed;
+
+      if (result.pausedUntil) {
+        onProgress({ phase: "achievements", done: achOffset, total: gameCount, pausedUntil: result.pausedUntil });
+        await wait(Math.max(0, result.pausedUntil - Date.now()));
+      } else {
+        onProgress({ phase: "achievements", done: Math.min(achOffset, gameCount), total: gameCount });
+      }
+    }
+
+    toast.success(t("syncXboxComplete", { games: library.total, achievements: achievementsUnlocked }));
   };
 }
