@@ -282,6 +282,7 @@ enum GameSource {
   RAWG
   STEAM
   PSN
+  XBOX
 }
 
 // Maps a canonical Game to its id in each external source, so the

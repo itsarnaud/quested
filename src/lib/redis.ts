@@ -42,3 +42,15 @@ export const psnSyncRatelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(40, "1 m"),
   prefix: "ratelimit:psn-sync",
 });
+
+// OpenXBL's own cap is 150 req/hour for the whole app (one shared API key,
+// no per-user quota like Steam). Unlike the per-user limiters above, every
+// caller checks the SAME identifier ("global") — see checkXboxBudget in
+// src/server/xbox/client.ts, which every actual OpenXBL call goes through.
+// Capped below the real limit to leave headroom for the gamertag-search
+// preview and any manual/admin calls.
+export const xboxGlobalRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(130, "1 h"),
+  prefix: "ratelimit:xbox-global",
+});
