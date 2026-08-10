@@ -508,10 +508,6 @@ function AccountsStep({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Every account linked here is brand new (onboarding), so it's always
-  // safe to auto-sync it immediately rather than making the user find and
-  // press a separate button — one less step in an already multi-step flow.
-
   return (
     <StepReveal>
       <Reveal>
@@ -539,6 +535,9 @@ function AccountsStep({
 
           {!hasPsnLinked ? <PsnLinkForm className="flex w-full gap-2" /> : null}
 
+          {/* autoStart: every account linked here is brand new (onboarding),
+              so it's always safe to sync it immediately rather than making
+              the user find and press a separate button. */}
           {anyLinked ? (
             <SyncAllButton hasSteamLinked={hasSteamLinked} hasPsnLinked={hasPsnLinked} autoStart className="w-full" />
           ) : null}

@@ -25,9 +25,8 @@ export const standardRatelimit = new Ratelimit({
 // Each Steam library sync page can trigger a batch of IGDB round trips —
 // tighter than standard, but loose enough for the client's own chunked
 // sync loop (syncPage + syncAchievementsPage share this one bucket) to run
-// without self-throttling. Raised from 20 to 40 on 09/08 — a real sync of a
-// ~100-game library fires ~11 calls across both loops, and hit its own
-// limit partway through on stock 20 (see the 429 that prompted this).
+// without self-throttling. A sync of a ~100-game library fires ~11 calls
+// across both loops, so the budget needs headroom above that.
 export const steamSyncRatelimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(40, "1 m"),

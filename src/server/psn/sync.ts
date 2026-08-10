@@ -18,15 +18,6 @@ function psnPlatformsToNames(trophyTitlePlatform: string): string[] {
   return trophyTitlePlatform.split(",").map((p) => PLATFORM_NAMES[p.trim()] ?? p.trim());
 }
 
-/**
- * Resolves a single PSN trophy title to a canonical Game. Match order:
- * existing GameExternalId(PSN, npCommunicationId) link from a prior sync
- * (fast path) > an IGDB search result whose title matches exactly once
- * normalized (PSN has no crosswalk table like Steam's external_games, so
- * this is a text match rather than an ID lookup) > a bare Game created
- * straight from PSN's own title data, for anything that doesn't confidently
- * match (DLC-only trophy sets, regional variants, etc).
- */
 // GameExternalId only has (source, sourceId) — npServiceName ("trophy" vs
 // "trophy2") is required by every later trophy API call but isn't derivable
 // from npCommunicationId alone, so it's packed into the sourceId itself
@@ -40,6 +31,15 @@ export function parsePsnSourceId(sourceId: string): { npServiceName: "trophy" | 
   return { npServiceName: npServiceName as "trophy" | "trophy2", npCommunicationId };
 }
 
+/**
+ * Resolves a single PSN trophy title to a canonical Game. Match order:
+ * existing GameExternalId(PSN, npCommunicationId) link from a prior sync
+ * (fast path) > an IGDB search result whose title matches exactly once
+ * normalized (PSN has no crosswalk table like Steam's external_games, so
+ * this is a text match rather than an ID lookup) > a bare Game created
+ * straight from PSN's own title data, for anything that doesn't confidently
+ * match (DLC-only trophy sets, regional variants, etc).
+ */
 async function upsertGameFromPsnTitle(title: TrophyTitle) {
   const sourceId = encodePsnSourceId(title);
 

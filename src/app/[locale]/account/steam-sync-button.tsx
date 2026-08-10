@@ -1,100 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { SteamIcon } from "@/components/icons/steam-icon";
+import { useBeforeUnloadWarning, useSteamSync, type SyncProgress } from "@/app/[locale]/account/use-provider-sync";
 
-const LIBRARY_PAGE_SIZE = 40;
-// Server-side sync of a page now runs its games in parallel (Promise.allSettled),
-// so a bigger page is still fast — and means fewer round trips against the
-// shared steamSyncRatelimit bucket (syncPage + syncAchievementsPage together).
-const ACHIEVEMENTS_PAGE_SIZE = 20;
-
-type SyncState =
-  | { status: "idle" }
-  | { status: "syncing"; phase: "library" | "achievements"; done: number; total: number };
-
-// Leaving mid-sync aborts the in-flight request and stops the loop for
-// good — the native "are you sure" prompt is the only real way to warn
-// against that (browsers ignore any custom message here).
-const useBeforeUnloadWarning = (active: boolean) => {
-  useEffect(() => {
-    if (!active) return;
-    const handler = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-    };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [active]);
-};
+type SyncState = { status: "idle" } | ({ status: "syncing" } & SyncProgress);
 
 export function SteamSyncButton({ className }: { className?: string }) {
   const t = useTranslations("Account");
   const [state, setState] = useState<SyncState>({ status: "idle" });
+  const sync = useSteamSync();
 
   useBeforeUnloadWarning(state.status === "syncing");
 
-  const utils = trpc.useUtils();
-  const syncPage = trpc.steam.syncPage.useMutation();
-  const syncAchievementsPage = trpc.steam.syncAchievementsPage.useMutation();
-
   async function runSync() {
     setState({ status: "syncing", phase: "library", done: 0, total: 0 });
-
-    // Bypass the query cache's default staleTime: this checks live Steam-side
-    // state (profile visibility, library size) that can change between two
-    // clicks of this button — a cached "private" result must never block a
-    // retry right after the user actually made their profile public.
-    const size = await utils.steam.getLibrarySize.fetch(undefined, { staleTime: 0 }).catch(() => null);
-    if (!size) {
-      setState({ status: "idle" });
-      toast.error(t("genericError"));
-      return;
-    }
-    if (size.isPrivate) {
-      setState({ status: "idle" });
-      toast.error(t("steamProfilePrivate"), {
-        action: {
-          label: t("steamPrivacySettingsLink"),
-          onClick: () => window.open("https://steamcommunity.com/my/edit/settings", "_blank", "noopener,noreferrer"),
-        },
-      });
-      return;
-    }
-
     try {
-      let offset = 0;
-      setState({ status: "syncing", phase: "library", done: 0, total: size.total });
-      while (offset < size.total) {
-        await syncPage.mutateAsync({ offset, limit: LIBRARY_PAGE_SIZE });
-        offset += LIBRARY_PAGE_SIZE;
-        setState({ status: "syncing", phase: "library", done: Math.min(offset, size.total), total: size.total });
-      }
-
-      const gameCount = await utils.steam.getTrackedGameCount.fetch();
-      let achOffset = 0;
-      let achievementsUnlocked = 0;
-      setState({ status: "syncing", phase: "achievements", done: 0, total: gameCount });
-      while (achOffset < gameCount) {
-        const result = await syncAchievementsPage.mutateAsync({ offset: achOffset, limit: ACHIEVEMENTS_PAGE_SIZE });
-        achievementsUnlocked += result.achievementsUnlocked;
-        achOffset += ACHIEVEMENTS_PAGE_SIZE;
-        setState({
-          status: "syncing",
-          phase: "achievements",
-          done: Math.min(achOffset, gameCount),
-          total: gameCount,
-        });
-      }
-
-      setState({ status: "idle" });
-      toast.success(t("syncSteamComplete", { games: size.total, achievements: achievementsUnlocked }));
+      await sync((progress) => setState({ status: "syncing", ...progress }));
     } catch {
-      setState({ status: "idle" });
       toast.error(t("genericError"));
+    } finally {
+      setState({ status: "idle" });
     }
   }
 

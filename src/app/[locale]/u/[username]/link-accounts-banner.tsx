@@ -18,11 +18,10 @@ function setAnsweredCookie() {
   document.cookie = `${COOKIE_NAME}=1; max-age=${oneYear}; path=/`;
 }
 
-// Generalized from the Steam-only banner it replaces — mentions whichever of
-// Steam/PSN isn't linked yet (Xbox to add later once it exists). Just links
-// to the settings page rather than embedding the Steam redirect button and
-// the PSN username form inline — cramming both into one row got cluttered
-// and confusing, the settings page already has the real UI for this.
+// Mentions whichever of Steam/PSN isn't linked yet (Xbox to add later once
+// it exists), but links out to the settings page rather than embedding the
+// Steam redirect button and PSN username form inline — cramming both into
+// one row got cluttered fast, and the settings page already has that UI.
 export function LinkAccountsBanner({
   hasSteamLinked,
   hasPsnLinked,
@@ -58,7 +57,7 @@ export function LinkAccountsBanner({
       </div>
       <div className="flex w-full shrink-0 gap-2 sm:w-auto">
         <Button variant="secondary" className="flex-1 sm:flex-none" onClick={dismiss}>
-          {t("steamBannerDismiss")}
+          {t("bannerDismiss")}
         </Button>
         <Link href="/account/comptes-lies" onClick={setAnsweredCookie} className="flex-1 sm:flex-none">
           <Button className="w-full">{t("linkAccountsBannerCta")}</Button>
