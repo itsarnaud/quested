@@ -60,7 +60,10 @@ export async function createCanonicalGame(input: {
   source: GameSource;
   sourceId: string;
 }) {
-  const baseSlug = slugify(input.title) || `game-${input.sourceId}`;
+  // sourceId isn't always URL-safe on its own — PSN's encodes a colon
+  // (see encodePsnSourceId, e.g. "trophy2:NPWR38524_00") — so it needs the
+  // same slugify pass as the title, not just string interpolation.
+  const baseSlug = slugify(input.title) || `game-${slugify(input.sourceId)}`;
   const slug = input.year ? `${baseSlug}-${input.year}` : baseSlug;
 
   // A slug collision here means another (source, sourceId) already created

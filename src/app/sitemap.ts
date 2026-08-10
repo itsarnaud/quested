@@ -13,8 +13,18 @@ function localizedUrls(path: string) {
   );
 }
 
-function entry(path: string, rest: Omit<MetadataRoute.Sitemap[number], "url" | "alternates">) {
-  return { url: localizedUrls(path)[routing.defaultLocale], alternates: { languages: localizedUrls(path) }, ...rest };
+// One <url> block per locale, each listing every locale (including itself)
+// as an hreflang alternate — the reciprocal structure Google's own sitemap
+// hreflang docs show. A single default-locale entry with alternates only
+// pointing outward (the previous approach here) never gave the /en pages
+// their own <url> block at all, which isn't the documented format.
+function entries(path: string, rest: Omit<MetadataRoute.Sitemap[number], "url" | "alternates">): MetadataRoute.Sitemap {
+  const urls = localizedUrls(path);
+  return routing.locales.map((locale) => ({
+    url: urls[locale],
+    alternates: { languages: urls },
+    ...rest,
+  }));
 }
 
 // The sitemap protocol's W3C-DTF profile only defines second precision —
@@ -61,17 +71,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
   return [
-    entry("", { changeFrequency: "weekly", priority: 1 }),
-    entry("/search", { changeFrequency: "weekly", priority: 0.8 }),
-    ...games.map((game) =>
-      entry(`/games/${game.slug}`, {
+    ...entries("", { changeFrequency: "weekly", priority: 1 }),
+    ...entries("/search", { changeFrequency: "weekly", priority: 0.8 }),
+    ...games.flatMap((game) =>
+      entries(`/games/${game.slug}`, {
         lastModified: toSitemapDate(game.updatedAt),
         changeFrequency: "weekly",
         priority: 0.6,
       }),
     ),
-    ...users.map((user) =>
-      entry(`/u/${user.username}`, {
+    ...users.flatMap((user) =>
+      entries(`/u/${user.username}`, {
         lastModified: toSitemapDate(user.updatedAt),
         changeFrequency: "weekly",
         priority: 0.5,
