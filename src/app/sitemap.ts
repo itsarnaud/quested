@@ -31,20 +31,34 @@ function toSitemapDate(date: Date): string {
 // when a crawler happens to fetch it.
 export const revalidate = 3600;
 
+type GameRow = { slug: string; updatedAt: Date };
+type UserRow = { username: string | null; updatedAt: Date };
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [games, users] = await Promise.all([
-    // Only list games at least one person has actually logged — keeps
-    // search-only imports (which can be noisy, especially for common
-    // search terms) out of the public sitemap.
-    prisma.game.findMany({
-      where: { logs: { some: {} } },
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.user.findMany({
-      where: { username: { not: null }, logs: { some: {} } },
-      select: { username: true, updatedAt: true },
-    }),
-  ]);
+  // A DB hiccup here (cold start, connection limit) must never turn into a
+  // 500 for the whole route — Google Search Console reads that as "sitemap
+  // unreachable" and can take a while to re-check, unlike a normal page
+  // where a user would just retry. Falling back to the static entries below
+  // keeps the sitemap fetchable either way. $transaction also means this
+  // costs one DB connection instead of two concurrent ones.
+  const [games, users]: [GameRow[], UserRow[]] = await prisma
+    .$transaction([
+      // Only list games at least one person has actually logged — keeps
+      // search-only imports (which can be noisy, especially for common
+      // search terms) out of the public sitemap.
+      prisma.game.findMany({
+        where: { logs: { some: {} } },
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.user.findMany({
+        where: { username: { not: null }, logs: { some: {} } },
+        select: { username: true, updatedAt: true },
+      }),
+    ])
+    .catch((error) => {
+      console.error("Sitemap DB query failed, falling back to static entries:", error);
+      return [[], []];
+    });
 
   return [
     entry("", { changeFrequency: "weekly", priority: 1 }),
