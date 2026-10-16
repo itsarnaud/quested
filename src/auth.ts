@@ -11,10 +11,6 @@ import { renderWelcomeEmail } from "@/lib/email-templates";
 // Discord's default profile() picks .gif for animated avatars, which
 // this CDN edge rejects with a 415. Force .png (static) instead.
 const discordProvider = Discord({
-  // Discord now returns an RFC 9207 `iss` param on the callback. Auth.js
-  // falls back to "https://authjs.dev" when no issuer is set and rejects
-  // the mismatch ("unexpected iss"), so declare Discord's real issuer.
-  issuer: "https://discord.com/oauth2",
   profile(profile: DiscordProfile) {
     const imageUrl =
       profile.avatar === null
